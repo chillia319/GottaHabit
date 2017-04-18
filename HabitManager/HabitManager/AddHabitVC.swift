@@ -18,15 +18,20 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         let habitsObject = UserDefaults.standard.object(forKey: "habits")
         
         var habits: [String]
-        if let tempHabits = habitsObject as? [String] {
-            habits = tempHabits
-            habits.append(habitDescription.text!)
+        if(!(habitDescription.text?.isEmpty)!){
+            if let tempHabits = habitsObject as? [String] {
+                habits = tempHabits
+                habits.append(habitDescription.text!)
+            }else{
+                habits = [habitDescription.text!]
+            }
+            habitDescription.backgroundColor = UIColor.white
+            UserDefaults.standard.set(habits, forKey: "habits")
+            habitDescription.text = ""
+            performSegue(withIdentifier: "segueToMain", sender: nil)
         }else{
-            habits = [habitDescription.text!]
+            habitDescription.backgroundColor = UIColor.red
         }
-        
-        UserDefaults.standard.set(habits, forKey: "habits")
-        habitDescription.text = ""
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

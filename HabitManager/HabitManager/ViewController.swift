@@ -20,7 +20,8 @@ class ViewController: UIViewController, UITabBarDelegate, UITableViewDataSource 
   
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         
-        let cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "Cell")
+        //let cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "Cell")
+        let cell = tableView.dequeueReusableCell(withIdentifier:"Cell")!
         
         cell.textLabel?.text = habits[indexPath.row]
         
