@@ -10,8 +10,10 @@ import UIKit
 
 class AddHabitVC: UITableViewController, UITextFieldDelegate {
     
-    
     @IBOutlet var habitDescription: UITextField!
+    @IBOutlet var timePicker: UIDatePicker!
+    
+    private var timePickerVisible = false
     
     @IBAction func save(_ sender: Any) {
         
@@ -34,6 +36,36 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         }
     }
     
+    private func toggleShowDateDatepicker () {
+        timePickerVisible = !timePickerVisible
+        
+        tableView.beginUpdates()
+        tableView.endUpdates()
+    }
+    
+    @IBAction func timePickerAction(_ sender: UIDatePicker) {
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == 1 && indexPath.row == 1 {
+            toggleShowDateDatepicker()
+        }
+        
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if !timePickerVisible && indexPath.section == 1 && indexPath.row == 2 {
+            return 0
+        } else {
+            if(indexPath.section == 1 && indexPath.row == 2){
+                return 216
+            } else{
+                return super.tableView.rowHeight
+            }
+        }
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
@@ -45,9 +77,13 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        self.navigationController?.navigationBar.isTranslucent = false
         // Do any additional setup after loading the view.
     }
+    
+    /*override var prefersStatusBarHidden: Bool {
+        return true
+    }*/
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

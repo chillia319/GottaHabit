@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITabBarDelegate, UITableViewDataSource {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet var habitsTable: UITableView!
     
@@ -24,13 +24,16 @@ class ViewController: UIViewController, UITabBarDelegate, UITableViewDataSource 
         let cell = tableView.dequeueReusableCell(withIdentifier:"Cell")!
         
         cell.textLabel?.text = habits[indexPath.row]
+        cell.textLabel?.numberOfLines = 0
         
         return cell
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        habitsTable.estimatedRowHeight = 44
+        habitsTable.rowHeight = UITableViewAutomaticDimension
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -50,6 +53,10 @@ class ViewController: UIViewController, UITabBarDelegate, UITableViewDataSource 
             UserDefaults.standard.set(habits, forKey: "habits")
         }
     }
+    
+    /*override var prefersStatusBarHidden: Bool {
+        return true
+    }*/
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
