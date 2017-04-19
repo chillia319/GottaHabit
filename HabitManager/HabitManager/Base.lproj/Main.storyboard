@@ -54,7 +54,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OP6-jD-3fZ">
-                                                    <rect key="frame" x="679" y="7" width="51" height="31"/>
+                                                    <rect key="frame" x="357" y="7" width="51" height="31"/>
                                                 </switch>
                                             </subviews>
                                             <color key="backgroundColor" red="0.40000000600000002" green="0.80000001190000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -265,9 +265,8 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="None" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A7A-Dw-RRm">
-                                                    <rect key="frame" x="293" y="11" width="41" height="21"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="None" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A7A-Dw-RRm">
+                                                    <rect key="frame" x="332" y="11" width="41" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.40000000600000002" green="0.40000000600000002" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -275,7 +274,10 @@
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="83w-mI-Tg1" firstAttribute="top" secondItem="QxT-Pa-JCZ" secondAttribute="topMargin" constant="3" id="9oV-1F-mmU"/>
+                                                <constraint firstItem="A7A-Dw-RRm" firstAttribute="top" secondItem="QxT-Pa-JCZ" secondAttribute="topMargin" constant="3" id="JIh-ye-Fjx"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="A7A-Dw-RRm" secondAttribute="bottom" constant="3.5" id="Nuc-3M-rIp"/>
                                                 <constraint firstItem="83w-mI-Tg1" firstAttribute="leading" secondItem="QxT-Pa-JCZ" secondAttribute="leadingMargin" constant="7" id="UxE-gY-MdK"/>
+                                                <constraint firstItem="A7A-Dw-RRm" firstAttribute="trailing" secondItem="QxT-Pa-JCZ" secondAttribute="trailingMargin" id="mTc-4e-6fl"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="83w-mI-Tg1" secondAttribute="bottom" constant="3.5" id="pKw-2o-KbV"/>
                                             </constraints>
                                         </tableViewCellContentView>
