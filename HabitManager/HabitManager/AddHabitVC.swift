@@ -12,28 +12,39 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     
     @IBOutlet var habitDescription: UITextField!
     @IBOutlet var timePicker: UIDatePicker!
+    @IBOutlet var timeLabel: UILabel!
+    @IBOutlet var saveButton: UIBarButtonItem!
     
     private var timePickerVisible = false
+    
+    private func checkDescription() {
+        let description = habitDescription.text ?? ""
+        saveButton.isEnabled = !description.isEmpty
+    }
+    
+    @IBAction func cancel(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
+    }
     
     @IBAction func save(_ sender: Any) {
         
         let habitsObject = UserDefaults.standard.object(forKey: "habits")
         
         var habits: [String]
-        if(!(habitDescription.text?.isEmpty)!){
-            if let tempHabits = habitsObject as? [String] {
-                habits = tempHabits
-                habits.append(habitDescription.text!)
-            }else{
-                habits = [habitDescription.text!]
-            }
-            habitDescription.backgroundColor = UIColor.white
-            UserDefaults.standard.set(habits, forKey: "habits")
-            habitDescription.text = ""
-            performSegue(withIdentifier: "segueToMain", sender: nil)
+ 
+        if let tempHabits = habitsObject as? [String] {
+            habits = tempHabits
+            habits.append(habitDescription.text!)
         }else{
-            habitDescription.backgroundColor = UIColor.red
+            habits = [habitDescription.text!]
         }
+        UserDefaults.standard.set(habits, forKey: "habits")
+        habitDescription.text = ""
+        performSegue(withIdentifier: "segueToMain", sender: nil)
+    }
+    
+    private func setTimelabelValue () {
+        timeLabel.text = DateFormatter.localizedString(from: timePicker.date, dateStyle: .none, timeStyle: .short)
     }
     
     private func toggleShowDateDatepicker () {
@@ -44,6 +55,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     }
     
     @IBAction func timePickerAction(_ sender: UIDatePicker) {
+        setTimelabelValue()
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -66,6 +78,15 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         }
     }
     
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        saveButton.isEnabled = false
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        checkDescription()
+    }
+    
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
@@ -78,6 +99,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:)))
         tap.cancelsTouchesInView = false
         self.view.addGestureRecognizer(tap)
+        checkDescription()
     }
     
     /*override var prefersStatusBarHidden: Bool {
