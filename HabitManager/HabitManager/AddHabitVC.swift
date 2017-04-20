@@ -16,6 +16,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     @IBOutlet var saveButton: UIBarButtonItem!
     
     private var timePickerVisible = false
+    private var selectedDate: Date!
     
     private func checkDescription() {
         let description = habitDescription.text ?? ""
@@ -34,12 +35,22 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
  
         if let tempHabits = habitsObject as? [String] {
             habits = tempHabits
-            habits.append(habitDescription.text!)
+            
+            if(selectedDate != nil){
+                habits.append(habitDescription.text! + " @ " + timeLabel.text!)
+            }else{
+                habits.append(habitDescription.text!)
+            }
         }else{
             habits = [habitDescription.text!]
         }
         UserDefaults.standard.set(habits, forKey: "habits")
-        habitDescription.text = ""
+        
+        if(selectedDate != nil){
+            let delegate = UIApplication.shared.delegate as? AppDelegate
+            delegate?.scheduleNotification(at: selectedDate, title: habitDescription.text!)
+        }
+        
         performSegue(withIdentifier: "segueToMain", sender: nil)
     }
     
@@ -56,14 +67,34 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     
     @IBAction func timePickerAction(_ sender: UIDatePicker) {
         setTimelabelValue()
+        selectedDate = sender.date
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 1 && indexPath.row == 1 {
-            toggleShowDateDatepicker()
+        if(restorationIdentifier == "newHabit"){
+            if indexPath.section == 1 && indexPath.row == 1 {
+                toggleShowDateDatepicker()
+            }
+            
+            tableView.deselectRow(at: indexPath, animated: true)
+        } else if (restorationIdentifier == "repeatOptions"){
+            
+            let numberOfRows = tableView.numberOfRows(inSection: 0)
+            for row in 0..<numberOfRows {
+                if let cell = tableView.cellForRow(at: IndexPath(row: row, section: 0)) {
+                    //cell.accessoryType = row == indexPath.row ? .checkmark : .none
+ 
+                    if(row == indexPath.row && cell.accessoryType == .none){
+                        cell.accessoryType = .checkmark //selected
+                        print (row)
+                    }else if(row == indexPath.row && cell.accessoryType != .none){
+                        cell.accessoryType = .none //deselcted
+                        print (row)
+                    }
+                    tableView.deselectRow(at: indexPath, animated: true)
+                }
+            }
         }
-        
-        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -94,12 +125,15 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         self.navigationController?.navigationBar.isTranslucent = false
         
-        let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:)))
-        tap.cancelsTouchesInView = false
-        self.view.addGestureRecognizer(tap)
-        checkDescription()
+        if(restorationIdentifier == "newHabit"){
+            let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:)))
+            tap.cancelsTouchesInView = false
+            self.view.addGestureRecognizer(tap)
+            checkDescription()
+        }
     }
     
     /*override var prefersStatusBarHidden: Bool {
