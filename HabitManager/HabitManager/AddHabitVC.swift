@@ -174,9 +174,9 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 
                 if(AddHabitVC.daysSelected.count == 7){
                     tempRepeatOptionsString = "Everyday"
-                }else if(isWeekdays){
+                }else if(isWeekdays && AddHabitVC.daysSelected.count == 5){
                     tempRepeatOptionsString = "Weekdays"
-                }else if(isWeekends){
+                }else if(isWeekends && AddHabitVC.daysSelected.count == 2){
                     tempRepeatOptionsString = "Weekends"
                 }else{
                     for day in 0..<AddHabitVC.daysSelected.count{
