@@ -10,13 +10,16 @@ import UIKit
 
 class AddHabitVC: UITableViewController, UITextFieldDelegate {
     
+    @IBOutlet var repeatOptionsLabel: UILabel!
     @IBOutlet var habitDescription: UITextField!
     @IBOutlet var timePicker: UIDatePicker!
     @IBOutlet var timeLabel: UILabel!
     @IBOutlet var saveButton: UIBarButtonItem!
+    @IBOutlet var repeatOptionsTable: UITableView!
     
     private var timePickerVisible = false
     private var selectedDate: Date!
+    private static var daysSelected: [Int] = []
     
     private func checkDescription() {
         let description = habitDescription.text ?? ""
@@ -71,13 +74,13 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if(restorationIdentifier == "newHabit"){
+        if(restorationIdentifier == "NewHabit"){
             if indexPath.section == 1 && indexPath.row == 1 {
                 toggleShowDateDatepicker()
             }
             
             tableView.deselectRow(at: indexPath, animated: true)
-        } else if (restorationIdentifier == "repeatOptions"){
+        } else if (restorationIdentifier == "RepeatOptions"){
             
             let numberOfRows = tableView.numberOfRows(inSection: 0)
             for row in 0..<numberOfRows {
@@ -86,14 +89,18 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
  
                     if(row == indexPath.row && cell.accessoryType == .none){
                         cell.accessoryType = .checkmark //selected
-                        print (row)
+                        AddHabitVC.daysSelected.append(row)
                     }else if(row == indexPath.row && cell.accessoryType != .none){
                         cell.accessoryType = .none //deselcted
-                        print (row)
+                        let itemToRemove = row
+                        if let index = AddHabitVC.daysSelected.index(of: itemToRemove) {
+                            AddHabitVC.daysSelected.remove(at: index)
+                        }
                     }
                     tableView.deselectRow(at: indexPath, animated: true)
                 }
             }
+            print (AddHabitVC.daysSelected)
         }
     }
     
@@ -123,16 +130,82 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         return true
     }
     
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.navigationController?.navigationBar.isTranslucent = false
         
-        if(restorationIdentifier == "newHabit"){
+        if(restorationIdentifier == "NewHabit"){
             let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:)))
             tap.cancelsTouchesInView = false
             self.view.addGestureRecognizer(tap)
+            AddHabitVC.daysSelected = []
             checkDescription()
+        }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        if(restorationIdentifier == "RepeatOptions"){
+            for cell in repeatOptionsTable.visibleCells {
+                let row = repeatOptionsTable.indexPath(for: cell)?.row
+
+                if(AddHabitVC.daysSelected.contains(row!)){
+                    cell.accessoryType = .checkmark
+                }
+            }
+            //repeatOptionsTable.reloadData()
+        }else if (restorationIdentifier == "NewHabit"){
+            if(!AddHabitVC.daysSelected.isEmpty){
+                AddHabitVC.daysSelected = AddHabitVC.daysSelected.sorted { $0 < $1 }
+                
+                let weekdaysList = [0,1,2,3,4]
+                let weekendsList = [5,6]
+                
+                let weekdaysListSet = Set(weekdaysList)
+                let weekendsListSet = Set(weekendsList)
+                let daysSelectedListSet = Set(AddHabitVC.daysSelected)
+                
+                let isWeekdays = weekdaysListSet.isSubset(of: daysSelectedListSet)
+                let isWeekends = weekendsListSet.isSubset(of: daysSelectedListSet)
+                
+                var tempRepeatOptionsString = ""
+                
+                if(AddHabitVC.daysSelected.count == 7){
+                    tempRepeatOptionsString = "Everyday"
+                }else if(isWeekdays){
+                    tempRepeatOptionsString = "Weekdays"
+                }else if(isWeekends){
+                    tempRepeatOptionsString = "Weekends"
+                }else{
+                    for day in 0..<AddHabitVC.daysSelected.count{
+                        
+                        switch AddHabitVC.daysSelected[day] {
+                        case 0:
+                            tempRepeatOptionsString += "Mon "
+                        case 1:
+                            tempRepeatOptionsString += "Tue "
+                        case 2:
+                            tempRepeatOptionsString += "Wed "
+                        case 3:
+                            tempRepeatOptionsString += "Tur "
+                        case 4:
+                            tempRepeatOptionsString += "Fri "
+                        case 5:
+                            tempRepeatOptionsString += "Sat "
+                        case 6:
+                            tempRepeatOptionsString += "Sun "
+                        default:
+                            tempRepeatOptionsString = "Never"
+                        }
+                    }
+                }
+                repeatOptionsLabel.text = tempRepeatOptionsString
+                print (AddHabitVC.daysSelected)
+            }else{
+                repeatOptionsLabel.text = "Never"
+            }
         }
     }
     

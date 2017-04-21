@@ -42,7 +42,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let content = UNMutableNotificationContent()
         print (title)
         content.title = title
-        content.body = "you know you want to"
+        content.body = "You know you want to!"
         content.sound = UNNotificationSound.default()
         
         let request = UNNotificationRequest(identifier: "textNotification", content: content, trigger: trigger)
