@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import UserNotifications
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
@@ -14,6 +15,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     var habits: [String] = []
     var notificationsString: [String] = []
+    var uuid: [String] = []
     
     internal func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         return habits.count
@@ -49,6 +51,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewDidAppear(_ animated: Bool) {
         let habitsObject = UserDefaults.standard.object(forKey: "habits")
         let notificationsStringObject = UserDefaults.standard.object(forKey: "notificationsString")
+        let uuidObject = UserDefaults.standard.object(forKey: "uuid")
         
         if let tempHabits = habitsObject as? [String] {
             habits = tempHabits
@@ -56,17 +59,58 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if let tempNotificationsString = notificationsStringObject as? [String] {
             notificationsString = tempNotificationsString
         }
+        if let tempUUID = uuidObject as? [String] {
+            uuid = tempUUID
+        }
         
         habitsTable.reloadData()
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == UITableViewCellEditingStyle.delete{
+            let center = UNUserNotificationCenter.current()
+            var breakCount = 0
+            var stop = false
+            print (uuid)
+            for index in 0..<uuid.count{
+                if(stop == false){
+                    if(indexPath.row == 0){ //first row
+                        if(uuid[0] != "break"){
+                            center.removeDeliveredNotifications(withIdentifiers: [uuid[0]])
+                            center.removePendingNotificationRequests(withIdentifiers: [uuid[0]])
+                            uuid.remove(at: 0)
+                            UserDefaults.standard.set(uuid, forKey: "uuid")
+                        }else{
+                            uuid.remove(at: 0)
+                            UserDefaults.standard.set(uuid, forKey: "uuid")
+                            stop = true
+                        }
+                    }else{ //not first row
+                        if(uuid[index] == "break"){
+                            breakCount += 1
+                            if(breakCount == indexPath.row){
+                                while(uuid[index+1] != "break"){
+                                    center.removeDeliveredNotifications(withIdentifiers: [uuid[index+1]])
+                                    center.removePendingNotificationRequests(withIdentifiers: [uuid[index+1]])
+                                    uuid.remove(at: index+1)
+                                    UserDefaults.standard.set(uuid, forKey: "uuid")
+                                }
+                                uuid.remove(at: index+1) //delete break
+                                UserDefaults.standard.set(uuid, forKey: "uuid")
+                                stop = true
+                            }
+                        }
+                    }
+                }
+            }
+            print (uuid)
             habits.remove(at: indexPath.row)
             notificationsString.remove(at: indexPath.row)
+            
             habitsTable.reloadData()
             UserDefaults.standard.set(habits, forKey: "habits")
             UserDefaults.standard.set(notificationsString, forKey: "notificationsString")
+            UserDefaults.standard.set(uuid, forKey: "uuid")
         }
     }
     

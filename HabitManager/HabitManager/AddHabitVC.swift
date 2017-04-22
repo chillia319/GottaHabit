@@ -20,8 +20,10 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     @IBOutlet var repeatOptionCell: UITableViewCell!
     
     private var timePickerVisible = false
-    private var selectedDate: Date!
+    private var firstRun = true
+    private var selectedTime: Date!
     private static var daysSelected: [Int] = []
+    private var uuid: [String] = []
     
     private func checkDescription() {
         let description = habitDescription.text ?? ""
@@ -49,44 +51,89 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         }
         UserDefaults.standard.set(habits, forKey: "habits")
         
+        
+        var beautifiedTimeLabel = ""
+        if(timeLabel.text == "None"){
+            beautifiedTimeLabel = "No Alert"
+        }else{
+            if(repeatOptionsLabel.text == "Today only"){
+                beautifiedTimeLabel = "At " + timeLabel.text!
+            }else{
+                beautifiedTimeLabel = "At " + timeLabel.text! + " on " + repeatOptionsLabel.text!
+            }
+        }
+        
         if let tempNotificationsString = notificationsStringObject as? [String] {
             notificationsString = tempNotificationsString
             
-            var beautifiedTimeLabel = ""
-            if(timeLabel.text == "None"){
-                beautifiedTimeLabel = "No Alert"
-            }else{
-                if(repeatOptionsLabel.text == "Never"){
-                    beautifiedTimeLabel = "At " + timeLabel.text!
-                }else{
-                    beautifiedTimeLabel = "At " + timeLabel.text! + " on " + repeatOptionsLabel.text!
-                }
-            }
-            
             notificationsString.append(beautifiedTimeLabel)
         }else{
-            notificationsString = [timeLabel.text!]
+            notificationsString = [beautifiedTimeLabel]
         }
         UserDefaults.standard.set(notificationsString, forKey: "notificationsString")
         
-        
-        if(selectedDate != nil){
+    
+        if(selectedTime != nil){
             let delegate = UIApplication.shared.delegate as? AppDelegate
-            delegate?.scheduleNotification(at: selectedDate, title: habitDescription.text!)
+            
+            
+            if(AddHabitVC.daysSelected.count != 0){
+
+                for index in 0..<AddHabitVC.daysSelected.count{
+                    
+                    var gregorianDay = AddHabitVC.daysSelected[index]+2
+                    if(gregorianDay == 8){
+                        gregorianDay = 1
+                    }
+                    print (gregorianDay)
+                    saveUUID(UUID: UUID().uuidString)
+                    delegate?.scheduleWeekdayNotifications(at: selectedTime, title: habitDescription.text!, id: uuid[uuid.count-1], weekday: gregorianDay)
+                    print (uuid[uuid.count-1])
+                }
+                saveUUID(UUID: "break")
+            }else{
+                saveUUID(UUID: UUID().uuidString)
+                delegate?.scheduleOneTimeNotification(at: selectedTime, title: habitDescription.text!, id: uuid[uuid.count-1])
+                saveUUID(UUID: "break")
+            }
         }
         
         performSegue(withIdentifier: "segueToMain", sender: nil)
     }
     
-    private func toggleRepeatOptionsCell(){
-        repeatOptionCell.isUserInteractionEnabled = !repeatOptionCell.isUserInteractionEnabled
-        repeatOptionsTitleLabel.isEnabled = !repeatOptionsTitleLabel.isEnabled
-        repeatOptionsLabel.isEnabled = !repeatOptionsLabel.isEnabled
+    private func saveUUID(UUID: String){
+        
+        let uuidObject = UserDefaults.standard.object(forKey: "uuid")
+        
+        if let tempUUID = uuidObject as? [String] {
+            uuid = tempUUID
+            
+            uuid.append(UUID)
+        }else{
+            uuid = [UUID]
+        }
+        UserDefaults.standard.set(uuid, forKey: "uuid")
+    }
+    
+    private func toggleRepeatOptionsCell(enable: Bool){
+        if(enable){
+            repeatOptionCell.isUserInteractionEnabled = true
+            repeatOptionsTitleLabel.isEnabled = true
+            repeatOptionsLabel.isEnabled = true
+        } else{
+            repeatOptionCell.isUserInteractionEnabled = false
+            repeatOptionsTitleLabel.isEnabled = false
+            repeatOptionsLabel.isEnabled = false
+        }
     }
     
     private func setTimelabelValue () {
         timeLabel.text = DateFormatter.localizedString(from: timePicker.date, dateStyle: .none, timeStyle: .short)
-        toggleRepeatOptionsCell()
+        if(firstRun){
+            toggleRepeatOptionsCell(enable: true)
+            repeatOptionsLabel.text = "Today only"
+            firstRun = false;
+        }
     }
     
     private func toggleShowDateDatepicker () {
@@ -98,7 +145,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     
     @IBAction func timePickerAction(_ sender: UIDatePicker) {
         setTimelabelValue()
-        selectedDate = sender.date
+        selectedTime = sender.date
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -168,12 +215,13 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             self.view.addGestureRecognizer(tap)
             AddHabitVC.daysSelected = []
             checkDescription()
-            toggleRepeatOptionsCell()
+            toggleRepeatOptionsCell(enable: false)
         }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         if(restorationIdentifier == "RepeatOptions"){
+            
             for cell in repeatOptionsTable.visibleCells {
                 let row = repeatOptionsTable.indexPath(for: cell)?.row
 
@@ -205,9 +253,9 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 }else if(isWeekends && AddHabitVC.daysSelected.count == 2){
                     tempRepeatOptionsString = "Weekends"
                 }else{
-                    for day in 0..<AddHabitVC.daysSelected.count{
+                    for index in 0..<AddHabitVC.daysSelected.count{
                         
-                        switch AddHabitVC.daysSelected[day] {
+                        switch AddHabitVC.daysSelected[index] {
                         case 0:
                             tempRepeatOptionsString += "Mon "
                         case 1:
@@ -223,14 +271,14 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                         case 6:
                             tempRepeatOptionsString += "Sun "
                         default:
-                            tempRepeatOptionsString = "Never"
+                            tempRepeatOptionsString = "Today only"
                         }
                     }
                 }
                 repeatOptionsLabel.text = tempRepeatOptionsString
                 print (AddHabitVC.daysSelected)
-            }else{
-                repeatOptionsLabel.text = "Never"
+            }else if(repeatOptionsLabel.text != "Today only" && repeatOptionsLabel.text != "Never"){
+                repeatOptionsLabel.text = "Today only"
             }
         }
     }

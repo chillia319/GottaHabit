@@ -32,28 +32,52 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
-    func scheduleNotification(at date: Date, title: String) {
+    func scheduleWeekdayNotifications(at date: Date, title: String, id: String, weekday: Int) {
         let calendar = Calendar(identifier: .gregorian)
-        let components = calendar.dateComponents(in: .current, from: date)
-        let newComponents = DateComponents(calendar: calendar, timeZone: .current, month: components.month, day: components.day, hour: components.hour, minute: components.minute)
         
-        let trigger = UNCalendarNotificationTrigger(dateMatching: newComponents, repeats: false)
+        //let triggerDaily = Calendar.current.dateComponents([.hour,.minute,.second,], from: date)
+        var triggerDate = calendar.dateComponents([.weekday,.hour,.minute,], from: date)
+        triggerDate.weekday = weekday
+        
+        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: true)
         //let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: true)
         
         let content = UNMutableNotificationContent()
-
         content.title = title
         content.body = "You know you want to!"
         content.sound = UNNotificationSound.default()
         
-        let request = UNNotificationRequest(identifier: "textNotification", content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
         
-        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-        UNUserNotificationCenter.current().add(request) {(error) in
+        //UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: {(error) in
             if let error = error {
-                print("An error has occured when adding notification: \(error)")
+                print("An error has occured when adding a weekday-based notification: \(error)")
             }
-        }
+        })
+    }
+    
+    func scheduleOneTimeNotification(at date: Date, title: String, id: String) {
+        let calendar = Calendar(identifier: .gregorian)
+        
+        let triggerDate = calendar.dateComponents([.year,.month,.day,.hour,.minute,], from: date)
+
+        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
+        //let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: true)
+        
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = "You know you want to!"
+        content.sound = UNNotificationSound.default()
+        
+        let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
+        
+        //UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: {(error) in
+            if let error = error {
+                print("An error has occured when adding a one time notification: \(error)")
+            }
+        })
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
