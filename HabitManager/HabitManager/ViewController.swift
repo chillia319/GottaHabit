@@ -79,10 +79,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                             center.removeDeliveredNotifications(withIdentifiers: [uuid[0]])
                             center.removePendingNotificationRequests(withIdentifiers: [uuid[0]])
                             uuid.remove(at: 0)
-                            UserDefaults.standard.set(uuid, forKey: "uuid")
                         }else{
                             uuid.remove(at: 0)
-                            UserDefaults.standard.set(uuid, forKey: "uuid")
                             stop = true
                         }
                     }else{ //not first row
@@ -93,10 +91,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                                     center.removeDeliveredNotifications(withIdentifiers: [uuid[index+1]])
                                     center.removePendingNotificationRequests(withIdentifiers: [uuid[index+1]])
                                     uuid.remove(at: index+1)
-                                    UserDefaults.standard.set(uuid, forKey: "uuid")
                                 }
                                 uuid.remove(at: index+1) //delete break
-                                UserDefaults.standard.set(uuid, forKey: "uuid")
                                 stop = true
                             }
                         }
