@@ -1,0 +1,27 @@
+//
+//  CustomCell.swift
+//  HabitManager
+//
+//  Created by Percy Hu on 22/04/17.
+//  Copyright © 2017 Percy Hu. All rights reserved.
+//
+
+import UIKit
+
+class CustomCell: UITableViewCell {
+    
+    @IBOutlet var habitLabel: UILabel!
+    @IBOutlet var notificationsLabel: UILabel!
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        // Initialization code
+    }
+
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+
+        // Configure the view for the selected state
+    }
+
+}

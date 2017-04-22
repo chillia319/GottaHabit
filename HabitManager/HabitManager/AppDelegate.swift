@@ -38,9 +38,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let newComponents = DateComponents(calendar: calendar, timeZone: .current, month: components.month, day: components.day, hour: components.hour, minute: components.minute)
         
         let trigger = UNCalendarNotificationTrigger(dateMatching: newComponents, repeats: false)
+        //let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: true)
         
         let content = UNMutableNotificationContent()
-        print (title)
+
         content.title = title
         content.body = "You know you want to!"
         content.sound = UNNotificationSound.default()
@@ -53,7 +54,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 print("An error has occured when adding notification: \(error)")
             }
         }
-
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

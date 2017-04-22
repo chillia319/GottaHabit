@@ -42,28 +42,45 @@
                                     </navigationItem>
                                 </items>
                             </navigationBar>
-                            <tableView clipsSubviews="YES" contentMode="scaleAspectFit" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="3Ns-cp-gLZ">
+                            <tableView clipsSubviews="YES" contentMode="scaleAspectFit" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="90" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="3Ns-cp-gLZ">
                                 <rect key="frame" x="0.0" y="64" width="414" height="623"/>
                                 <color key="backgroundColor" red="0.29803922770000002" green="0.29803922770000002" blue="0.29803922770000002" alpha="1" colorSpace="calibratedRGB"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" id="wkT-cW-cel">
-                                        <rect key="frame" x="0.0" y="28" width="414" height="44"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" rowHeight="90" id="wkT-cW-cel" customClass="CustomCell" customModule="HabitManager" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="414" height="90"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="wkT-cW-cel" id="Y3F-qj-t1H">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="90"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OP6-jD-3fZ">
-                                                    <rect key="frame" x="357" y="7" width="51" height="31"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Play lots of games" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="P9J-Us-aUR">
+                                                    <rect key="frame" x="8" y="8" width="292" height="50"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                                    <color key="textColor" red="0.20000000300000001" green="0.20000000300000001" blue="0.20000000300000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MtU-Ao-lpq">
+                                                    <rect key="frame" x="263" y="33" width="51" height="25"/>
                                                 </switch>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="At 7:00 PM" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a8t-xB-mKS">
+                                                    <rect key="frame" x="8" y="66" width="292" height="16"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <color key="textColor" red="0.40000000600000002" green="0.40000000600000002" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
-                                            <color key="backgroundColor" red="0.40000000600000002" green="0.80000001190000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <constraints>
-                                                <constraint firstAttribute="trailing" secondItem="OP6-jD-3fZ" secondAttribute="trailing" constant="8" id="UTO-u0-N4o"/>
-                                                <constraint firstAttribute="bottom" secondItem="OP6-jD-3fZ" secondAttribute="bottom" constant="6" id="aHC-Mv-eLY"/>
-                                                <constraint firstItem="OP6-jD-3fZ" firstAttribute="top" secondItem="Y3F-qj-t1H" secondAttribute="top" constant="7" id="lrq-W1-xe6"/>
+                                                <constraint firstItem="MtU-Ao-lpq" firstAttribute="top" secondItem="Y3F-qj-t1H" secondAttribute="topMargin" constant="25" id="0et-da-cxE"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="MtU-Ao-lpq" secondAttribute="bottom" constant="24" id="nfH-6m-wtd"/>
+                                                <constraint firstItem="MtU-Ao-lpq" firstAttribute="trailing" secondItem="Y3F-qj-t1H" secondAttribute="trailingMargin" id="yd8-xx-JPD"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="habitLabel" destination="P9J-Us-aUR" id="zuF-DS-OiU"/>
+                                            <outlet property="notificationsLabel" destination="a8t-xB-mKS" id="8Jz-0W-MPf"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
@@ -101,7 +118,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="766" y="633"/>
+            <point key="canvasLocation" x="765.21739130434787" y="632.60869565217399"/>
         </scene>
         <!--New Habit-->
         <scene sceneID="Qru-e3-PQi">
@@ -148,7 +165,7 @@
                                                     <rect key="frame" x="8" y="5" width="398" height="30"/>
                                                     <nil key="textColor"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <textInputTraits key="textInputTraits"/>
+                                                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences" returnKeyType="done"/>
                                                     <connections>
                                                         <outlet property="delegate" destination="h3i-5D-ZSh" id="iBf-UG-Qp7"/>
                                                     </connections>
@@ -304,7 +321,9 @@
                     </navigationItem>
                     <connections>
                         <outlet property="habitDescription" destination="7yv-o4-DvL" id="GDm-fv-UQd"/>
+                        <outlet property="repeatOptionCell" destination="v6d-ym-gpw" id="O2x-q6-oNx"/>
                         <outlet property="repeatOptionsLabel" destination="XwT-tz-Bgm" id="z5h-sk-CHb"/>
+                        <outlet property="repeatOptionsTitleLabel" destination="lNe-jR-SUy" id="H9O-h5-dNk"/>
                         <outlet property="saveButton" destination="1sb-EE-qTX" id="O7W-tv-yeh"/>
                         <outlet property="timeLabel" destination="znD-ie-Cmm" id="cfF-Tx-rtA"/>
                         <outlet property="timePicker" destination="50w-in-WOi" id="gd4-il-opY"/>

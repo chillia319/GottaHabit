@@ -10,12 +10,14 @@ import UIKit
 
 class AddHabitVC: UITableViewController, UITextFieldDelegate {
     
+    @IBOutlet var repeatOptionsTitleLabel: UILabel!
     @IBOutlet var repeatOptionsLabel: UILabel!
     @IBOutlet var habitDescription: UITextField!
     @IBOutlet var timePicker: UIDatePicker!
     @IBOutlet var timeLabel: UILabel!
     @IBOutlet var saveButton: UIBarButtonItem!
     @IBOutlet var repeatOptionsTable: UITableView!
+    @IBOutlet var repeatOptionCell: UITableViewCell!
     
     private var timePickerVisible = false
     private var selectedDate: Date!
@@ -33,21 +35,40 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     @IBAction func save(_ sender: Any) {
         
         let habitsObject = UserDefaults.standard.object(forKey: "habits")
+        let notificationsStringObject = UserDefaults.standard.object(forKey: "notificationsString")
         
         var habits: [String]
+        var notificationsString: [String]
  
         if let tempHabits = habitsObject as? [String] {
             habits = tempHabits
-            
-            if(selectedDate != nil){
-                habits.append(habitDescription.text! + " @ " + timeLabel.text!)
-            }else{
-                habits.append(habitDescription.text!)
-            }
+
+            habits.append(habitDescription.text!)
         }else{
             habits = [habitDescription.text!]
         }
         UserDefaults.standard.set(habits, forKey: "habits")
+        
+        if let tempNotificationsString = notificationsStringObject as? [String] {
+            notificationsString = tempNotificationsString
+            
+            var beautifiedTimeLabel = ""
+            if(timeLabel.text == "None"){
+                beautifiedTimeLabel = "No Alert"
+            }else{
+                if(repeatOptionsLabel.text == "Never"){
+                    beautifiedTimeLabel = "At " + timeLabel.text!
+                }else{
+                    beautifiedTimeLabel = "At " + timeLabel.text! + " on " + repeatOptionsLabel.text!
+                }
+            }
+            
+            notificationsString.append(beautifiedTimeLabel)
+        }else{
+            notificationsString = [timeLabel.text!]
+        }
+        UserDefaults.standard.set(notificationsString, forKey: "notificationsString")
+        
         
         if(selectedDate != nil){
             let delegate = UIApplication.shared.delegate as? AppDelegate
@@ -57,8 +78,15 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         performSegue(withIdentifier: "segueToMain", sender: nil)
     }
     
+    private func toggleRepeatOptionsCell(){
+        repeatOptionCell.isUserInteractionEnabled = !repeatOptionCell.isUserInteractionEnabled
+        repeatOptionsTitleLabel.isEnabled = !repeatOptionsTitleLabel.isEnabled
+        repeatOptionsLabel.isEnabled = !repeatOptionsLabel.isEnabled
+    }
+    
     private func setTimelabelValue () {
         timeLabel.text = DateFormatter.localizedString(from: timePicker.date, dateStyle: .none, timeStyle: .short)
+        toggleRepeatOptionsCell()
     }
     
     private func toggleShowDateDatepicker () {
@@ -81,17 +109,17 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             
             tableView.deselectRow(at: indexPath, animated: true)
         } else if (restorationIdentifier == "RepeatOptions"){
-            
             let numberOfRows = tableView.numberOfRows(inSection: 0)
+            
             for row in 0..<numberOfRows {
                 if let cell = tableView.cellForRow(at: IndexPath(row: row, section: 0)) {
                     //cell.accessoryType = row == indexPath.row ? .checkmark : .none
  
                     if(row == indexPath.row && cell.accessoryType == .none){
-                        cell.accessoryType = .checkmark //selected
+                        cell.accessoryType = .checkmark
                         AddHabitVC.daysSelected.append(row)
                     }else if(row == indexPath.row && cell.accessoryType != .none){
-                        cell.accessoryType = .none //deselcted
+                        cell.accessoryType = .none
                         let itemToRemove = row
                         if let index = AddHabitVC.daysSelected.index(of: itemToRemove) {
                             AddHabitVC.daysSelected.remove(at: index)
@@ -124,13 +152,10 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         checkDescription()
     }
     
-    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }
-    
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -143,6 +168,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             self.view.addGestureRecognizer(tap)
             AddHabitVC.daysSelected = []
             checkDescription()
+            toggleRepeatOptionsCell()
         }
     }
     
