@@ -33,9 +33,11 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     private var firstRun = true
     private var mode = 0
     private var selectedTime: Date!
-    private var selectedInverval: Double!
+    private var selectedInterval: Int!
+    private var selectedIntervalHours: Int = 0
+    private var selectedIntervalMinutes: Int = 0
     private var alertOptionsMode0Text: String = "None"
-    private var alertOptionsMode1Text: String = "None"
+    private var alertOptionsMode1Text: String = "1 minute"
     private static var daysSelected: [Int] = []
     private var uuid: [String] = []
     
@@ -194,9 +196,33 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     }
     
     @IBAction func intervalPickerAction(_ sender: UIDatePicker) {
-        selectedInverval = sender.countDownDuration
-        print (selectedInverval)
-        alertOptionsMode1Text = String(selectedInverval)
+        selectedInterval = Int(sender.countDownDuration)
+        selectedIntervalHours  = selectedInterval / 3600
+        if selectedIntervalHours == 0{
+            selectedIntervalMinutes = selectedInterval / 60
+        } else{
+            selectedIntervalMinutes = selectedInterval % 3600 / 60
+        }
+        
+        if((selectedIntervalHours == 0 || selectedIntervalHours == 1) && selectedIntervalMinutes != 0 && selectedIntervalMinutes != 1){
+            alertOptionsMode1Text = "\(selectedIntervalHours) hour and \(selectedIntervalMinutes) minutes"
+        }else if((selectedIntervalHours == 0 || selectedIntervalHours == 1) && (selectedIntervalMinutes == 0 || selectedIntervalMinutes == 1)){
+            alertOptionsMode1Text = "\(selectedIntervalHours) hour and \(selectedIntervalMinutes) minute"
+        }else if(selectedIntervalHours != 0 && selectedIntervalHours != 1 && (selectedIntervalMinutes == 0 || selectedIntervalMinutes == 1)){
+            alertOptionsMode1Text = "\(selectedIntervalHours) hours and \(selectedIntervalMinutes) minute"
+        }else{
+            alertOptionsMode1Text = "\(selectedIntervalHours) hours and \(selectedIntervalMinutes) minutes"
+        }
+        
+        if(selectedIntervalHours == 0 && selectedIntervalMinutes != 0 && selectedIntervalMinutes != 1){
+            alertOptionsMode1Text = "\(selectedIntervalMinutes) minutes"
+        }else if(selectedIntervalMinutes == 0 && selectedIntervalHours != 0 && selectedIntervalHours != 1){
+            alertOptionsMode1Text = "\(selectedIntervalHours) hours"
+        }else if(selectedIntervalHours == 0 && (selectedIntervalMinutes == 0 || selectedIntervalMinutes == 1)){
+            alertOptionsMode1Text = "\(selectedIntervalMinutes) minute"
+        }else if(selectedIntervalMinutes == 0 && (selectedIntervalHours == 0 || selectedIntervalHours == 1)){
+            alertOptionsMode1Text = "\(selectedIntervalHours) hour"
+        }
         alertOptionsLabel.text = alertOptionsMode1Text
     }
     
@@ -291,6 +317,14 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             checkDescription()
             toggleRepeatOptionsCell(enable: false)
             toggleAlertOptionsCell(enable: false)
+            
+            //Work around for: DatePicker in CountDownTimer mode does not update countDownDuration after the first spin
+            let dateComp : NSDateComponents = NSDateComponents()
+            dateComp.hour = 0
+            dateComp.minute = 1
+            let calendar = Calendar(identifier: .gregorian)
+            let date : NSDate = calendar.date(from: dateComp as DateComponents)! as NSDate
+            intervalPicker.setDate(date as Date, animated: true)
         }
     }
     
