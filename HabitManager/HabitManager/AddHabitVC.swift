@@ -12,15 +12,22 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     
     @IBOutlet var repeatOptionsTitleLabel: UILabel!
     @IBOutlet var repeatOptionsLabel: UILabel!
+    @IBOutlet var alertOptionsTitleLabel: UILabel!
+    @IBOutlet var alertOptionsLabel: UILabel!
     @IBOutlet var habitDescription: UITextField!
     @IBOutlet var timePicker: UIDatePicker!
     @IBOutlet var timeLabel: UILabel!
     @IBOutlet var saveButton: UIBarButtonItem!
     @IBOutlet var repeatOptionsTable: UITableView!
+    @IBOutlet var startOptionsCell: UITableViewCell!
+    @IBOutlet var timePickerCell: UITableViewCell!
     @IBOutlet var repeatOptionCell: UITableViewCell!
+    @IBOutlet var alertOptionsCell: UITableViewCell!
+    @IBOutlet var intervalPickerCell: UITableViewCell!
     
     private var timePickerVisible = false
     private var firstRun = true
+    private var mode = 0
     private var selectedTime: Date!
     private static var daysSelected: [Int] = []
     private var uuid: [String] = []
@@ -28,6 +35,18 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     private func checkDescription() {
         let description = habitDescription.text ?? ""
         saveButton.isEnabled = !description.isEmpty
+    }
+    
+    @IBAction func modeToggle(_ sender: UISegmentedControl) {
+        if sender.selectedSegmentIndex == 0{
+            mode = 0
+            print ("mode: \(mode)")
+        }else{
+            mode = 1
+            print ("mode: \(mode)")
+        }
+        tableView.beginUpdates()
+        tableView.endUpdates()
     }
     
     @IBAction func cancel(_ sender: Any) {
@@ -85,7 +104,6 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                     if(gregorianDay == 8){
                         gregorianDay = 1
                     }
-                    print (gregorianDay)
                     saveUUID(UUID: UUID().uuidString)
                     delegate?.scheduleWeekdayNotifications(at: selectedTime, title: habitDescription.text!, id: uuid[uuid.count-1], weekday: gregorianDay)
                     print (uuid[uuid.count-1])
@@ -95,6 +113,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 saveUUID(UUID: UUID().uuidString)
                 delegate?.scheduleOneTimeNotification(at: selectedTime, title: habitDescription.text!, id: uuid[uuid.count-1])
                 saveUUID(UUID: "break")
+                print (uuid[uuid.count-1])
             }
         }
         
@@ -115,22 +134,29 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         UserDefaults.standard.set(uuid, forKey: "uuid")
     }
     
-    private func toggleRepeatOptionsCell(enable: Bool){
+    private func toggleExtraOptionsCell(enable: Bool){
         if(enable){
             repeatOptionCell.isUserInteractionEnabled = true
             repeatOptionsTitleLabel.isEnabled = true
             repeatOptionsLabel.isEnabled = true
+            alertOptionsCell.isUserInteractionEnabled = true
+            alertOptionsTitleLabel.isEnabled = true
+            alertOptionsLabel.isEnabled = true
         } else{
             repeatOptionCell.isUserInteractionEnabled = false
             repeatOptionsTitleLabel.isEnabled = false
             repeatOptionsLabel.isEnabled = false
+            alertOptionsCell.isUserInteractionEnabled = false
+            alertOptionsTitleLabel.isEnabled = false
+            alertOptionsLabel.isEnabled = false
         }
     }
     
     private func setTimelabelValue () {
         timeLabel.text = DateFormatter.localizedString(from: timePicker.date, dateStyle: .none, timeStyle: .short)
+        alertOptionsLabel.text = "At " + timeLabel.text!
         if(firstRun){
-            toggleRepeatOptionsCell(enable: true)
+            toggleExtraOptionsCell(enable: true)
             repeatOptionsLabel.text = "Today only"
             firstRun = false;
         }
@@ -150,12 +176,12 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if(restorationIdentifier == "NewHabit"){
-            if indexPath.section == 1 && indexPath.row == 1 {
+            if(indexPath.section == 1 && indexPath.row == 0) {
                 toggleShowDateDatepicker()
             }
             
             tableView.deselectRow(at: indexPath, animated: true)
-        } else if (restorationIdentifier == "RepeatOptions"){
+        } else if(restorationIdentifier == "RepeatOptions"){
             let numberOfRows = tableView.numberOfRows(inSection: 0)
             
             for row in 0..<numberOfRows {
@@ -180,12 +206,20 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if !timePickerVisible && indexPath.section == 1 && indexPath.row == 2 {
-            return 0
-        } else {
-            if(indexPath.section == 1 && indexPath.row == 2){
-                return 216
-            } else{
+        if(mode == 0){
+            if(!timePickerVisible && indexPath.section == 1 && indexPath.row == 1){
+                return 0
+            }else {
+                if(indexPath.section == 1 && indexPath.row == 1){
+                    return 216
+                }else{
+                    return super.tableView.rowHeight
+                }
+            }
+        }else{
+            if(indexPath.section == 1 && (indexPath.row == 0 || indexPath.row == 1 || indexPath.row == 2)){
+                return 0
+            }else{
                 return super.tableView.rowHeight
             }
         }
@@ -206,7 +240,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         self.navigationController?.navigationBar.isTranslucent = false
         
         if(restorationIdentifier == "NewHabit"){
@@ -214,8 +248,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             tap.cancelsTouchesInView = false
             self.view.addGestureRecognizer(tap)
             AddHabitVC.daysSelected = []
-            checkDescription()
-            toggleRepeatOptionsCell(enable: false)
+            toggleExtraOptionsCell(enable: false)
         }
     }
     
