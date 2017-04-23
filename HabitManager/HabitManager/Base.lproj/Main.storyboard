@@ -31,7 +31,6 @@
                                 </textAttributes>
                                 <items>
                                     <navigationItem title="All Habits" id="vMn-ud-nfi">
-                                        <barButtonItem key="leftBarButtonItem" systemItem="edit" id="2U4-zQ-6fj"/>
                                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="eHe-9L-1WM">
                                             <connections>
                                                 <segue destination="cGE-b2-RA0" kind="popoverPresentation" popoverAnchorBarButtonItem="eHe-9L-1WM" id="HXH-6j-DJa">
@@ -209,9 +208,9 @@
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="znD-ie-Cmm" firstAttribute="trailing" secondItem="BgY-zd-Vt7" secondAttribute="trailingMargin" id="KnD-Th-Rf1"/>
-                                                <constraint firstItem="znD-ie-Cmm" firstAttribute="top" secondItem="BgY-zd-Vt7" secondAttribute="topMargin" constant="3" id="jhr-5j-eCW"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="znD-ie-Cmm" secondAttribute="bottom" constant="3.5" id="o3F-sz-KsO"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="znD-ie-Cmm" secondAttribute="bottom" priority="999" constant="3.5" id="b7S-ba-HcZ"/>
+                                                <constraint firstItem="znD-ie-Cmm" firstAttribute="top" secondItem="BgY-zd-Vt7" secondAttribute="topMargin" priority="999" constant="3" id="phy-IU-M2S"/>
+                                                <constraint firstItem="znD-ie-Cmm" firstAttribute="trailing" secondItem="BgY-zd-Vt7" secondAttribute="trailingMargin" priority="999" id="q6R-wZ-0ey"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -260,9 +259,9 @@
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="bottomMargin" secondItem="XwT-tz-Bgm" secondAttribute="bottom" constant="3.5" id="0xF-eU-9hl"/>
-                                                <constraint firstItem="XwT-tz-Bgm" firstAttribute="trailing" secondItem="m5B-OZ-bsz" secondAttribute="trailingMargin" id="Xkm-Pc-RDM"/>
-                                                <constraint firstItem="XwT-tz-Bgm" firstAttribute="top" secondItem="m5B-OZ-bsz" secondAttribute="topMargin" constant="3" id="k6r-yv-crT"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="XwT-tz-Bgm" secondAttribute="bottom" priority="999" constant="3.5" id="0xF-eU-9hl"/>
+                                                <constraint firstItem="XwT-tz-Bgm" firstAttribute="trailing" secondItem="m5B-OZ-bsz" secondAttribute="trailingMargin" priority="999" id="Xkm-Pc-RDM"/>
+                                                <constraint firstItem="XwT-tz-Bgm" firstAttribute="top" secondItem="m5B-OZ-bsz" secondAttribute="topMargin" priority="999" constant="3" id="k6r-yv-crT"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
@@ -291,13 +290,13 @@
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="A7A-Dw-RRm" firstAttribute="top" secondItem="QxT-Pa-JCZ" secondAttribute="topMargin" constant="3" id="JIh-ye-Fjx"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="A7A-Dw-RRm" secondAttribute="bottom" constant="3.5" id="Nuc-3M-rIp"/>
-                                                <constraint firstItem="A7A-Dw-RRm" firstAttribute="trailing" secondItem="QxT-Pa-JCZ" secondAttribute="trailingMargin" id="mTc-4e-6fl"/>
+                                                <constraint firstItem="A7A-Dw-RRm" firstAttribute="top" secondItem="QxT-Pa-JCZ" secondAttribute="topMargin" priority="999" constant="3" id="JIh-ye-Fjx"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="A7A-Dw-RRm" secondAttribute="bottom" priority="999" constant="3.5" id="Nuc-3M-rIp"/>
+                                                <constraint firstItem="A7A-Dw-RRm" firstAttribute="trailing" secondItem="QxT-Pa-JCZ" secondAttribute="trailingMargin" priority="999" id="mTc-4e-6fl"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="216" id="S71-Fd-MeP">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="216" id="S71-Fd-MeP">
                                         <rect key="frame" x="0.0" y="509" width="375" height="216"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="S71-Fd-MeP" id="UX4-lh-rqJ">
@@ -309,6 +308,9 @@
                                                     <date key="date" timeIntervalSinceReferenceDate="514609960.59548599">
                                                         <!--2017-04-23 03:12:40 +0000-->
                                                     </date>
+                                                    <connections>
+                                                        <action selector="intervalPickerAction:" destination="h3i-5D-ZSh" eventType="valueChanged" id="Z9J-7g-ZVl"/>
+                                                    </connections>
                                                 </datePicker>
                                             </subviews>
                                             <constraints>
@@ -342,6 +344,7 @@
                         <outlet property="alertOptionsLabel" destination="A7A-Dw-RRm" id="f9J-eY-AaU"/>
                         <outlet property="alertOptionsTitleLabel" destination="83w-mI-Tg1" id="6ux-Es-n1e"/>
                         <outlet property="habitDescription" destination="7yv-o4-DvL" id="GDm-fv-UQd"/>
+                        <outlet property="intervalPicker" destination="NEc-mT-hwQ" id="sX3-2R-1LB"/>
                         <outlet property="intervalPickerCell" destination="S71-Fd-MeP" id="Tjf-q1-CiN"/>
                         <outlet property="repeatOptionCell" destination="v6d-ym-gpw" id="O2x-q6-oNx"/>
                         <outlet property="repeatOptionsLabel" destination="XwT-tz-Bgm" id="z5h-sk-CHb"/>
@@ -530,7 +533,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="440-Cd-9th" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2954" y="74"/>
+            <point key="canvasLocation" x="2900" y="632"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="O5y-or-Qli">

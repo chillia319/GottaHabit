@@ -14,11 +14,14 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     @IBOutlet var repeatOptionsLabel: UILabel!
     @IBOutlet var alertOptionsTitleLabel: UILabel!
     @IBOutlet var alertOptionsLabel: UILabel!
+    
     @IBOutlet var habitDescription: UITextField!
     @IBOutlet var timePicker: UIDatePicker!
     @IBOutlet var timeLabel: UILabel!
+    @IBOutlet var intervalPicker: UIDatePicker!
     @IBOutlet var saveButton: UIBarButtonItem!
     @IBOutlet var repeatOptionsTable: UITableView!
+    
     @IBOutlet var startOptionsCell: UITableViewCell!
     @IBOutlet var timePickerCell: UITableViewCell!
     @IBOutlet var repeatOptionCell: UITableViewCell!
@@ -26,9 +29,13 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     @IBOutlet var intervalPickerCell: UITableViewCell!
     
     private var timePickerVisible = false
+    private var intervalPickerVisible = false
     private var firstRun = true
     private var mode = 0
     private var selectedTime: Date!
+    private var selectedInverval: Double!
+    private var alertOptionsMode0Text: String = "None"
+    private var alertOptionsMode1Text: String = "None"
     private static var daysSelected: [Int] = []
     private var uuid: [String] = []
     
@@ -40,10 +47,15 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     @IBAction func modeToggle(_ sender: UISegmentedControl) {
         if sender.selectedSegmentIndex == 0{
             mode = 0
-            print ("mode: \(mode)")
+            
+            if(timeLabel.text == "None"){
+                toggleAlertOptionsCell(enable: false)
+            }
+            alertOptionsLabel.text = alertOptionsMode0Text
         }else{
             mode = 1
-            print ("mode: \(mode)")
+            toggleAlertOptionsCell(enable: true)
+            alertOptionsLabel.text = alertOptionsMode1Text
         }
         tableView.beginUpdates()
         tableView.endUpdates()
@@ -134,39 +146,40 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         UserDefaults.standard.set(uuid, forKey: "uuid")
     }
     
-    private func toggleExtraOptionsCell(enable: Bool){
+    private func toggleRepeatOptionsCell(enable: Bool){
         if(enable){
             repeatOptionCell.isUserInteractionEnabled = true
             repeatOptionsTitleLabel.isEnabled = true
             repeatOptionsLabel.isEnabled = true
-            alertOptionsCell.isUserInteractionEnabled = true
-            alertOptionsTitleLabel.isEnabled = true
-            alertOptionsLabel.isEnabled = true
         } else{
             repeatOptionCell.isUserInteractionEnabled = false
             repeatOptionsTitleLabel.isEnabled = false
             repeatOptionsLabel.isEnabled = false
+        }
+    }
+    
+    private func toggleAlertOptionsCell(enable: Bool){
+        if(enable){
+            alertOptionsCell.isUserInteractionEnabled = true
+            alertOptionsTitleLabel.isEnabled = true
+            alertOptionsLabel.isEnabled = true
+        } else{
             alertOptionsCell.isUserInteractionEnabled = false
             alertOptionsTitleLabel.isEnabled = false
             alertOptionsLabel.isEnabled = false
         }
     }
     
-    private func setTimelabelValue () {
+    private func setTimelabelValue (){
         timeLabel.text = DateFormatter.localizedString(from: timePicker.date, dateStyle: .none, timeStyle: .short)
-        alertOptionsLabel.text = "At " + timeLabel.text!
+        alertOptionsMode0Text = "At " + timeLabel.text!
+        alertOptionsLabel.text = alertOptionsMode0Text
         if(firstRun){
-            toggleExtraOptionsCell(enable: true)
+            toggleRepeatOptionsCell(enable: true)
+            toggleAlertOptionsCell(enable: true)
             repeatOptionsLabel.text = "Today only"
             firstRun = false;
         }
-    }
-    
-    private func toggleShowDateDatepicker () {
-        timePickerVisible = !timePickerVisible
-        
-        tableView.beginUpdates()
-        tableView.endUpdates()
     }
     
     @IBAction func timePickerAction(_ sender: UIDatePicker) {
@@ -174,10 +187,31 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         selectedTime = sender.date
     }
     
+    private func toggleShowTimePicker (){
+        timePickerVisible = !timePickerVisible
+        tableView.beginUpdates()
+        tableView.endUpdates()
+    }
+    
+    @IBAction func intervalPickerAction(_ sender: UIDatePicker) {
+        selectedInverval = sender.countDownDuration
+        print (selectedInverval)
+        alertOptionsMode1Text = String(selectedInverval)
+        alertOptionsLabel.text = alertOptionsMode1Text
+    }
+    
+    private func toggleShowInvervalPicker(){
+        intervalPickerVisible = !intervalPickerVisible
+        tableView.beginUpdates()
+        tableView.endUpdates()
+    }
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if(restorationIdentifier == "NewHabit"){
             if(indexPath.section == 1 && indexPath.row == 0) {
-                toggleShowDateDatepicker()
+                toggleShowTimePicker()
+            }else if(indexPath.section == 1 && indexPath.row == 3){
+                toggleShowInvervalPicker()
             }
             
             tableView.deselectRow(at: indexPath, animated: true)
@@ -207,19 +241,25 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if(mode == 0){
-            if(!timePickerVisible && indexPath.section == 1 && indexPath.row == 1){
+            if(indexPath.section == 1 && indexPath.row == 4){
+                return 0
+            }else if(!timePickerVisible && indexPath.section == 1 && indexPath.row == 1){
                 return 0
             }else {
                 if(indexPath.section == 1 && indexPath.row == 1){
                     return 216
-                }else{
-                    return super.tableView.rowHeight
                 }
+                return super.tableView.rowHeight
             }
         }else{
             if(indexPath.section == 1 && (indexPath.row == 0 || indexPath.row == 1 || indexPath.row == 2)){
                 return 0
+            }else if(!intervalPickerVisible && indexPath.section == 1 && indexPath.row == 4){
+                return 0
             }else{
+                if(indexPath.section == 1 && indexPath.row == 4){
+                    return 216
+                }
                 return super.tableView.rowHeight
             }
         }
@@ -248,7 +288,9 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             tap.cancelsTouchesInView = false
             self.view.addGestureRecognizer(tap)
             AddHabitVC.daysSelected = []
-            toggleExtraOptionsCell(enable: false)
+            checkDescription()
+            toggleRepeatOptionsCell(enable: false)
+            toggleAlertOptionsCell(enable: false)
         }
     }
     
