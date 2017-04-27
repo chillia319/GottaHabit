@@ -37,7 +37,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     private var selectedIntervalHours: Int = 0
     private var selectedIntervalMinutes: Int = 0
     private var alertOptionsMode0Text: String = "None"
-    private var alertOptionsMode1Text: String = "1 minute"
+    private var alertOptionsMode1Text: String = "Every 1 minute"
     private static var daysSelected: [Int] = []
     private var uuid: [String] = []
     
@@ -205,23 +205,23 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         }
         
         if((selectedIntervalHours == 0 || selectedIntervalHours == 1) && selectedIntervalMinutes != 0 && selectedIntervalMinutes != 1){
-            alertOptionsMode1Text = "\(selectedIntervalHours) hour and \(selectedIntervalMinutes) minutes"
+            alertOptionsMode1Text = "Every \(selectedIntervalHours) hour and \(selectedIntervalMinutes) minutes"
         }else if((selectedIntervalHours == 0 || selectedIntervalHours == 1) && (selectedIntervalMinutes == 0 || selectedIntervalMinutes == 1)){
-            alertOptionsMode1Text = "\(selectedIntervalHours) hour and \(selectedIntervalMinutes) minute"
+            alertOptionsMode1Text = "Every \(selectedIntervalHours) hour and \(selectedIntervalMinutes) minute"
         }else if(selectedIntervalHours != 0 && selectedIntervalHours != 1 && (selectedIntervalMinutes == 0 || selectedIntervalMinutes == 1)){
-            alertOptionsMode1Text = "\(selectedIntervalHours) hours and \(selectedIntervalMinutes) minute"
+            alertOptionsMode1Text = "Every \(selectedIntervalHours) hours and \(selectedIntervalMinutes) minute"
         }else{
-            alertOptionsMode1Text = "\(selectedIntervalHours) hours and \(selectedIntervalMinutes) minutes"
+            alertOptionsMode1Text = "Every \(selectedIntervalHours) hours and \(selectedIntervalMinutes) minutes"
         }
         
         if(selectedIntervalHours == 0 && selectedIntervalMinutes != 0 && selectedIntervalMinutes != 1){
-            alertOptionsMode1Text = "\(selectedIntervalMinutes) minutes"
+            alertOptionsMode1Text = "Every \(selectedIntervalMinutes) minutes"
         }else if(selectedIntervalMinutes == 0 && selectedIntervalHours != 0 && selectedIntervalHours != 1){
-            alertOptionsMode1Text = "\(selectedIntervalHours) hours"
+            alertOptionsMode1Text = "Every \(selectedIntervalHours) hours"
         }else if(selectedIntervalHours == 0 && (selectedIntervalMinutes == 0 || selectedIntervalMinutes == 1)){
-            alertOptionsMode1Text = "\(selectedIntervalMinutes) minute"
+            alertOptionsMode1Text = "Every \(selectedIntervalMinutes) minute"
         }else if(selectedIntervalMinutes == 0 && (selectedIntervalHours == 0 || selectedIntervalHours == 1)){
-            alertOptionsMode1Text = "\(selectedIntervalHours) hour"
+            alertOptionsMode1Text = "Every \(selectedIntervalHours) hour"
         }
         alertOptionsLabel.text = alertOptionsMode1Text
     }
