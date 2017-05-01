@@ -415,7 +415,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                         case 2:
                             tempRepeatOptionsString += "Wed "
                         case 3:
-                            tempRepeatOptionsString += "Tur "
+                            tempRepeatOptionsString += "Thu "
                         case 4:
                             tempRepeatOptionsString += "Fri "
                         case 5:
