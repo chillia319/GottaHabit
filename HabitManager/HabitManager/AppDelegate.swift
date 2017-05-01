@@ -13,7 +13,8 @@ import UserNotifications
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
+    
+    /* Do tasks when the app is lauched */
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         UINavigationBar.appearance().barTintColor = UIColor(red: 0x33/255, green: 0x33/255, blue: 0x33/255, alpha: 1.0)
@@ -32,6 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
+    /* Schedual weekday-based notifications */
     func scheduleWeekdayNotifications(at date: Date, title: String, id: String, weekday: Int) {
         let calendar = Calendar(identifier: .gregorian)
         
@@ -57,6 +59,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         })
     }
     
+    /* Schedual one-time notifications */
     func scheduleOneTimeNotification(at date: Date, title: String, id: String) {
         let calendar = Calendar(identifier: .gregorian)
         
@@ -75,7 +78,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         UNUserNotificationCenter.current().add(request, withCompletionHandler: {(error) in
             if let error = error {
-                print("An error has occured when adding a one time notification: \(error)")
+                print("An error has occured when adding a one-time notification: \(error)")
+            }
+        })
+    }
+    
+    /* Schedual reoccurring notifications */
+    func scheduleReoccurringNotification(interval: Int, title: String, id: String) {
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(interval), repeats: true)
+        
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = "You know you want to!"
+        content.sound = UNNotificationSound.default()
+        
+        let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: {(error) in
+            if let error = error {
+                print("An error has occured when adding a reoccurring notification: \(error)")
             }
         })
     }
