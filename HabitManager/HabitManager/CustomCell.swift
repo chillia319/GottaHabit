@@ -12,6 +12,7 @@ class CustomCell: UITableViewCell {
     
     @IBOutlet var habitLabel: UILabel!
     @IBOutlet var notificationsLabel: UILabel!
+    @IBOutlet var cellSwitch: UISwitch!
 
     override func awakeFromNib() {
         super.awakeFromNib()

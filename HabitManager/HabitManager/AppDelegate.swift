@@ -10,7 +10,7 @@ import UIKit
 import UserNotifications
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
 
     var window: UIWindow?
     
@@ -23,14 +23,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UINavigationBar.appearance().clipsToBounds = true
         let statusBar: UIView = UIApplication.shared.value(forKey: "statusBar") as! UIView
         statusBar.backgroundColor = UIColor(red: 0x33/255, green: 0x33/255, blue: 0x33/255, alpha: 1.0)
-        
+
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) {(accepted, error) in
             if !accepted {
                 print("Notification access denied.")
             }
         }
+        if #available(iOS 10.0, *) {
+            UNUserNotificationCenter.current().delegate = self
+        }
         
         return true
+    }
+    
+    /* Present the notification in foreground if one is received when inside the app (only for iOS 10+) */
+    @available(iOS 10.0, *)
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        
+        completionHandler(UNNotificationPresentationOptions.alert)
     }
     
     /* Schedual weekday-based notifications */

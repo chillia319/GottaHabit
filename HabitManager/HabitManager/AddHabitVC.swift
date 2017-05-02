@@ -144,6 +144,9 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 print (uuid[uuid.count-1])
                 saveUUID(UUID: "break")
             }
+        }// If in "Daily" mode and no time is selected
+        else if(selectedTime == nil && mode == 0){
+            saveUUID(UUID: "break")
         }// If in "Reoccurring" mode, schedual notifications based on interval specified by the user
         else if(mode == 1){
             saveUUID(UUID: UUID().uuidString)
@@ -428,7 +431,6 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                     }
                 }
                 repeatOptionsLabel.text = tempRepeatOptionsString
-                print (AddHabitVC.daysSelected)
             }else if(repeatOptionsLabel.text != "Today only" && repeatOptionsLabel.text != "Never"){
                 repeatOptionsLabel.text = "Today only"
             }
