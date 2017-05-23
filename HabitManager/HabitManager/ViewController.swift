@@ -122,6 +122,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             
             // Switch is on, store this information
             switchState[row] = 1
+            UserDefaults.standard.set(switchState, forKey: "switchState")
             print("Switch states: \(switchState)")
             
             // Find the uuids that were assoiciated with this row
@@ -180,6 +181,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         else{
             // Switch is off, store this information
             switchState[row] = 0
+            UserDefaults.standard.set(switchState, forKey: "switchState")
             print("Switch states: \(switchState)")
             
             let center = UNUserNotificationCenter.current()
