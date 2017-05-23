@@ -17,6 +17,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var notificationsString: [String] = []
     var uuid: [String] = []
     var resumeFuncData: [Any] = []
+    var switchState: [Int] = []
+    
     var refresh: Bool = false
     var rowDeleted: Int = 0
     
@@ -29,6 +31,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         
         let cell = tableView.dequeueReusableCell(withIdentifier:"Cell") as! CustomCell
+        let currentSwitchState: Int!
         
         // Fill the cell with information saved previously
         cell.habitLabel.text = habits[indexPath.row]
@@ -46,6 +49,22 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }else{
             cell.backgroundColor = UIColor(red: 0/255, green: 200/255, blue: 255/255, alpha: 1.0)
         }
+        
+        // Ensures the state of the switches are always correct
+        if(switchState.count > 0){
+            if(cell.cellSwitch.isOn){
+                currentSwitchState = 1
+                if(currentSwitchState != switchState[indexPath.row]){
+                    cell.cellSwitch.isOn = false
+                }
+            }else{
+                currentSwitchState = 0
+                if(currentSwitchState != switchState[indexPath.row]){
+                    cell.cellSwitch.isOn = true
+                }
+            }
+        }
+        
         return cell
     }
     
@@ -64,11 +83,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     /* Do tasks when main page is appeared */
     override func viewDidAppear(_ animated: Bool) {
-        // Extract information from local storage and set the values in this class
+        // Extract information from local storage and set the values inside this class
         let habitsObject = UserDefaults.standard.object(forKey: "habits")
         let notificationsStringObject = UserDefaults.standard.object(forKey: "notificationsString")
         let uuidObject = UserDefaults.standard.object(forKey: "uuid")
         let resumeFuncDataObject = UserDefaults.standard.object(forKey: "resumeFuncData")
+        let switchStateObject = UserDefaults.standard.object(forKey: "switchState")
         
         if let tempHabits = habitsObject as? [String] {
             habits = tempHabits
@@ -81,6 +101,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         if let tempResumeFuncData = resumeFuncDataObject as? [Any] {
             resumeFuncData = tempResumeFuncData
+        }
+        if let tempSwitchState = switchStateObject as? [Int] {
+            switchState = tempSwitchState
         }
         
         habitsTable.reloadData()
@@ -96,6 +119,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let row = sender.tag
         if(sender.isOn){
             let delegate = UIApplication.shared.delegate as? AppDelegate
+            
+            // Switch is on, store this information
+            switchState[row] = 1
+            print("Switch states: \(switchState)")
             
             // Find the uuids that were assoiciated with this row
             var uuidsForResume: [String] = []
@@ -149,9 +176,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             default: // Should not trigger
                 print("Unexpected case when reading notificationType from resumeFunData")
             }
+        }// Remove notification requests assosiated with this row
+        else{
+            // Switch is off, store this information
+            switchState[row] = 0
+            print("Switch states: \(switchState)")
             
-        }else{
-            // Remove notification requests assosiated with this row
             let center = UNUserNotificationCenter.current()
             var breakCount = 0
             var stop = false
@@ -185,7 +215,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
         }
     }
-    
     
     /* Do tasks when a row is being edited (deletion only for now) */
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
@@ -229,25 +258,19 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             print ("UUIDs After deletion: \(uuid)\n")
             habits.remove(at: indexPath.row)
             notificationsString.remove(at: indexPath.row)
+            switchState.remove(at: indexPath.row)
+            print ("switchState after deletion: \(switchState)\n")
             // There are 3 elements reserved for each row's resume data, so delete all three
             for _ in 0...2{
                 self.resumeFuncData.remove(at: (indexPath.row*3))
             }
             print ("resumeFuncData after deletion: \(resumeFuncData)\n")
             
-            // Make sure that when a row is deleted, the next row's "Switch" state does not get affected
-            let currentCell = tableView.cellForRow(at: indexPath) as! CustomCell
-            if(indexPath.row+1 <= habits.count){
-                let nextIndexPath = IndexPath(row: indexPath.row+1, section: 0)
-                
-                let nextCell = tableView.cellForRow(at: nextIndexPath) as! CustomCell
-                currentCell.cellSwitch.isOn = nextCell.cellSwitch.isOn
-            }
-            
             habitsTable.reloadData()
             UserDefaults.standard.set(habits, forKey: "habits")
             UserDefaults.standard.set(notificationsString, forKey: "notificationsString")
             UserDefaults.standard.set(resumeFuncData, forKey: "resumeFuncData")
+            UserDefaults.standard.set(switchState, forKey: "switchState")
         }
     }
     

@@ -77,17 +77,18 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         let habitsObject = UserDefaults.standard.object(forKey: "habits")
         let notificationsStringObject = UserDefaults.standard.object(forKey: "notificationsString")
         let resumeFuncDataObject = UserDefaults.standard.object(forKey: "resumeFuncData")
+        let switchStateObject = UserDefaults.standard.object(forKey: "switchState")
         
         var habits: [String]
         var notificationsString: [String]
         var resumeFuncData: [Any]
+        var switchState: [Int]
         
         /* ============================================================================================================ */
  
         // Store habit decription to user's local storage
         if let tempHabits = habitsObject as? [String] {
             habits = tempHabits
-
             habits.append(habitDescription.text!)
         }else{
             habits = [habitDescription.text!]
@@ -115,13 +116,23 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         // Store the label to user's local storage so the main page can access and display
         if let tempNotificationsString = notificationsStringObject as? [String] {
             notificationsString = tempNotificationsString
-            
             notificationsString.append(beautifiedTimeLabel)
         }else{
             notificationsString = [beautifiedTimeLabel]
         }
         UserDefaults.standard.set(notificationsString, forKey: "notificationsString")
         
+        /* ============================================================================================================ */
+        
+        // Store the state of the added switch to local storage (0 for "off" and 1 for "on")
+        if let tempSwitchState = switchStateObject as? [Int] {
+            switchState = tempSwitchState
+            switchState.append(1)
+        }else{
+            switchState = [1]
+        }
+        UserDefaults.standard.set(switchState, forKey: "switchState")
+
         /* ============================================================================================================ */
         
         let delegate = UIApplication.shared.delegate as? AppDelegate
@@ -197,7 +208,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         UserDefaults.standard.set(resumeFuncData, forKey: "resumeFuncData")
         
         // Go back to the main page
-        performSegue(withIdentifier: "segueToMain", sender: nil)
+        dismiss(animated: true, completion: nil)
     }
     
     /* Generates an unique ID if "UUID().uuidString" is the argument and stores it to user's local storage */
