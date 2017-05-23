@@ -76,9 +76,13 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         // Set up things for storing these arrays to user's local storage
         let habitsObject = UserDefaults.standard.object(forKey: "habits")
         let notificationsStringObject = UserDefaults.standard.object(forKey: "notificationsString")
+        let resumeFuncDataObject = UserDefaults.standard.object(forKey: "resumeFuncData")
         
         var habits: [String]
         var notificationsString: [String]
+        var resumeFuncData: [Any]
+        
+        /* ============================================================================================================ */
  
         // Store habit decription to user's local storage
         if let tempHabits = habitsObject as? [String] {
@@ -89,6 +93,8 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             habits = [habitDescription.text!]
         }
         UserDefaults.standard.set(habits, forKey: "habits")
+        
+        /* ============================================================================================================ */
         
         // Prepare the label that descripbes the notications
         var beautifiedTimeLabel = ""
@@ -116,18 +122,22 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         }
         UserDefaults.standard.set(notificationsString, forKey: "notificationsString")
         
+        /* ============================================================================================================ */
+        
         let delegate = UIApplication.shared.delegate as? AppDelegate
+        var notificationType: Int!
+        var notificationDays: String = ""
         
         // If in "Daily" mode, schedual the notifications based on time and day selected by the user
         if(selectedTime != nil && mode == 0){
             
             if(AddHabitVC.daysSelected.count != 0){
-
+                print ("Added multiple uuids: ")
                 for index in 0..<AddHabitVC.daysSelected.count{
                     
                     // Convert days selected by the user (stored in daysSelected array) to gregorian format
                     var gregorianDay = AddHabitVC.daysSelected[index]+2
-                    // Sunday is 1, Monday is 2 ... Saturaday is 6
+                    // Sunday is 1, Monday is 2 ... Saturaday is 7
                     if(gregorianDay == 8){
                         gregorianDay = 1
                     }
@@ -135,25 +145,57 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                     saveUUID(UUID: UUID().uuidString)
                     // Schedual the notifications based on information provided
                     delegate?.scheduleWeekdayNotifications(at: selectedTime, title: habitDescription.text!, id: uuid[uuid.count-1], weekday: gregorianDay)
+                    notificationDays += "\(gregorianDay)"
                     print (uuid[uuid.count-1])
                 }
+                print ("\n")
+                notificationType = 0
                 saveUUID(UUID: "break")
             }else{
                 saveUUID(UUID: UUID().uuidString)
                 delegate?.scheduleOneTimeNotification(at: selectedTime, title: habitDescription.text!, id: uuid[uuid.count-1])
-                print (uuid[uuid.count-1])
+                notificationType = 1
+                print ("Added uuid: \(uuid[uuid.count-1])\n")
                 saveUUID(UUID: "break")
             }
         }// If in "Daily" mode and no time is selected
         else if(selectedTime == nil && mode == 0){
+            notificationType = 2
             saveUUID(UUID: "break")
         }// If in "Reoccurring" mode, schedual notifications based on interval specified by the user
         else if(mode == 1){
             saveUUID(UUID: UUID().uuidString)
             delegate?.scheduleReoccurringNotification(interval: selectedInterval, title: habitDescription.text!, id: uuid[uuid.count-1])
-            print (uuid[uuid.count-1])
+            notificationType = 3
+            print ("Added uuid: \(uuid[uuid.count-1])\n")
             saveUUID(UUID: "break")
         }
+        
+        // Store data needed for the resume function to local storage
+        if let tempResumeFuncData = resumeFuncDataObject as? [Any] {
+            resumeFuncData = tempResumeFuncData
+            
+            resumeFuncData.append(notificationType)
+        }else{
+            resumeFuncData = [notificationType]
+        }
+        
+        if(notificationDays != ""){
+            resumeFuncData.append(notificationDays)
+        }else{
+            resumeFuncData.append(-1)
+        }
+        
+        if(notificationType == 2){
+            resumeFuncData.append(-1)
+        }else if(notificationType == 3){
+            resumeFuncData.append(selectedInterval)
+        }else{
+            resumeFuncData.append(selectedTime)
+        }
+        print ("Resume data: \(resumeFuncData)")
+        UserDefaults.standard.set(resumeFuncData, forKey: "resumeFuncData")
+        
         // Go back to the main page
         performSegue(withIdentifier: "segueToMain", sender: nil)
     }
@@ -208,7 +250,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             toggleRepeatOptionsCell(enable: true)
             toggleAlertOptionsCell(enable: true)
             repeatOptionsLabel.text = "Today only"
-            firstRun = false;
+            firstRun = false
         }
     }
     
@@ -426,7 +468,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                         case 6:
                             tempRepeatOptionsString += "Sun "
                         default:
-                            tempRepeatOptionsString = "Today only"
+                            print("Unexpected case when converting daysSelected to readable String")
                         }
                     }
                 }

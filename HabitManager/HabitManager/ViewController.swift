@@ -16,6 +16,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var habits: [String] = []
     var notificationsString: [String] = []
     var uuid: [String] = []
+    var resumeFuncData: [Any] = []
     var refresh: Bool = false
     var rowDeleted: Int = 0
     
@@ -67,6 +68,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let habitsObject = UserDefaults.standard.object(forKey: "habits")
         let notificationsStringObject = UserDefaults.standard.object(forKey: "notificationsString")
         let uuidObject = UserDefaults.standard.object(forKey: "uuid")
+        let resumeFuncDataObject = UserDefaults.standard.object(forKey: "resumeFuncData")
         
         if let tempHabits = habitsObject as? [String] {
             habits = tempHabits
@@ -76,6 +78,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         if let tempUUID = uuidObject as? [String] {
             uuid = tempUUID
+        }
+        if let tempResumeFuncData = resumeFuncDataObject as? [Any] {
+            resumeFuncData = tempResumeFuncData
         }
         
         habitsTable.reloadData()
@@ -90,30 +95,63 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBAction func cellSwitchAction(_ sender: UISwitch) {
         let row = sender.tag
         if(sender.isOn){
-            /*let delegate = UIApplication.shared.delegate as? AppDelegate
-            let currentString = notificationsString[row]
-           
-            if(currentString.contains("At")){
-                let line = currentString.components(separatedBy: CharacterSet.decimalDigits.inverted)
-                    .joined()
-                print("At \(line)")
-            }else if(currentString.contains("Every")){
-                let line = currentString.components(separatedBy: CharacterSet.decimalDigits.inverted)
-                    .joined()
-                let interval = 0
-                
-                if(currentString.contains("h") && currentString.contains("m")){
-                    interval = line.
-                    print("\(line)hm")
-                }else if(currentString.contains("h")){
-                    print("\(line)h")
-                }else if(currentString.contains("m")){
-                    print("\(line)m")
+            let delegate = UIApplication.shared.delegate as? AppDelegate
+            
+            // Find the uuids that were assoiciated with this row
+            var uuidsForResume: [String] = []
+            var breakCount = 0
+            var stop = false
+            for index in 0..<uuid.count{
+                if(stop == false){
+                    if(row == 0){
+                        var modifier = 0
+                        while(uuid[index+modifier] != "break"){
+                            uuidsForResume.append(uuid[index+modifier])
+                            modifier += 1
+                        }
+                        stop = true
+                    }else{
+                        if(uuid[index] == "break"){
+                            breakCount += 1
+                        }
+                        if(row == breakCount){ //bingo
+                            var modifier = 1
+                            while(uuid[index+modifier] != "break"){
+                                uuidsForResume.append(uuid[index+modifier])
+                                modifier += 1
+                            }
+                            stop = true
+                        }
+                    }
                 }
-                
-            }*/
+            }
+            
+            let notificationType = resumeFuncData[row*3] as! Int
+            switch notificationType{
+            case 0: // If current row needs weekday notifications
+                let gregorianDaysString = resumeFuncData[row*3+1] as! String
+                var dayCount = 0
+                for day in gregorianDaysString.characters{
+                    if Int("\(day)") != nil {
+                        print("Resumed uuid: \(uuidsForResume[dayCount])")
+                        delegate?.scheduleWeekdayNotifications(at: resumeFuncData[row*3+2] as! Date, title: habits[row], id: uuidsForResume[dayCount], weekday: Int("\(day)")!)
+                    }
+                    dayCount += 1
+                }
+            case 1: // If current row needs one-time notifications
+                print("Resumed uuid: \(uuidsForResume[0])")
+                delegate?.scheduleOneTimeNotification(at: resumeFuncData[row*3+2] as! Date, title: habits[row], id: uuidsForResume[0])
+            case 2: // If current row does not need any notification which should not be triggerd since the switch is hidden
+                print("BS there isn't even a switch")
+            case 3: // If current row needs reoccuring notifications
+                print("Resumed uuid: \(uuidsForResume[0])")
+                delegate?.scheduleReoccurringNotification(interval: resumeFuncData[row*3+2] as! Int, title: habits[row], id: uuidsForResume[0])
+            default: // Should not trigger
+                print("Unexpected case when reading notificationType from resumeFunData")
+            }
             
         }else{
+            // Remove notification requests assosiated with this row
             let center = UNUserNotificationCenter.current()
             var breakCount = 0
             var stop = false
@@ -122,6 +160,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     if(row == 0){
                         var modifier = 0
                         while(uuid[index+modifier] != "break"){
+                            print("Suspended uuid: \(uuid[index+modifier])")
                             center.removeDeliveredNotifications(withIdentifiers: [uuid[index+modifier]])
                             center.removePendingNotificationRequests(withIdentifiers: [uuid[index+modifier]])
                             modifier += 1
@@ -134,6 +173,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                         if(row == breakCount){ //bingo
                             var modifier = 1
                             while(uuid[index+modifier] != "break"){
+                                print("Suspended uuid: \(uuid[index+modifier])")
                                 center.removeDeliveredNotifications(withIdentifiers: [uuid[index+modifier]])
                                 center.removePendingNotificationRequests(withIdentifiers: [uuid[index+modifier]])
                                 modifier += 1
@@ -155,7 +195,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             let center = UNUserNotificationCenter.current()
             var breakCount = 0
             var stop = false
-            print (uuid)
+            print ("UUIDs Before deletion: \(uuid)")
             // Delete UUIDs (a bit complecated since some rows have multiple UUIDs)
             for index in 0..<uuid.count{
                 if(stop == false){
@@ -186,9 +226,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
             UserDefaults.standard.set(uuid, forKey: "uuid")
             
-            print ("\(uuid)\n")
+            print ("UUIDs After deletion: \(uuid)\n")
             habits.remove(at: indexPath.row)
             notificationsString.remove(at: indexPath.row)
+            // There are 3 elements reserved for each row's resume data, so delete all three
+            for _ in 0...2{
+                self.resumeFuncData.remove(at: (indexPath.row*3))
+            }
+            print ("resumeFuncData after deletion: \(resumeFuncData)\n")
             
             // Make sure that when a row is deleted, the next row's "Switch" state does not get affected
             let currentCell = tableView.cellForRow(at: indexPath) as! CustomCell
@@ -202,6 +247,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             habitsTable.reloadData()
             UserDefaults.standard.set(habits, forKey: "habits")
             UserDefaults.standard.set(notificationsString, forKey: "notificationsString")
+            UserDefaults.standard.set(resumeFuncData, forKey: "resumeFuncData")
         }
     }
     
