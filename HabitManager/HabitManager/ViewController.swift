@@ -45,9 +45,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         cell.cellSwitch.tag = indexPath.row
         
         if indexPath.row % 2 == 0 {
-            cell.backgroundColor = UIColor(red: 0/255, green: 190/255, blue: 255/255, alpha: 1.0)
+            cell.backgroundColor = UIColor(red: 77/255, green: 195/255, blue: 199/255, alpha: 1.0)
         }else{
-            cell.backgroundColor = UIColor(red: 0/255, green: 200/255, blue: 255/255, alpha: 1.0)
+            cell.backgroundColor = UIColor(red: 77/255, green: 205/255, blue: 199/255, alpha: 1.0)
         }
         
         // Ensures the state of the switches are always correct
@@ -68,6 +68,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return cell
     }
     
+    /* Set row height */
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 75
+    }
+    
     /* Deselect row animation for better UX */
     internal func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
         tableView.deselectRow(at: indexPath, animated: true)
@@ -77,7 +82,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        habitsTable.estimatedRowHeight = 90
+        habitsTable.estimatedRowHeight = 80
         habitsTable.rowHeight = UITableViewAutomaticDimension
     }
     
@@ -112,6 +117,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     /* Development purpose only */
     @IBAction func RemoveAllNotifications(_ sender: Any) {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
     }
     
     /* Controls the Switches for suspending and resuming notifications */
