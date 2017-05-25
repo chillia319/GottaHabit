@@ -1,8 +1,7 @@
 language: objective-c
 osx_image: xcode8.2
 
-before_script:
-        -cd HabitManager
+before_install:cd HabitManager
 
 script:
 
