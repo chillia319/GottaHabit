@@ -2,7 +2,7 @@ language: objective-c
 osx_image: xcode8.2
 
 before_install:
-        -cd HabitManager
+- cd HabitManager
 
 script:
 
@@ -14,5 +14,3 @@ script:
 - xcodebuild clean && xcodebuild test -project HabitManager.xcodeproj -scheme HabitManager -destination "platform=iOS Simulator,name=iPhone 7" -sdk iphonesimulator10.2  CODE_SIGNING_REQUIRED=NO
 - xcodebuild clean && xcodebuild test -project HabitManager.xcodeproj -scheme HabitManager -destination "platform=iOS Simulator,name=iPhone 7 Plus" -sdk iphonesimulator10.2  CODE_SIGNING_REQUIRED=NO
 # - xcodebuild clean && xcodebuild test -project HabitManager\HabitManager.xcodeproj -scheme HabitManager/HabitManager -destination "platform=iOS Simulator,name=iPhone SE" -sdk iphonesimulator10.2  CODE_SIGNING_REQUIRED=NO
-
-
