@@ -42,7 +42,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     private var uuid: [String] = []
     
     /* Disables "Save" button if no text is in the textfield */
-    private func checkDescription() {
+    internal func checkDescription() {
         let description = habitDescription.text ?? ""
         saveButton.isEnabled = !description.isEmpty
     }
