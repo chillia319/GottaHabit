@@ -1,16 +1,17 @@
 //
-//  HabitManagerTests.swift
-//  HabitManagerTests
+//  ViewControllerTests.swift
+//  HabitManager
 //
 //  Created by Alexis Barltrop on 5/25/17.
 //  Copyright © 2017 Percy Hu. All rights reserved.
 //
 
+//Import testing files
 import XCTest
+//Import app for testing with access to all functions etc
 @testable import HabitManager
 
-
-class HabitManagerTests: XCTestCase {
+class ViewControllerTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
@@ -21,11 +22,21 @@ class HabitManagerTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
+    //All testing funcitons must start with "test"
     
-    func testExample() {
+    func testCountRows() {
+        let viewController = ViewController()
+        viewController.habits.append("Happy")
+        viewController.habits.append("Sad")
+        
+        XCTAssertEqual(viewController.tableView(UITableView: viewController.habitsTable,Int:2), 2)
+
+        
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
+    
+    
     
     func testPerformanceExample() {
         // This is an example of a performance test case.
