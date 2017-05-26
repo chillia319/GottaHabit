@@ -28,8 +28,11 @@ class HabitManagerUITests: XCTestCase {
         super.tearDown()
     }
     
+    /**
+     *  Adds one habit and checks to see that it has been added to the habit Table
+     */
     func testAddOneDailyHabit() {
-        
+       
         let app = XCUIApplication()
         let table = app.tables.element(boundBy: 0)
         let numRows = table.cells.count
@@ -50,6 +53,18 @@ class HabitManagerUITests: XCTestCase {
         
         // Use recording to get started writing UI tests.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
+    }
+    
+    func testDeleteOneDailyHabit(){
+        
+    }
+    
+    func testAddOneRecurringHabit(){
+        
+    }
+    
+    func testDeleteOneRecurringHabit(){
+    
     }
     
 }
