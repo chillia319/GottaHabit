@@ -7,7 +7,6 @@
 //
 
 import XCTest
-import UIKit
 @testable import HabitManager
 
 
@@ -23,15 +22,14 @@ class AddHabitVCTests: XCTestCase {
         super.tearDown()
     }
     //Want ot check that the save button is disabled if the description is empty
-    /*
-    func testCheckDescriptionFalse() {
+    func CheckDescriptionFalse() {
         let habitVC = AddHabitVC()
+        
+        habitVC.habitDescription.text = ""
         habitVC.checkDescription()
         XCTAssertFalse(habitVC.saveButton.isEnabled)
     }
- */
- 
-
+    
     
     
     func testPerformanceExample() {

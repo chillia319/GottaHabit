@@ -10,28 +10,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "HabitManagerTests/AddHabitVCTests.swift"
-            timestampString = "517455374.391175"
+            timestampString = "517377209.181915"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "30"
-            endingLineNumber = "30"
-            landmarkName = "AddHabitVCTests"
-            landmarkType = "3">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "HabitManagerUITests/HabitManagerUITests.swift"
-            timestampString = "517458010.031311"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "34"
-            endingLineNumber = "34"
-            landmarkName = "testAddOneDailyHabit()"
+            startingLineNumber = "29"
+            endingLineNumber = "29"
+            landmarkName = "testCheckDescriptionFalse()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

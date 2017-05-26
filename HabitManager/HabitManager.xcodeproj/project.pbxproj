@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		0570C6591ED66BEA0034019C /* HabitManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570C6581ED66BEA0034019C /* HabitManagerTests.swift */; };
 		0570C6651ED694590034019C /* AddHabitVCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570C6641ED694590034019C /* AddHabitVCTests.swift */; };
-		05F679381ED7C22A00F13377 /* HabitManagerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F679371ED7C22A00F13377 /* HabitManagerUITests.swift */; };
 		401BE9DD1EA5CF9D00831D67 /* AddHabitVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401BE9DC1EA5CF9D00831D67 /* AddHabitVC.swift */; };
 		40232D921EAB0CB9004E0478 /* CustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40232D911EAB0CB9004E0478 /* CustomCell.swift */; };
 		40C986511EA5AF36003D2D73 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40C986501EA5AF36003D2D73 /* AppDelegate.swift */; };
@@ -27,13 +26,6 @@
 			remoteGlobalIDString = 40C9864C1EA5AF36003D2D73;
 			remoteInfo = HabitManager;
 		};
-		05F6793A1ED7C22A00F13377 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 40C986451EA5AF36003D2D73 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 40C9864C1EA5AF36003D2D73;
-			remoteInfo = HabitManager;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -41,9 +33,6 @@
 		0570C6581ED66BEA0034019C /* HabitManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitManagerTests.swift; sourceTree = "<group>"; };
 		0570C65A1ED66BEA0034019C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0570C6641ED694590034019C /* AddHabitVCTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddHabitVCTests.swift; sourceTree = "<group>"; };
-		05F679351ED7C22A00F13377 /* HabitManagerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HabitManagerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		05F679371ED7C22A00F13377 /* HabitManagerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitManagerUITests.swift; sourceTree = "<group>"; };
-		05F679391ED7C22A00F13377 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		401BE9DC1EA5CF9D00831D67 /* AddHabitVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddHabitVC.swift; sourceTree = "<group>"; };
 		40232D911EAB0CB9004E0478 /* CustomCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCell.swift; sourceTree = "<group>"; };
 		40C9864D1EA5AF36003D2D73 /* HabitManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HabitManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -57,13 +46,6 @@
 
 /* Begin PBXFrameworksBuildPhase section */
 		0570C6531ED66BEA0034019C /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		05F679321ED7C22A00F13377 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -90,21 +72,11 @@
 			path = HabitManagerTests;
 			sourceTree = "<group>";
 		};
-		05F679361ED7C22A00F13377 /* HabitManagerUITests */ = {
-			isa = PBXGroup;
-			children = (
-				05F679371ED7C22A00F13377 /* HabitManagerUITests.swift */,
-				05F679391ED7C22A00F13377 /* Info.plist */,
-			);
-			path = HabitManagerUITests;
-			sourceTree = "<group>";
-		};
 		40C986441EA5AF36003D2D73 = {
 			isa = PBXGroup;
 			children = (
 				40C9864F1EA5AF36003D2D73 /* HabitManager */,
 				0570C6571ED66BEA0034019C /* HabitManagerTests */,
-				05F679361ED7C22A00F13377 /* HabitManagerUITests */,
 				40C9864E1EA5AF36003D2D73 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -114,7 +86,6 @@
 			children = (
 				40C9864D1EA5AF36003D2D73 /* HabitManager.app */,
 				0570C6561ED66BEA0034019C /* HabitManagerTests.xctest */,
-				05F679351ED7C22A00F13377 /* HabitManagerUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -155,24 +126,6 @@
 			productReference = 0570C6561ED66BEA0034019C /* HabitManagerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		05F679341ED7C22A00F13377 /* HabitManagerUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 05F6793C1ED7C22A00F13377 /* Build configuration list for PBXNativeTarget "HabitManagerUITests" */;
-			buildPhases = (
-				05F679311ED7C22A00F13377 /* Sources */,
-				05F679321ED7C22A00F13377 /* Frameworks */,
-				05F679331ED7C22A00F13377 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				05F6793B1ED7C22A00F13377 /* PBXTargetDependency */,
-			);
-			name = HabitManagerUITests;
-			productName = HabitManagerUITests;
-			productReference = 05F679351ED7C22A00F13377 /* HabitManagerUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 		40C9864C1EA5AF36003D2D73 /* HabitManager */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 40C9865F1EA5AF36003D2D73 /* Build configuration list for PBXNativeTarget "HabitManager" */;
@@ -205,11 +158,6 @@
 						ProvisioningStyle = Automatic;
 						TestTargetID = 40C9864C1EA5AF36003D2D73;
 					};
-					05F679341ED7C22A00F13377 = {
-						CreatedOnToolsVersion = 8.2.1;
-						ProvisioningStyle = Automatic;
-						TestTargetID = 40C9864C1EA5AF36003D2D73;
-					};
 					40C9864C1EA5AF36003D2D73 = {
 						CreatedOnToolsVersion = 8.3.1;
 						DevelopmentTeam = H87GZLP42E;
@@ -232,20 +180,12 @@
 			targets = (
 				40C9864C1EA5AF36003D2D73 /* HabitManager */,
 				0570C6551ED66BEA0034019C /* HabitManagerTests */,
-				05F679341ED7C22A00F13377 /* HabitManagerUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		0570C6541ED66BEA0034019C /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		05F679331ED7C22A00F13377 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -274,14 +214,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		05F679311ED7C22A00F13377 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				05F679381ED7C22A00F13377 /* HabitManagerUITests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		40C986491EA5AF36003D2D73 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -300,11 +232,6 @@
 			isa = PBXTargetDependency;
 			target = 40C9864C1EA5AF36003D2D73 /* HabitManager */;
 			targetProxy = 0570C65B1ED66BEA0034019C /* PBXContainerItemProxy */;
-		};
-		05F6793B1ED7C22A00F13377 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 40C9864C1EA5AF36003D2D73 /* HabitManager */;
-			targetProxy = 05F6793A1ED7C22A00F13377 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -353,32 +280,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HabitManager.app/HabitManager";
-			};
-			name = Release;
-		};
-		05F6793D1ED7C22A00F13377 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				INFOPLIST_FILE = HabitManagerUITests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = Alexis.HabitManagerUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-				TEST_TARGET_NAME = HabitManager;
-			};
-			name = Debug;
-		};
-		05F6793E1ED7C22A00F13377 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				INFOPLIST_FILE = HabitManagerUITests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = Alexis.HabitManagerUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-				TEST_TARGET_NAME = HabitManager;
 			};
 			name = Release;
 		};
@@ -511,15 +412,6 @@
 			buildConfigurations = (
 				0570C65D1ED66BEA0034019C /* Debug */,
 				0570C65E1ED66BEA0034019C /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		05F6793C1ED7C22A00F13377 /* Build configuration list for PBXNativeTarget "HabitManagerUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				05F6793D1ED7C22A00F13377 /* Debug */,
-				05F6793E1ED7C22A00F13377 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 		};

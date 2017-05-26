@@ -38,16 +38,6 @@
                ReferencedContainer = "container:HabitManager.xcodeproj">
             </BuildableReference>
          </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "05F679341ED7C22A00F13377"
-               BuildableName = "HabitManagerUITests.xctest"
-               BlueprintName = "HabitManagerUITests"
-               ReferencedContainer = "container:HabitManager.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
