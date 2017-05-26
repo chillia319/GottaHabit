@@ -57,13 +57,34 @@ class HabitManagerUITests: XCTestCase {
     
     func testDeleteOneDailyHabit(){
         
-    }
-    
-    func testAddOneRecurringHabit(){
+        let app = XCUIApplication()
+        let table = app.tables.element(boundBy: 0)
+        let numRows = table.cells.count
+        
+        app.navigationBars["All Habits"].buttons["Add"].tap()
+        let tablesQuery = app.tables
+        tablesQuery.textFields["Stand up for 2 minutes"].tap()
+        
+        let textField = tablesQuery.children(matching: .cell).element(boundBy: 1).children(matching: .textField).element
+        textField.typeText("DailyTestHabit")
+        
+        app.buttons["Done"].tap()
+        app.navigationBars["New Habit"].buttons["Save"].tap()
+        
+        
+        tablesQuery.staticTexts["DailyTestHabit"].swipeLeft()
+        tablesQuery.buttons["Delete"].tap()
+        
+        XCTAssertEqual(table.cells.count, numRows)
+        
         
     }
     
-    func testDeleteOneRecurringHabit(){
+    func AddOneRecurringHabit(){
+        
+    }
+    
+    func DeleteOneRecurringHabit(){
     
     }
     
