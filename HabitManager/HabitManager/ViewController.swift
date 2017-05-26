@@ -9,18 +9,21 @@
 import UIKit
 import UserNotifications
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITabBarDelegate {
     
     @IBOutlet var habitsTable: UITableView!
+    @IBOutlet var tabBar: UITabBar!
+    @IBOutlet var navBar: UINavigationBar!
     
     var habits: [String] = []
     var notificationsString: [String] = []
     var uuid: [String] = []
-    var resumeFuncData: [Any] = []
+    var habitsData: [Any] = []
     var switchState: [Int] = []
     
     var refresh: Bool = false
     var rowDeleted: Int = 0
+    var tabPressed: Int = 0
     
     /* Count how many rows are in the main page */
     internal func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
@@ -47,7 +50,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if indexPath.row % 2 == 0 {
             cell.backgroundColor = UIColor(red: 77/255, green: 195/255, blue: 199/255, alpha: 1.0)
         }else{
-            cell.backgroundColor = UIColor(red: 77/255, green: 205/255, blue: 199/255, alpha: 1.0)
+            cell.backgroundColor = UIColor(red: 77/255, green: 210/255, blue: 199/255, alpha: 1.0)
         }
         
         // Ensures the state of the switches are always correct
@@ -68,9 +71,42 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return cell
     }
     
+    internal func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+        
+        if (item.tag == 0){
+            tabPressed = 0
+            navBar.topItem?.title = "All Habits"
+            habitsTable.beginUpdates()
+            habitsTable.endUpdates()
+        } else if(item.tag == 1){
+            tabPressed = 1
+            navBar.topItem?.title = "Today"
+            habitsTable.beginUpdates()
+            habitsTable.endUpdates()
+        }
+    }
+    
     /* Set row height */
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 75
+        if(tabPressed == 1){
+            if(habitsData[indexPath.row*3] as! Int == 0){
+                let todayDate = Date()
+                let currentWeekday = Calendar.current.component(.weekday, from: todayDate)
+                let daysStr = habitsData[indexPath.row*3+1] as! String
+                if(!daysStr.contains("\(currentWeekday)")){
+                    return 0
+                }
+            }else if(habitsData[indexPath.row*3] as! Int == 1){
+                return habitsTable.rowHeight
+            }else if(habitsData[indexPath.row*3] as! Int == 2){
+                return habitsTable.rowHeight
+            }else if(habitsData[indexPath.row*3] as! Int == 3){
+                return habitsTable.rowHeight
+            }
+        }else if (tabPressed == 0){
+            return 80
+        }
+        return habitsTable.rowHeight
     }
     
     /* Deselect row animation for better UX */
@@ -78,10 +114,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
+    
+    
     /* Do tasks when main page is first loaded */
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        tabBar.delegate = self
+        // Highlight "All habits" by default
+        tabBar.selectedItem = tabBar.items![0]
         habitsTable.estimatedRowHeight = 80
         habitsTable.rowHeight = UITableViewAutomaticDimension
     }
@@ -92,7 +133,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let habitsObject = UserDefaults.standard.object(forKey: "habits")
         let notificationsStringObject = UserDefaults.standard.object(forKey: "notificationsString")
         let uuidObject = UserDefaults.standard.object(forKey: "uuid")
-        let resumeFuncDataObject = UserDefaults.standard.object(forKey: "resumeFuncData")
+        let habitsDataObject = UserDefaults.standard.object(forKey: "habitsData")
         let switchStateObject = UserDefaults.standard.object(forKey: "switchState")
         
         if let tempHabits = habitsObject as? [String] {
@@ -104,14 +145,26 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if let tempUUID = uuidObject as? [String] {
             uuid = tempUUID
         }
-        if let tempResumeFuncData = resumeFuncDataObject as? [Any] {
-            resumeFuncData = tempResumeFuncData
+        if let tempHabitsData = habitsDataObject as? [Any] {
+            habitsData = tempHabitsData
         }
         if let tempSwitchState = switchStateObject as? [Int] {
             switchState = tempSwitchState
         }
         
         habitsTable.reloadData()
+        
+        // Check if notification access is given by the user, only checks if user added a habit which requires notification access
+        let notificationAccess = UIApplication.shared.currentUserNotificationSettings!.types
+        if notificationAccess == [] && checkNotificationAccess{
+            print("notifications not enabled")
+            let alertController = UIAlertController(title: "Notification Not Enabled", message: "You can still use GottaHabit, but the functionalities will be extremly limited, enable notifications by going to Settings->GottaHabit->Notifications", preferredStyle: .alert)
+            let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alertController.addAction(defaultAction)
+            present(alertController, animated: true, completion: nil)
+            
+            checkNotificationAccess = false
+        }
     }
     
     /* Development purpose only */
@@ -160,26 +213,26 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }
             }
             
-            let notificationType = resumeFuncData[row*3] as! Int
+            let notificationType = habitsData[row*3] as! Int
             switch notificationType{
             case 0: // If current row needs weekday notifications
-                let gregorianDaysString = resumeFuncData[row*3+1] as! String
+                let gregorianDaysString = habitsData[row*3+1] as! String
                 var dayCount = 0
                 for day in gregorianDaysString.characters{
                     if Int("\(day)") != nil {
                         print("Resumed uuid: \(uuidsForResume[dayCount])")
-                        delegate?.scheduleWeekdayNotifications(at: resumeFuncData[row*3+2] as! Date, title: habits[row], id: uuidsForResume[dayCount], weekday: Int("\(day)")!)
+                        delegate?.scheduleWeekdayNotifications(at: habitsData[row*3+2] as! Date, title: habits[row], id: uuidsForResume[dayCount], weekday: Int("\(day)")!)
                     }
                     dayCount += 1
                 }
             case 1: // If current row needs one-time notifications
                 print("Resumed uuid: \(uuidsForResume[0])")
-                delegate?.scheduleOneTimeNotification(at: resumeFuncData[row*3+2] as! Date, title: habits[row], id: uuidsForResume[0])
+                delegate?.scheduleOneTimeNotification(at: habitsData[row*3+2] as! Date, title: habits[row], id: uuidsForResume[0])
             case 2: // If current row does not need any notification which should not be triggerd since the switch is hidden
                 print("BS there isn't even a switch")
             case 3: // If current row needs reoccuring notifications
                 print("Resumed uuid: \(uuidsForResume[0])")
-                delegate?.scheduleReoccurringNotification(interval: resumeFuncData[row*3+2] as! Int, title: habits[row], id: uuidsForResume[0])
+                delegate?.scheduleReoccurringNotification(interval: habitsData[row*3+2] as! Int, title: habits[row], id: uuidsForResume[0])
             default: // Should not trigger
                 print("Unexpected case when reading notificationType from resumeFunData")
             }
@@ -270,14 +323,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             print ("switchState after deletion: \(switchState)\n")
             // There are 3 elements reserved for each row's resume data, so delete all three
             for _ in 0...2{
-                self.resumeFuncData.remove(at: (indexPath.row*3))
+                self.habitsData.remove(at: (indexPath.row*3))
             }
-            print ("resumeFuncData after deletion: \(resumeFuncData)\n")
+            print ("habitsData after deletion: \(habitsData)\n")
             
             habitsTable.reloadData()
             UserDefaults.standard.set(habits, forKey: "habits")
             UserDefaults.standard.set(notificationsString, forKey: "notificationsString")
-            UserDefaults.standard.set(resumeFuncData, forKey: "resumeFuncData")
+            UserDefaults.standard.set(habitsData, forKey: "habitsData")
             UserDefaults.standard.set(switchState, forKey: "switchState")
         }
     }

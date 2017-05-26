@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) {(accepted, error) in
             if !accepted {
-                print("Notification access denied.")
+                print("Notification authorization denied")
             }
         }
         if #available(iOS 10.0, *) {

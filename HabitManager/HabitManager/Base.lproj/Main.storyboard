@@ -79,9 +79,9 @@
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="MtU-Ao-lpq" firstAttribute="top" secondItem="Y3F-qj-t1H" secondAttribute="topMargin" constant="17" id="Jv7-ij-gZs"/>
-                                                <constraint firstItem="MtU-Ao-lpq" firstAttribute="trailing" secondItem="Y3F-qj-t1H" secondAttribute="trailingMargin" id="dbL-75-K0X"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="MtU-Ao-lpq" secondAttribute="bottom" constant="16" id="nb2-d1-HIF"/>
+                                                <constraint firstItem="MtU-Ao-lpq" firstAttribute="top" secondItem="Y3F-qj-t1H" secondAttribute="topMargin" priority="999" constant="17" id="Jv7-ij-gZs"/>
+                                                <constraint firstItem="MtU-Ao-lpq" firstAttribute="trailing" secondItem="Y3F-qj-t1H" secondAttribute="trailingMargin" priority="999" id="dbL-75-K0X"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="MtU-Ao-lpq" secondAttribute="bottom" priority="999" constant="16" id="nb2-d1-HIF"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
@@ -100,8 +100,8 @@
                                 <rect key="frame" x="0.0" y="618" width="375" height="49"/>
                                 <items>
                                     <tabBarItem title="All Habits" id="B4j-tw-znf"/>
-                                    <tabBarItem title="Today" id="zqh-mQ-Z67"/>
-                                    <tabBarItem systemItem="more" id="IZ8-LV-rj0"/>
+                                    <tabBarItem tag="1" title="Today" id="zqh-mQ-Z67"/>
+                                    <tabBarItem tag="2" systemItem="more" id="IZ8-LV-rj0"/>
                                 </items>
                                 <color key="barTintColor" red="0.20000000300000001" green="0.20000000300000001" blue="0.20000000300000001" alpha="1" colorSpace="calibratedRGB"/>
                             </tabBar>
@@ -123,6 +123,8 @@
                     </view>
                     <connections>
                         <outlet property="habitsTable" destination="3Ns-cp-gLZ" id="iVD-02-4x0"/>
+                        <outlet property="navBar" destination="aYi-Wc-6sU" id="TbH-1D-jS2"/>
+                        <outlet property="tabBar" destination="toO-aA-OGI" id="YvN-Uf-iO9"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

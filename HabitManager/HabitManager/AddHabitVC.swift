@@ -8,6 +8,8 @@
 
 import UIKit
 
+var checkNotificationAccess: Bool = false
+
 class AddHabitVC: UITableViewController, UITextFieldDelegate {
     
     @IBOutlet var repeatOptionsTitleLabel: UILabel!
@@ -76,12 +78,12 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         // Set up things for storing these arrays to user's local storage
         let habitsObject = UserDefaults.standard.object(forKey: "habits")
         let notificationsStringObject = UserDefaults.standard.object(forKey: "notificationsString")
-        let resumeFuncDataObject = UserDefaults.standard.object(forKey: "resumeFuncData")
+        let habitsDataObject = UserDefaults.standard.object(forKey: "habitsData")
         let switchStateObject = UserDefaults.standard.object(forKey: "switchState")
         
         var habits: [String]
         var notificationsString: [String]
-        var resumeFuncData: [Any]
+        var habitsData: [Any]
         var switchState: [Int]
         
         /* ============================================================================================================ */
@@ -159,13 +161,15 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                     notificationDays += "\(gregorianDay)"
                     print (uuid[uuid.count-1])
                 }
-                print ("\n")
                 notificationType = 0
+                checkNotificationAccess = true
+                print ("\n")
                 saveUUID(UUID: "break")
             }else{
                 saveUUID(UUID: UUID().uuidString)
                 delegate?.scheduleOneTimeNotification(at: selectedTime, title: habitDescription.text!, id: uuid[uuid.count-1])
                 notificationType = 1
+                checkNotificationAccess = true
                 print ("Added uuid: \(uuid[uuid.count-1])\n")
                 saveUUID(UUID: "break")
             }
@@ -178,34 +182,35 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             saveUUID(UUID: UUID().uuidString)
             delegate?.scheduleReoccurringNotification(interval: selectedInterval, title: habitDescription.text!, id: uuid[uuid.count-1])
             notificationType = 3
+            checkNotificationAccess = true
             print ("Added uuid: \(uuid[uuid.count-1])\n")
             saveUUID(UUID: "break")
         }
         
         // Store data needed for the resume function to local storage
-        if let tempResumeFuncData = resumeFuncDataObject as? [Any] {
-            resumeFuncData = tempResumeFuncData
+        if let tempHabitsData = habitsDataObject as? [Any] {
+            habitsData = tempHabitsData
             
-            resumeFuncData.append(notificationType)
+            habitsData.append(notificationType)
         }else{
-            resumeFuncData = [notificationType]
+            habitsData = [notificationType]
         }
         
         if(notificationDays != ""){
-            resumeFuncData.append(notificationDays)
+            habitsData.append(notificationDays)
         }else{
-            resumeFuncData.append(-1)
+            habitsData.append(-1)
         }
         
         if(notificationType == 2){
-            resumeFuncData.append(-1)
+            habitsData.append(-1)
         }else if(notificationType == 3){
-            resumeFuncData.append(selectedInterval)
+            habitsData.append(selectedInterval)
         }else{
-            resumeFuncData.append(selectedTime)
+            habitsData.append(selectedTime)
         }
-        print ("Resume data: \(resumeFuncData)")
-        UserDefaults.standard.set(resumeFuncData, forKey: "resumeFuncData")
+        print ("habits data: \(habitsData)")
+        UserDefaults.standard.set(habitsData, forKey: "habitsData")
         
         // Go back to the main page
         dismiss(animated: true, completion: nil)
