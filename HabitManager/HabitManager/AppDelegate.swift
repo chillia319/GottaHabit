@@ -23,24 +23,48 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UINavigationBar.appearance().clipsToBounds = true
         let statusBar: UIView = UIApplication.shared.value(forKey: "statusBar") as! UIView
         statusBar.backgroundColor = UIColor(red: 45/255, green: 58/255, blue: 67/255, alpha: 1.0)
-
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) {(accepted, error) in
+        
+        // Request access to notifications
+        let centre = UNUserNotificationCenter.current()
+        centre.requestAuthorization(options: [.alert, .sound]) {(accepted, error) in
             if !accepted {
                 print("Notification authorization denied")
             }
         }
-        if #available(iOS 10.0, *) {
-            UNUserNotificationCenter.current().delegate = self
-        }
+        
+        // Add a snooze option to the notifications
+        let snoozeAction = UNNotificationAction(identifier: "Snooze", title: "Snooze", options: [])
+        let category = UNNotificationCategory(identifier: "UYLReminderCategory", actions: [snoozeAction], intentIdentifiers: [], options: [])
+        centre.setNotificationCategories([category])
+
+        UNUserNotificationCenter.current().delegate = self
         
         return true
     }
     
     /* Present the notification in foreground if one is received when inside the app (only for iOS 10+) */
-    @available(iOS 10.0, *)
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         
         completionHandler(UNNotificationPresentationOptions.alert)
+    }
+    
+    /* Schedual a new notification if user pressed Snooze */
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        if response.actionIdentifier == "Snooze" {
+            let receivedTitle = response.notification.request.content.title
+            let receivedUUID = response.notification.request.identifier
+            for id in uuid{
+                if(id == receivedUUID){
+                    uuid.insert(UUID().uuidString, at: uuid.index(of: receivedUUID)!+1)
+                    UserDefaults.standard.set(uuid, forKey: "uuid")
+                    print("uuid after inserting: \(uuid)\n")
+                    scheduleSnoozeNotification(interval: 600, title: receivedTitle, id: uuid[uuid.index(of: receivedUUID)!+1])
+                    print("snooze uuid: \(uuid[uuid.index(of: receivedUUID)!+1])\n")
+                    break
+                }
+            }
+        }
+        completionHandler()
     }
     
     /* Schedual weekday-based notifications */
@@ -58,6 +82,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         content.title = title
         content.body = "You know you want to!"
         content.sound = UNNotificationSound.default()
+        content.categoryIdentifier = "UYLReminderCategory"
         
         let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
         
@@ -82,6 +107,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         content.title = title
         content.body = "You know you want to!"
         content.sound = UNNotificationSound.default()
+        content.categoryIdentifier = "UYLReminderCategory"
         
         let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
         
@@ -101,12 +127,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         content.title = title
         content.body = "You know you want to!"
         content.sound = UNNotificationSound.default()
+        content.categoryIdentifier = "UYLReminderCategory"
         
         let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
         
         UNUserNotificationCenter.current().add(request, withCompletionHandler: {(error) in
             if let error = error {
                 print("An error has occured when adding a reoccurring notification: \(error)")
+            }
+        })
+    }
+    
+    /* Schedual a new notification when user snoozes a received notification */
+    func scheduleSnoozeNotification(interval: Int, title: String, id: String) {
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(interval), repeats: false)
+        
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = "You know you want to!"
+        content.sound = UNNotificationSound.default()
+        content.categoryIdentifier = "UYLReminderCategory"
+        
+        let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: {(error) in
+            if let error = error {
+                print("An error has occured when adding a snooze notification: \(error)")
             }
         })
     }

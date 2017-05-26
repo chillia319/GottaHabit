@@ -9,6 +9,8 @@
 import UIKit
 import UserNotifications
 
+var uuid: [String] = []
+
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITabBarDelegate {
     
     @IBOutlet var habitsTable: UITableView!
@@ -17,7 +19,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     var habits: [String] = []
     var notificationsString: [String] = []
-    var uuid: [String] = []
     var habitsData: [Any] = []
     var switchState: [Int] = []
     
@@ -51,6 +52,19 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             cell.backgroundColor = UIColor(red: 77/255, green: 195/255, blue: 199/255, alpha: 1.0)
         }else{
             cell.backgroundColor = UIColor(red: 77/255, green: 210/255, blue: 199/255, alpha: 1.0)
+        }
+        
+        // if a habit is expired
+        if(habitsData[indexPath.row*3] as! Int == 1){
+            let currentTime = Date()
+            let storedTime = habitsData[indexPath.row*3+2] as! Date
+            if(storedTime < currentTime){
+                switchState[indexPath.row] = 0
+                UserDefaults.standard.set(switchState, forKey: "switchState")
+                cell.cellSwitch.isUserInteractionEnabled = false
+                cell.backgroundColor = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1.0)
+                //cell.notificationsLabel.textColor = UIColor(red: 200/255, green: 200/255, blue: 200/255, alpha: 1.0)
+            }
         }
         
         // Ensures the state of the switches are always correct
@@ -104,7 +118,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 return habitsTable.rowHeight
             }
         }else if (tabPressed == 0){
-            return 80
+            return habitsTable.rowHeight
         }
         return habitsTable.rowHeight
     }

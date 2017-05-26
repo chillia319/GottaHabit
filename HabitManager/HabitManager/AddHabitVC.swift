@@ -106,7 +106,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 beautifiedTimeLabel = "No Alert"
             }else{
                 if(repeatOptionsLabel.text == "Today only"){
-                    beautifiedTimeLabel = "At " + timeLabel.text!
+                    beautifiedTimeLabel = "At " + timeLabel.text! + " Today"
                 }else{
                     beautifiedTimeLabel = "At " + timeLabel.text! + " on " + repeatOptionsLabel.text!
                 }
