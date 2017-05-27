@@ -11,6 +11,7 @@ import UIKit
 class CustomCell: UITableViewCell {
     
     @IBOutlet var habitLabel: UILabel!
+    @IBOutlet var habitDetailsLabel: UILabel!
     @IBOutlet var notificationsLabel: UILabel!
     @IBOutlet var cellSwitch: UISwitch!
 

@@ -18,6 +18,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet var navBar: UINavigationBar!
     
     var habits: [String] = []
+    var habitDetails: [String] = []
     var notificationsString: [String] = []
     var habitsData: [Any] = []
     var switchState: [Int] = []
@@ -39,7 +40,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         // Fill the cell with information saved previously
         cell.habitLabel.text = habits[indexPath.row]
-        cell.habitLabel.numberOfLines = 0
+        cell.habitDetailsLabel.numberOfLines = 0
+        cell.habitDetailsLabel.text = habitDetails[indexPath.row]
         cell.notificationsLabel.text = notificationsString[indexPath.row]
         if(notificationsString[indexPath.row] == "No Alert"){
             cell.cellSwitch.isHidden = true;
@@ -128,8 +130,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
-    
-    
     /* Do tasks when main page is first loaded */
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -137,7 +137,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tabBar.delegate = self
         // Highlight "All habits" by default
         tabBar.selectedItem = tabBar.items![0]
-        habitsTable.estimatedRowHeight = 80
+
+        habitsTable.estimatedRowHeight = 90
         habitsTable.rowHeight = UITableViewAutomaticDimension
     }
     
@@ -145,6 +146,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewDidAppear(_ animated: Bool) {
         // Extract information from local storage and set the values inside this class
         let habitsObject = UserDefaults.standard.object(forKey: "habits")
+        let habitDetailsObject = UserDefaults.standard.object(forKey: "habitDetails")
         let notificationsStringObject = UserDefaults.standard.object(forKey: "notificationsString")
         let uuidObject = UserDefaults.standard.object(forKey: "uuid")
         let habitsDataObject = UserDefaults.standard.object(forKey: "habitsData")
@@ -152,6 +154,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         if let tempHabits = habitsObject as? [String] {
             habits = tempHabits
+        }
+        if let tempHabitDetails = habitDetailsObject as? [String] {
+            habitDetails = tempHabitDetails
         }
         if let tempNotificationsString = notificationsStringObject as? [String] {
             notificationsString = tempNotificationsString
@@ -227,6 +232,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }
             }
             
+            // Set the body content for notifications that need rescheduling
+            var bodyContentForNotification: String = ""
+            if(habitDetails[row] == ""){
+                bodyContentForNotification = "It is time to " + habits[row] + "!"
+            }else{
+                bodyContentForNotification = habitDetails[row]
+            }
+            
+            // Reschedual the notifications
             let notificationType = habitsData[row*3] as! Int
             switch notificationType{
             case 0: // If current row needs weekday notifications
@@ -235,18 +249,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 for day in gregorianDaysString.characters{
                     if Int("\(day)") != nil {
                         print("Resumed uuid: \(uuidsForResume[dayCount])")
-                        delegate?.scheduleWeekdayNotifications(at: habitsData[row*3+2] as! Date, title: habits[row], id: uuidsForResume[dayCount], weekday: Int("\(day)")!)
+                        delegate?.scheduleWeekdayNotifications(at: habitsData[row*3+2] as! Date, title: habits[row], body: bodyContentForNotification,  id: uuidsForResume[dayCount], weekday: Int("\(day)")!)
                     }
                     dayCount += 1
                 }
             case 1: // If current row needs one-time notifications
                 print("Resumed uuid: \(uuidsForResume[0])")
-                delegate?.scheduleOneTimeNotification(at: habitsData[row*3+2] as! Date, title: habits[row], id: uuidsForResume[0])
+                delegate?.scheduleOneTimeNotification(at: habitsData[row*3+2] as! Date, title: habits[row], body: bodyContentForNotification, id: uuidsForResume[0])
             case 2: // If current row does not need any notification which should not be triggerd since the switch is hidden
                 print("BS there isn't even a switch")
             case 3: // If current row needs reoccuring notifications
                 print("Resumed uuid: \(uuidsForResume[0])")
-                delegate?.scheduleReoccurringNotification(interval: habitsData[row*3+2] as! Int, title: habits[row], id: uuidsForResume[0])
+                delegate?.scheduleReoccurringNotification(interval: habitsData[row*3+2] as! Int, title: habits[row], body: bodyContentForNotification, id: uuidsForResume[0])
             default: // Should not trigger
                 print("Unexpected case when reading notificationType from resumeFunData")
             }
@@ -332,6 +346,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             
             print ("UUIDs After deletion: \(uuid)\n")
             habits.remove(at: indexPath.row)
+            habitDetails.remove(at: indexPath.row)
             notificationsString.remove(at: indexPath.row)
             switchState.remove(at: indexPath.row)
             print ("switchState after deletion: \(switchState)\n")
@@ -343,6 +358,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             
             habitsTable.reloadData()
             UserDefaults.standard.set(habits, forKey: "habits")
+            UserDefaults.standard.set(habitDetails, forKey: "habitDetails")
             UserDefaults.standard.set(notificationsString, forKey: "notificationsString")
             UserDefaults.standard.set(habitsData, forKey: "habitsData")
             UserDefaults.standard.set(switchState, forKey: "switchState")

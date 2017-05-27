@@ -17,14 +17,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     /* Do tasks when the app is lauched */
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        UINavigationBar.appearance().barTintColor = UIColor(red: 45/255, green: 58/255, blue: 67/255, alpha: 1.0)
+        UINavigationBar.appearance().barTintColor = UIColor(red: 67/255, green: 66/255, blue: 64/255, alpha: 1.0)
         UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName:UIColor.white]
         UIApplication.shared.statusBarStyle = .lightContent
         UINavigationBar.appearance().clipsToBounds = true
         UITabBar.appearance().tintColor = UIColor(red: 77/255, green: 195/255, blue: 199/255, alpha: 1.0)
         let statusBar: UIView = UIApplication.shared.value(forKey: "statusBar") as! UIView
-        statusBar.backgroundColor = UIColor(red: 45/255, green: 58/255, blue: 67/255, alpha: 1.0)
-        
+        statusBar.backgroundColor = UIColor(red: 67/255, green: 66/255, blue: 64/255, alpha: 1.0)        
         // Request access to notifications
         let centre = UNUserNotificationCenter.current()
         centre.requestAuthorization(options: [.alert, .sound]) {(accepted, error) in
@@ -56,10 +55,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let receivedUUID = response.notification.request.identifier
             for id in uuid{
                 if(id == receivedUUID){
-                    uuid.insert(UUID().uuidString, at: uuid.index(of: receivedUUID)!+1)
+                    let snoozeUUID = UUID().uuidString
+                    uuid.insert(snoozeUUID, at: uuid.index(of: receivedUUID)!+1)
                     UserDefaults.standard.set(uuid, forKey: "uuid")
                     print("uuid after inserting: \(uuid)\n")
-                    scheduleSnoozeNotification(interval: 600, title: receivedTitle, id: uuid[uuid.index(of: receivedUUID)!+1])
+                    scheduleSnoozeNotification(interval: 600, title: receivedTitle, id: snoozeUUID)
                     print("snooze uuid: \(uuid[uuid.index(of: receivedUUID)!+1])\n")
                     break
                 }
@@ -69,25 +69,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     /* Schedual weekday-based notifications */
-    func scheduleWeekdayNotifications(at date: Date, title: String, id: String, weekday: Int) {
+    func scheduleWeekdayNotifications(at date: Date, title: String, body: String, id: String, weekday: Int) {
         let calendar = Calendar(identifier: .gregorian)
         
-        //let triggerDaily = Calendar.current.dateComponents([.hour,.minute,.second,], from: date)
         var triggerDate = calendar.dateComponents([.weekday,.hour,.minute,], from: date)
         triggerDate.weekday = weekday
         
         let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: true)
-        //let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: true)
         
         let content = UNMutableNotificationContent()
         content.title = title
-        content.body = "You know you want to!"
+        content.body = body
         content.sound = UNNotificationSound.default()
         content.categoryIdentifier = "UYLReminderCategory"
         
         let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
         
-        //UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         UNUserNotificationCenter.current().add(request, withCompletionHandler: {(error) in
             if let error = error {
                 print("An error has occured when adding a weekday-based notification: \(error)")
@@ -96,23 +93,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     /* Schedual one-time notifications */
-    func scheduleOneTimeNotification(at date: Date, title: String, id: String) {
+    func scheduleOneTimeNotification(at date: Date, title: String, body: String, id: String) {
         let calendar = Calendar(identifier: .gregorian)
         
         let triggerDate = calendar.dateComponents([.year,.month,.day,.hour,.minute,], from: date)
 
         let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
-        //let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: true)
         
         let content = UNMutableNotificationContent()
         content.title = title
-        content.body = "You know you want to!"
+        content.body = body
         content.sound = UNNotificationSound.default()
         content.categoryIdentifier = "UYLReminderCategory"
         
         let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
         
-        //UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         UNUserNotificationCenter.current().add(request, withCompletionHandler: {(error) in
             if let error = error {
                 print("An error has occured when adding a one-time notification: \(error)")
@@ -121,12 +116,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     /* Schedual reoccurring notifications */
-    func scheduleReoccurringNotification(interval: Int, title: String, id: String) {
+    func scheduleReoccurringNotification(interval: Int, title: String, body: String, id: String) {
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(interval), repeats: true)
         
         let content = UNMutableNotificationContent()
         content.title = title
-        content.body = "You know you want to!"
+        content.body = body
         content.sound = UNNotificationSound.default()
         content.categoryIdentifier = "UYLReminderCategory"
         
@@ -145,7 +140,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         let content = UNMutableNotificationContent()
         content.title = title
-        content.body = "You know you want to!"
+        content.body = "Snooze timer is up!"
         content.sound = UNNotificationSound.default()
         content.categoryIdentifier = "UYLReminderCategory"
         

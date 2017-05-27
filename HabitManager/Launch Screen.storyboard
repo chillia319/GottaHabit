@@ -21,16 +21,18 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Lauch" translatesAutoresizingMaskIntoConstraints="NO" id="ob2-BZ-W9f">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo" translatesAutoresizingMaskIntoConstraints="NO" id="6bu-aT-lxV">
+                                <rect key="frame" x="97.5" y="183.5" width="180" height="180"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="180" id="2aN-EG-xEJ"/>
+                                    <constraint firstAttribute="height" constant="180" id="bQI-zN-UkQ"/>
+                                </constraints>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.43403127789497375" green="0.75636088848114014" blue="0.77258884906768799" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="ob2-BZ-W9f" secondAttribute="trailing" id="HVh-5R-nEG"/>
-                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="ob2-BZ-W9f" secondAttribute="bottom" id="Llw-79-M0W"/>
-                            <constraint firstItem="ob2-BZ-W9f" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="SR4-4R-JIk"/>
-                            <constraint firstItem="ob2-BZ-W9f" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="vUo-KH-Wbw"/>
+                            <constraint firstItem="6bu-aT-lxV" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="O0I-yU-AQp"/>
+                            <constraint firstItem="6bu-aT-lxV" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="-60" id="U1E-0F-ZpV"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -40,6 +42,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Lauch" width="621" height="1104"/>
+        <image name="Logo" width="512" height="512"/>
     </resources>
 </document>
