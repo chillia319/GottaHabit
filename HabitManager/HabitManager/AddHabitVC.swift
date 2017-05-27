@@ -49,6 +49,12 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         saveButton.isEnabled = !description.isEmpty
     }
     
+    /* Dynamically checks if there's text in the textfield as you type */
+    @IBAction func habitDescriptionEntered(_ sender: Any) {
+        let description = habitDescription.text ?? ""
+        saveButton.isEnabled = !description.isEmpty
+    }
+    
     /* Toggles between "Daily" and "Reoccurring", set up the relevant interface */
     @IBAction func modeToggle(_ sender: UISegmentedControl) {
         if sender.selectedSegmentIndex == 0{
@@ -383,16 +389,6 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 return super.tableView.rowHeight
             }
         }
-    }
-    
-    /* When typing, "Save" button is disabled */
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        saveButton.isEnabled = false
-    }
-    
-    /* Check if the textfield is empty after user has finished entering texts */
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        checkDescription()
     }
     
     /* If user tapped "Return" button on his/her keyboard, then hide the keyboard */
