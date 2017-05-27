@@ -11,11 +11,11 @@
 		0570C6651ED694590034019C /* AddHabitVCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570C6641ED694590034019C /* AddHabitVCTests.swift */; };
 		401BE9DD1EA5CF9D00831D67 /* AddHabitVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401BE9DC1EA5CF9D00831D67 /* AddHabitVC.swift */; };
 		40232D921EAB0CB9004E0478 /* CustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40232D911EAB0CB9004E0478 /* CustomCell.swift */; };
+		402401181ED865010065960F /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 402401171ED865010065960F /* Launch Screen.storyboard */; };
 		40C986511EA5AF36003D2D73 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40C986501EA5AF36003D2D73 /* AppDelegate.swift */; };
 		40C986531EA5AF36003D2D73 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40C986521EA5AF36003D2D73 /* ViewController.swift */; };
 		40C986561EA5AF36003D2D73 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40C986541EA5AF36003D2D73 /* Main.storyboard */; };
 		40C986581EA5AF36003D2D73 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40C986571EA5AF36003D2D73 /* Assets.xcassets */; };
-		40C9865B1EA5AF36003D2D73 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40C986591EA5AF36003D2D73 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,12 +35,12 @@
 		0570C6641ED694590034019C /* AddHabitVCTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddHabitVCTests.swift; sourceTree = "<group>"; };
 		401BE9DC1EA5CF9D00831D67 /* AddHabitVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddHabitVC.swift; sourceTree = "<group>"; };
 		40232D911EAB0CB9004E0478 /* CustomCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCell.swift; sourceTree = "<group>"; };
+		402401171ED865010065960F /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = "Launch Screen.storyboard"; path = "../Launch Screen.storyboard"; sourceTree = "<group>"; };
 		40C9864D1EA5AF36003D2D73 /* HabitManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HabitManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		40C986501EA5AF36003D2D73 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		40C986521EA5AF36003D2D73 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		40C986551EA5AF36003D2D73 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		40C986571EA5AF36003D2D73 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		40C9865A1EA5AF36003D2D73 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		40C9865C1EA5AF36003D2D73 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -99,7 +99,7 @@
 				401BE9DC1EA5CF9D00831D67 /* AddHabitVC.swift */,
 				40232D911EAB0CB9004E0478 /* CustomCell.swift */,
 				40C986571EA5AF36003D2D73 /* Assets.xcassets */,
-				40C986591EA5AF36003D2D73 /* LaunchScreen.storyboard */,
+				402401171ED865010065960F /* Launch Screen.storyboard */,
 				40C9865C1EA5AF36003D2D73 /* Info.plist */,
 			);
 			path = HabitManager;
@@ -196,7 +196,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				40C9865B1EA5AF36003D2D73 /* LaunchScreen.storyboard in Resources */,
+				402401181ED865010065960F /* Launch Screen.storyboard in Resources */,
 				40C986581EA5AF36003D2D73 /* Assets.xcassets in Resources */,
 				40C986561EA5AF36003D2D73 /* Main.storyboard in Resources */,
 			);
@@ -242,14 +242,6 @@
 				40C986551EA5AF36003D2D73 /* Base */,
 			);
 			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		40C986591EA5AF36003D2D73 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				40C9865A1EA5AF36003D2D73 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

@@ -99,9 +99,8 @@
                             <tabBar contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="toO-aA-OGI">
                                 <rect key="frame" x="0.0" y="618" width="375" height="49"/>
                                 <items>
-                                    <tabBarItem title="All Habits" id="B4j-tw-znf"/>
-                                    <tabBarItem tag="1" title="Today" id="zqh-mQ-Z67"/>
-                                    <tabBarItem tag="2" systemItem="more" id="IZ8-LV-rj0"/>
+                                    <tabBarItem title="All Habits" image="TabBarIcon1" id="B4j-tw-znf"/>
+                                    <tabBarItem tag="1" title="Today" image="TabBarIcon2" id="zqh-mQ-Z67"/>
                                 </items>
                                 <color key="barTintColor" red="0.20000000300000001" green="0.20000000300000001" blue="0.20000000300000001" alpha="1" colorSpace="calibratedRGB"/>
                             </tabBar>
@@ -233,7 +232,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="50w-in-WOi">
-                                                    <rect key="frame" x="27.5" y="1" width="320" height="216"/>
+                                                    <rect key="frame" x="28" y="1" width="320" height="216"/>
                                                     <date key="date" timeIntervalSinceReferenceDate="514276619.280532">
                                                         <!--2017-04-19 06:36:59 +0000-->
                                                     </date>
@@ -315,7 +314,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="countDownTimer" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="NEc-mT-hwQ">
-                                                    <rect key="frame" x="27.5" y="0.0" width="320" height="216"/>
+                                                    <rect key="frame" x="28" y="0.0" width="320" height="216"/>
                                                     <date key="date" timeIntervalSinceReferenceDate="514609960.59548599">
                                                         <!--2017-04-23 03:12:40 +0000-->
                                                     </date>
@@ -565,4 +564,8 @@
             <point key="canvasLocation" x="1484" y="633"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="TabBarIcon1" width="25" height="25"/>
+        <image name="TabBarIcon2" width="25" height="25"/>
+    </resources>
 </document>

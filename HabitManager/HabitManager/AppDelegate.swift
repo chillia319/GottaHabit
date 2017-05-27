@@ -21,6 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName:UIColor.white]
         UIApplication.shared.statusBarStyle = .lightContent
         UINavigationBar.appearance().clipsToBounds = true
+        UITabBar.appearance().tintColor = UIColor(red: 77/255, green: 195/255, blue: 199/255, alpha: 1.0)
         let statusBar: UIView = UIApplication.shared.value(forKey: "statusBar") as! UIView
         statusBar.backgroundColor = UIColor(red: 45/255, green: 58/255, blue: 67/255, alpha: 1.0)
         
