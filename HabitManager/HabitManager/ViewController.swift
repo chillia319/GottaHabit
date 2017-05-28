@@ -16,6 +16,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet var habitsTable: UITableView!
     @IBOutlet var tabBar: UITabBar!
     @IBOutlet var navBar: UINavigationBar!
+    @IBOutlet var quote: UILabel!
+    @IBOutlet var quoteAuthor: UILabel!
     
     var habits: [String] = []
     var habitDetails: [String] = []
@@ -184,6 +186,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         if let tempSwitchState = switchStateObject as? [Int] {
             switchState = tempSwitchState
+        }
+        
+        // Hide quote is a row is present
+        if(!habits.isEmpty){
+            quote.isHidden = true
+            quoteAuthor.isHidden = true
+        }else{
+            quote.isHidden = false
+            quoteAuthor.isHidden = false
         }
         
         habitsTable.reloadData()
@@ -371,7 +382,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
             print ("habitsData after deletion: \(habitsData)\n")
             
+            // Show quote is no row is present
+            if(habits.isEmpty){
+                quote.isHidden = false
+                quoteAuthor.isHidden = false
+            }
+            
             habitsTable.reloadData()
+            
             UserDefaults.standard.set(habits, forKey: "habits")
             UserDefaults.standard.set(habitDetails, forKey: "habitDetails")
             UserDefaults.standard.set(notificationsString, forKey: "notificationsString")

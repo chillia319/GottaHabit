@@ -146,6 +146,18 @@
                                 </items>
                                 <color key="barTintColor" red="0.20000000300000001" green="0.20000000300000001" blue="0.20000000300000001" alpha="1" colorSpace="calibratedRGB"/>
                             </tabBar>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="&quot;It always seems impossible until it's done.&quot;" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PlV-YF-7vd">
+                                <rect key="frame" x="40" y="305" width="296" height="18"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" red="0.80000001190000003" green="0.80000001190000003" blue="0.80000001190000003" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Nelson Mandela" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Aef-Wn-5gh">
+                                <rect key="frame" x="138.5" y="325.5" width="97.5" height="16"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                <color key="textColor" red="0.80000001190000003" green="0.80000001190000003" blue="0.80000001190000003" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -153,9 +165,13 @@
                             <constraint firstItem="toO-aA-OGI" firstAttribute="top" secondItem="3Ns-cp-gLZ" secondAttribute="bottom" id="5qz-Lc-4vd"/>
                             <constraint firstAttribute="trailing" secondItem="toO-aA-OGI" secondAttribute="trailing" id="J4e-f2-cZr"/>
                             <constraint firstItem="3Ns-cp-gLZ" firstAttribute="top" secondItem="aYi-Wc-6sU" secondAttribute="bottom" id="N0p-DC-Ftj"/>
+                            <constraint firstItem="PlV-YF-7vd" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" priority="999" constant="-20" id="Oc7-uB-9Nz"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="toO-aA-OGI" secondAttribute="bottom" id="QDV-W8-WVW"/>
                             <constraint firstItem="toO-aA-OGI" firstAttribute="top" secondItem="3Ns-cp-gLZ" secondAttribute="bottom" id="TWA-qb-DUr"/>
                             <constraint firstItem="aYi-Wc-6sU" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="Tw7-n6-D8K"/>
+                            <constraint firstItem="Aef-Wn-5gh" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" priority="999" id="Ub1-g4-tq4"/>
+                            <constraint firstItem="Aef-Wn-5gh" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" priority="999" id="XVO-p8-isg"/>
+                            <constraint firstItem="PlV-YF-7vd" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" priority="999" id="YAL-fW-HA7"/>
                             <constraint firstAttribute="trailing" secondItem="3Ns-cp-gLZ" secondAttribute="trailing" id="jxV-Uy-Xa1"/>
                             <constraint firstItem="aYi-Wc-6sU" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="mZG-DV-3Xo"/>
                             <constraint firstItem="toO-aA-OGI" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="soC-HM-1Gn"/>
@@ -165,6 +181,8 @@
                     <connections>
                         <outlet property="habitsTable" destination="3Ns-cp-gLZ" id="iVD-02-4x0"/>
                         <outlet property="navBar" destination="aYi-Wc-6sU" id="TbH-1D-jS2"/>
+                        <outlet property="quote" destination="PlV-YF-7vd" id="sSw-Ow-S6h"/>
+                        <outlet property="quoteAuthor" destination="Aef-Wn-5gh" id="CUD-Fd-XgE"/>
                         <outlet property="tabBar" destination="toO-aA-OGI" id="YvN-Uf-iO9"/>
                     </connections>
                 </viewController>
