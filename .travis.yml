@@ -6,11 +6,11 @@ before_install:
 
 script:
 
-- xcodebuild clean && xcodebuild build -project HabitManager\HabitManager.xcodeproj -scheme HabitManager/HabitManager -destination "platform=iOS Simulator,name=iPhone 5s" -sdk iphonesimulator10.2  CODE_SIGNING_REQUIRED=NO
-- xcodebuild clean && xcodebuild build -project HabitManager\HabitManager.xcodeproj -scheme HabitManager/HabitManager -destination "platform=iOS Simulator,name=iPhone 6" -sdk iphonesimulator10.2  CODE_SIGNING_REQUIRED=NO
-- xcodebuild clean && xcodebuild build -project HabitManager\HabitManager.xcodeproj -scheme HabitManager/HabitManager -destination "platform=iOS Simulator,name=iPhone 6 Plus" -sdk iphonesimulator10.2  CODE_SIGNING_REQUIRED=NO
-- xcodebuild clean && xcodebuild build -project HabitManager\HabitManager.xcodeproj -scheme HabitManager/HabitManager -destination "platform=iOS Simulator,name=iPhone 6s" -sdk iphonesimulator10.2  CODE_SIGNING_REQUIRED=NO
-- xcodebuild clean && xcodebuild build -project HabitManager\HabitManager.xcodeproj -scheme HabitManager/HabitManager -destination "platform=iOS Simulator,name=iPhone 6s Plus" -sdk iphonesimulator10.2  CODE_SIGNING_REQUIRED=NO
+- xcodebuild clean && xcodebuild build -project HabitManager.xcodeproj -scheme HabitManager -destination "platform=iOS Simulator,name=iPhone 5s" -sdk iphonesimulator10.2  CODE_SIGNING_REQUIRED=NO
+- xcodebuild clean && xcodebuild build -project HabitManager.xcodeproj -scheme HabitManager -destination "platform=iOS Simulator,name=iPhone 6" -sdk iphonesimulator10.2  CODE_SIGNING_REQUIRED=NO
+- xcodebuild clean && xcodebuild build -project HabitManager.xcodeproj -scheme HabitManager -destination "platform=iOS Simulator,name=iPhone 6 Plus" -sdk iphonesimulator10.2  CODE_SIGNING_REQUIRED=NO
+- xcodebuild clean && xcodebuild build -project HabitManager.xcodeproj -scheme HabitManager -destination "platform=iOS Simulator,name=iPhone 6s" -sdk iphonesimulator10.2  CODE_SIGNING_REQUIRED=NO
+- xcodebuild clean && xcodebuild build -project HabitManager.xcodeproj -scheme HabitManager -destination "platform=iOS Simulator,name=iPhone 6s Plus" -sdk iphonesimulator10.2  CODE_SIGNING_REQUIRED=NO
 - xcodebuild clean && xcodebuild build -project HabitManager.xcodeproj -scheme HabitManager -destination "platform=iOS Simulator,name=iPhone 7" -sdk iphonesimulator10.2  CODE_SIGNING_REQUIRED=NO
 - xcodebuild clean && xcodebuild build  -project HabitManager.xcodeproj -scheme HabitManager -destination "platform=iOS Simulator,name=iPhone 7 Plus" -sdk iphonesimulator10.2  CODE_SIGNING_REQUIRED=NO
-- xcodebuild clean && xcodebuild build -project HabitManager\HabitManager.xcodeproj -scheme HabitManager/HabitManager -destination "platform=iOS Simulator,name=iPhone SE" -sdk iphonesimulator10.2  CODE_SIGNING_REQUIRED=NO
+- xcodebuild clean && xcodebuild build -project HabitManager.xcodeproj -scheme HabitManager -destination "platform=iOS Simulator,name=iPhone SE" -sdk iphonesimulator10.2  CODE_SIGNING_REQUIRED=NO
