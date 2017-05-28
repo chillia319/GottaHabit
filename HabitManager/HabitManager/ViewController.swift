@@ -23,8 +23,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var habitsData: [Any] = []
     var switchState: [Int] = []
     
-    var refresh: Bool = false
-    var rowDeleted: Int = 0
     var tabPressed: Int = 0
     
     /* Count how many rows are in the main page */
@@ -38,16 +36,29 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let cell = tableView.dequeueReusableCell(withIdentifier:"Cell") as! CustomCell
         let currentSwitchState: Int!
         
-        // Fill the cell with information saved previously
+        // do these for each cell
         cell.habitLabel.text = habits[indexPath.row]
         cell.habitDetailsLabel.numberOfLines = 0
         cell.habitDetailsLabel.text = habitDetails[indexPath.row]
         cell.notificationsLabel.text = notificationsString[indexPath.row]
+        cell.notificationsLabel.layer.zPosition = 1
+        
+        // If this row does not require notifications
         if(notificationsString[indexPath.row] == "No Alert"){
-            cell.cellSwitch.isHidden = true;
+            cell.cellSwitch.isHidden = true
+            cell.ribbonHead.isHidden = true
+            cell.ribbonTail.isHidden = true
+            cell.ribbonBody.isHidden = true
         }else{
-            cell.cellSwitch.isHidden = false;
+            cell.cellSwitch.isHidden = false
+            cell.ribbonHead.isHidden = false
+            cell.ribbonTail.isHidden = false
+            // Set the ribbon body width to the same as the notification label
+            cell.ribbonBody.frame = CGRect(x: 8, y: 6, width: cell.notificationsLabel.intrinsicContentSize.width, height: 16)
+            cell.ribbonBody.isHidden = false
         }
+        
+        // Assign switches with tags for easy tracking
         cell.cellSwitch.tag = indexPath.row
         
         if indexPath.row % 2 == 0 {
@@ -92,13 +103,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if (item.tag == 0){
             tabPressed = 0
             navBar.topItem?.title = "All Habits"
-            habitsTable.beginUpdates()
-            habitsTable.endUpdates()
+            UIView.animate(withDuration: 0.2, animations: {
+                self.habitsTable.beginUpdates()
+                self.habitsTable.endUpdates()
+            }, completion: nil)
         } else if(item.tag == 1){
             tabPressed = 1
             navBar.topItem?.title = "Today"
-            habitsTable.beginUpdates()
-            habitsTable.endUpdates()
+            UIView.animate(withDuration: 0.2, animations: {
+                self.habitsTable.beginUpdates()
+                self.habitsTable.endUpdates()
+            }, completion: nil)
         }
     }
     
