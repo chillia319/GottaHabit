@@ -1,10 +1,14 @@
 GottaHabit Readme
 
-Group Members : 
-Alexis Barltrop     7176303
-Percy Hu            2856476
-Tyler Baker         1927791
-Meiqi Sun           5926587
+Group Members
+ 
+Alexis Barltrop     7176303;
+
+Percy Hu            2856476;
+
+Tyler Baker         1927791;
+
+Meiqi Sun           5926587;
     
 Software Description:
 
