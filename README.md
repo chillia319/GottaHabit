@@ -14,7 +14,7 @@ Software Description:
 
 GottaHabit is an iOS application designed to help users manage habits. The app has two main modes, one that sets daily reminders e.g. 
 take the dog for a walk, and another than sets reminders on a reoccuring timer for shorter periods e.g take a break from sitting down
-every 30 minutes. 
+every 30 minutes. Notifications can also be snoozed for 10 minutes. 
 
 Running Instructions:
 
