@@ -78,8 +78,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 UserDefaults.standard.set(switchState, forKey: "switchState")
                 cell.cellSwitch.isUserInteractionEnabled = false
                 cell.backgroundColor = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1.0)
-                //cell.notificationsLabel.textColor = UIColor(red: 200/255, green: 200/255, blue: 200/255, alpha: 1.0)
+            }else{
+                switchState[indexPath.row] = 1
+                UserDefaults.standard.set(switchState, forKey: "switchState")
+                cell.cellSwitch.isUserInteractionEnabled = true
             }
+        }else{
+            cell.cellSwitch.isUserInteractionEnabled = true
         }
         
         // Ensures the state of the switches are always correct
