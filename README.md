@@ -1,11 +1,10 @@
 GottaHabit Readme
 
 Group Members : 
-    Name                Student ID:
-    Alexis Barltrop     7176303
-    Percy Hu            2856476
-    Tyler Baker         1927791
-    Meiqi Sun           5926587
+Alexis Barltrop     7176303
+Percy Hu            2856476
+Tyler Baker         1927791
+Meiqi Sun           5926587
     
 Software Description:
 
