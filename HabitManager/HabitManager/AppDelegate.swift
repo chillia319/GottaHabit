@@ -53,16 +53,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if response.actionIdentifier == "Snooze" {
             let receivedTitle = response.notification.request.content.title
             let receivedUUID = response.notification.request.identifier
-            for id in uuid{
-                if(id == receivedUUID){
-                    let snoozeUUID = UUID().uuidString
-                    uuid.insert(snoozeUUID, at: uuid.index(of: receivedUUID)!+1)
-                    UserDefaults.standard.set(uuid, forKey: "uuid")
-                    print("uuid after inserting: \(uuid)\n")
-                    scheduleSnoozeNotification(interval: 600, title: receivedTitle, id: snoozeUUID)
-                    print("snooze uuid: \(uuid[uuid.index(of: receivedUUID)!+1])\n")
-                    break
+            var count = 0
+            for row in uuid{
+                for element in row{
+                    if(element == receivedUUID){
+                        let snoozeUUID = UUID().uuidString
+                        uuid[count].insert(snoozeUUID, at: uuid[count].index(of: receivedUUID)!+1)
+                        UserDefaults.standard.set(uuid, forKey: "uuid")
+                        print("uuid after inserting: \(uuid)\n")
+                        scheduleSnoozeNotification(interval: 60, title: receivedTitle, id: snoozeUUID)
+                        print("snooze uuid: \(uuid[count][uuid[count].index(of: receivedUUID)!+1])\n")
+                        break
+                    }
                 }
+                count += 1
             }
         }
         completionHandler()

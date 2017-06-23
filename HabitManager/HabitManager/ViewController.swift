@@ -9,20 +9,21 @@
 import UIKit
 import UserNotifications
 
-var uuid: [String] = []
+var uuid: [[String]] = []
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITabBarDelegate {
     
     @IBOutlet var habitsTable: UITableView!
     @IBOutlet var tabBar: UITabBar!
     @IBOutlet var navBar: UINavigationBar!
+    @IBOutlet var leftBarItem: UIBarButtonItem!
     @IBOutlet var quote: UILabel!
     @IBOutlet var quoteAuthor: UILabel!
     
     var habits: [String] = []
     var habitDetails: [String] = []
     var notificationsString: [String] = []
-    var habitsData: [Any] = []
+    var habitData: [Any] = []
     var switchState: [Int] = []
     
     var tabPressed: Int = 0
@@ -64,15 +65,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         cell.cellSwitch.tag = indexPath.row
         
         if indexPath.row % 2 == 0 {
-            cell.backgroundColor = UIColor(red: 77/255, green: 195/255, blue: 199/255, alpha: 1.0)
+            cell.backgroundColor = UIColor(red: 77/255, green: 200/255, blue: 199/255, alpha: 1.0)
         }else{
-            cell.backgroundColor = UIColor(red: 77/255, green: 210/255, blue: 199/255, alpha: 1.0)
+            cell.backgroundColor = UIColor(red: 77/255, green: 215/255, blue: 199/255, alpha: 1.0)
         }
         
         // if a habit is expired
-        if(habitsData[indexPath.row*3] as! Int == 1){
+        if(habitData[indexPath.row*3] as! Int == 1){
             let currentTime = Date()
-            let storedTime = habitsData[indexPath.row*3+2] as! Date
+            let storedTime = habitData[indexPath.row*3+2] as! Date
             if(storedTime < currentTime){
                 switchState[indexPath.row] = 0
                 UserDefaults.standard.set(switchState, forKey: "switchState")
@@ -127,18 +128,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     /* Set row height */
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if(tabPressed == 1){
-            if(habitsData[indexPath.row*3] as! Int == 0){
+            if(habitData[indexPath.row*3] as! Int == 0){
                 let todayDate = Date()
                 let currentWeekday = Calendar.current.component(.weekday, from: todayDate)
-                let daysStr = habitsData[indexPath.row*3+1] as! String
+                let daysStr = habitData[indexPath.row*3+1] as! String
                 if(!daysStr.contains("\(currentWeekday)")){
                     return 0
                 }
-            }else if(habitsData[indexPath.row*3] as! Int == 1){
+            }else if(habitData[indexPath.row*3] as! Int == 1){
                 return habitsTable.rowHeight
-            }else if(habitsData[indexPath.row*3] as! Int == 2){
+            }else if(habitData[indexPath.row*3] as! Int == 2){
                 return habitsTable.rowHeight
-            }else if(habitsData[indexPath.row*3] as! Int == 3){
+            }else if(habitData[indexPath.row*3] as! Int == 3){
                 return habitsTable.rowHeight
             }
         }else if (tabPressed == 0){
@@ -159,9 +160,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tabBar.delegate = self
         // Highlight "All habits" by default
         tabBar.selectedItem = tabBar.items![0]
-
+        
         habitsTable.estimatedRowHeight = 90
         habitsTable.rowHeight = UITableViewAutomaticDimension
+        
+        leftBarItem.title = "Edit"
+        
+        //UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        //UNUserNotificationCenter.current().removeAllDeliveredNotifications()
     }
     
     /* Do tasks when main page is appeared */
@@ -171,7 +177,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let habitDetailsObject = UserDefaults.standard.object(forKey: "habitDetails")
         let notificationsStringObject = UserDefaults.standard.object(forKey: "notificationsString")
         let uuidObject = UserDefaults.standard.object(forKey: "uuid")
-        let habitsDataObject = UserDefaults.standard.object(forKey: "habitsData")
+        let habitDataObject = UserDefaults.standard.object(forKey: "habitData")
         let switchStateObject = UserDefaults.standard.object(forKey: "switchState")
         
         if let tempHabits = habitsObject as? [String] {
@@ -183,11 +189,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if let tempNotificationsString = notificationsStringObject as? [String] {
             notificationsString = tempNotificationsString
         }
-        if let tempUUID = uuidObject as? [String] {
-            uuid = tempUUID
+        if let tempUUIDs = uuidObject as? [[String]] {
+            uuid = tempUUIDs
         }
-        if let tempHabitsData = habitsDataObject as? [Any] {
-            habitsData = tempHabitsData
+        if let temphabitData = habitDataObject as? [Any] {
+            habitData = temphabitData
         }
         if let tempSwitchState = switchStateObject as? [Int] {
             switchState = tempSwitchState
@@ -217,10 +223,66 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
-    /* Development purpose only */
-    @IBAction func RemoveAllNotifications(_ sender: Any) {
-        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+//    /* Development purpose only */
+//    @IBAction func RemoveAllNotifications(_ sender: Any) {
+//        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+//        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+//    }
+    
+    @IBAction func editAction(_ sender: UIBarButtonItem) {
+        if(habitsTable.isEditing){
+            leftBarItem.title = "Edit"
+            habitsTable.setEditing(false,animated:true)
+        }else{
+            leftBarItem.title = "Done"
+            habitsTable.setEditing(true,animated:true)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        let tempUUIDs = uuid[sourceIndexPath.row]
+        uuid.remove(at: sourceIndexPath.row)
+        uuid.insert(tempUUIDs, at: destinationIndexPath.row)
+        
+        let tempHabits = habits[sourceIndexPath.row]
+        habits.remove(at: sourceIndexPath.row)
+        habits.insert(tempHabits, at: destinationIndexPath.row)
+       
+        let tempHabitDetails = habitDetails[sourceIndexPath.row]
+        habitDetails.remove(at: sourceIndexPath.row)
+        habitDetails.insert(tempHabitDetails, at: destinationIndexPath.row)
+        
+        let tempNotificationString = notificationsString[sourceIndexPath.row]
+        notificationsString.remove(at: sourceIndexPath.row)
+        notificationsString.insert(tempNotificationString, at: destinationIndexPath.row)
+
+        let tempHabitData0 = habitData[sourceIndexPath.row*3]
+        let tempHabitData1 = habitData[sourceIndexPath.row*3+1]
+        let tempHabitData2 = habitData[sourceIndexPath.row*3+2]
+        for _ in 0...2{
+            habitData.remove(at: sourceIndexPath.row*3)
+        }
+        habitData.insert(tempHabitData0, at: destinationIndexPath.row*3)
+        habitData.insert(tempHabitData1, at: destinationIndexPath.row*3+1)
+        habitData.insert(tempHabitData2, at: destinationIndexPath.row*3+2)
+        
+        
+        let tempSwitchState = switchState[sourceIndexPath.row]
+        switchState.remove(at: sourceIndexPath.row)
+        switchState.insert(tempSwitchState, at: destinationIndexPath.row)
+        
+        UserDefaults.standard.set(uuid, forKey: "uuid")
+        UserDefaults.standard.set(habits, forKey: "habits")
+        UserDefaults.standard.set(habitDetails, forKey: "habitDetails")
+        UserDefaults.standard.set(notificationsString, forKey: "notificationsString")
+        UserDefaults.standard.set(habitData, forKey: "habitData")
+        UserDefaults.standard.set(switchState, forKey: "switchState")
+        
+        print ("UUIDs: \(uuid)")
+        print ("habits: \(habits)")
+        print ("notificationString: \(notificationsString)")
+        print ("data: \(habitData)")
+        print ("switchState: \(switchState)\n")
     }
     
     /* Controls the Switches for suspending and resuming notifications */
@@ -235,33 +297,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             print("Switch states: \(switchState)")
             
             // Find the uuids that were assoiciated with this row
-            var uuidsForResume: [String] = []
-            var breakCount = 0
-            var stop = false
-            for index in 0..<uuid.count{
-                if(stop == false){
-                    if(row == 0){
-                        var modifier = 0
-                        while(uuid[index+modifier] != "break"){
-                            uuidsForResume.append(uuid[index+modifier])
-                            modifier += 1
-                        }
-                        stop = true
-                    }else{
-                        if(uuid[index] == "break"){
-                            breakCount += 1
-                        }
-                        if(row == breakCount){ //bingo
-                            var modifier = 1
-                            while(uuid[index+modifier] != "break"){
-                                uuidsForResume.append(uuid[index+modifier])
-                                modifier += 1
-                            }
-                            stop = true
-                        }
-                    }
-                }
-            }
+            var uuidsForResume = uuid[row]
             
             // Set the body content for notifications that need rescheduling
             var bodyContentForNotification: String = ""
@@ -272,26 +308,26 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
             
             // Reschedual the notifications
-            let notificationType = habitsData[row*3] as! Int
+            let notificationType = habitData[row*3] as! Int
             switch notificationType{
             case 0: // If current row needs weekday notifications
-                let gregorianDaysString = habitsData[row*3+1] as! String
+                let gregorianDaysString = habitData[row*3+1] as! String
                 var dayCount = 0
                 for day in gregorianDaysString.characters{
                     if Int("\(day)") != nil {
                         print("Resumed uuid: \(uuidsForResume[dayCount])")
-                        delegate?.scheduleWeekdayNotifications(at: habitsData[row*3+2] as! Date, title: habits[row], body: bodyContentForNotification,  id: uuidsForResume[dayCount], weekday: Int("\(day)")!)
+                        delegate?.scheduleWeekdayNotifications(at: habitData[row*3+2] as! Date, title: habits[row], body: bodyContentForNotification,  id: uuidsForResume[dayCount], weekday: Int("\(day)")!)
                     }
                     dayCount += 1
                 }
             case 1: // If current row needs one-time notifications
                 print("Resumed uuid: \(uuidsForResume[0])")
-                delegate?.scheduleOneTimeNotification(at: habitsData[row*3+2] as! Date, title: habits[row], body: bodyContentForNotification, id: uuidsForResume[0])
+                delegate?.scheduleOneTimeNotification(at: habitData[row*3+2] as! Date, title: habits[row], body: bodyContentForNotification, id: uuidsForResume[0])
             case 2: // If current row does not need any notification which should not be triggerd since the switch is hidden
                 print("BS there isn't even a switch")
             case 3: // If current row needs reoccuring notifications
                 print("Resumed uuid: \(uuidsForResume[0])")
-                delegate?.scheduleReoccurringNotification(interval: habitsData[row*3+2] as! Int, title: habits[row], body: bodyContentForNotification, id: uuidsForResume[0])
+                delegate?.scheduleReoccurringNotification(interval: habitData[row*3+2] as! Int, title: habits[row], body: bodyContentForNotification, id: uuidsForResume[0])
             default: // Should not trigger
                 print("Unexpected case when reading notificationType from resumeFunData")
             }
@@ -303,35 +339,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             print("Switch states: \(switchState)")
             
             let center = UNUserNotificationCenter.current()
-            var breakCount = 0
-            var stop = false
-            for index in 0..<uuid.count{
-                if(stop == false){
-                    if(row == 0){
-                        var modifier = 0
-                        while(uuid[index+modifier] != "break"){
-                            print("Suspended uuid: \(uuid[index+modifier])")
-                            center.removeDeliveredNotifications(withIdentifiers: [uuid[index+modifier]])
-                            center.removePendingNotificationRequests(withIdentifiers: [uuid[index+modifier]])
-                            modifier += 1
-                        }
-                        stop = true
-                    }else{
-                        if(uuid[index] == "break"){
-                            breakCount += 1
-                        }
-                        if(row == breakCount){ //bingo
-                            var modifier = 1
-                            while(uuid[index+modifier] != "break"){
-                                print("Suspended uuid: \(uuid[index+modifier])")
-                                center.removeDeliveredNotifications(withIdentifiers: [uuid[index+modifier]])
-                                center.removePendingNotificationRequests(withIdentifiers: [uuid[index+modifier]])
-                                modifier += 1
-                            }
-                            stop = true
-                        }
-                    }
-                }
+            
+            for index in 0..<uuid[row].count{
+                center.removeDeliveredNotifications(withIdentifiers: [uuid[row][index]])
+                center.removePendingNotificationRequests(withIdentifiers: [uuid[row][index]])
             }
         }
     }
@@ -342,40 +353,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         // Remove all information related to that row
         if editingStyle == UITableViewCellEditingStyle.delete{
             let center = UNUserNotificationCenter.current()
-            var breakCount = 0
-            var stop = false
             print ("UUIDs Before deletion: \(uuid)")
-            // Delete UUIDs (a bit complecated since some rows have multiple UUIDs)
-            for index in 0..<uuid.count{
-                if(stop == false){
-                    if(indexPath.row == 0){ //first row
-                        if(uuid[0] != "break"){
-                            center.removeDeliveredNotifications(withIdentifiers: [uuid[0]])
-                            center.removePendingNotificationRequests(withIdentifiers: [uuid[0]])
-                            uuid.remove(at: 0)
-                        }else{
-                            uuid.remove(at: 0) //delete "break"
-                            stop = true
-                        }
-                    }else{ //not first row
-                        if(uuid[index] == "break"){
-                            breakCount += 1
-                            if(breakCount == indexPath.row){
-                                while(uuid[index+1] != "break"){
-                                    center.removeDeliveredNotifications(withIdentifiers: [uuid[index+1]])
-                                    center.removePendingNotificationRequests(withIdentifiers: [uuid[index+1]])
-                                    uuid.remove(at: index+1)
-                                }
-                                uuid.remove(at: index+1) //delete "break"
-                                stop = true
-                            }
-                        }
-                    }
-                }
+            // Delete UUIDs
+            for index in 0..<uuid[indexPath.row].count{
+                center.removeDeliveredNotifications(withIdentifiers: [uuid[indexPath.row][index]])
+                center.removePendingNotificationRequests(withIdentifiers: [uuid[indexPath.row][index]])
             }
+            uuid.remove(at: indexPath.row)
             UserDefaults.standard.set(uuid, forKey: "uuid")
-            
             print ("UUIDs After deletion: \(uuid)\n")
+            
             habits.remove(at: indexPath.row)
             habitDetails.remove(at: indexPath.row)
             notificationsString.remove(at: indexPath.row)
@@ -383,9 +370,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             print ("switchState after deletion: \(switchState)\n")
             // There are 3 elements reserved for each row's resume data, so delete all three
             for _ in 0...2{
-                self.habitsData.remove(at: (indexPath.row*3))
+                habitData.remove(at: (indexPath.row*3))
             }
-            print ("habitsData after deletion: \(habitsData)\n")
+            print ("habitData after deletion: \(habitData)\n")
             
             // Show quote is no row is present
             if(habits.isEmpty){
@@ -398,14 +385,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             UserDefaults.standard.set(habits, forKey: "habits")
             UserDefaults.standard.set(habitDetails, forKey: "habitDetails")
             UserDefaults.standard.set(notificationsString, forKey: "notificationsString")
-            UserDefaults.standard.set(habitsData, forKey: "habitsData")
+            UserDefaults.standard.set(habitData, forKey: "habitData")
             UserDefaults.standard.set(switchState, forKey: "switchState")
         }
     }
-    
-    /*override var prefersStatusBarHidden: Bool {
-     return true
-     }*/
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

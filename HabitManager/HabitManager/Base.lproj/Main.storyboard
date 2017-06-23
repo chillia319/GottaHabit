@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -31,9 +31,9 @@
                                 </textAttributes>
                                 <items>
                                     <navigationItem title="All Habits" id="vMn-ud-nfi">
-                                        <barButtonItem key="leftBarButtonItem" title="Test Only" id="9i9-g1-1bc">
+                                        <barButtonItem key="leftBarButtonItem" title="Edit" id="RCw-GH-Ztc">
                                             <connections>
-                                                <action selector="RemoveAllNotifications:" destination="BYZ-38-t0r" id="ZRJ-Cn-kfA"/>
+                                                <action selector="editAction:" destination="BYZ-38-t0r" id="jDS-Ya-Pdd"/>
                                             </connections>
                                         </barButtonItem>
                                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="eHe-9L-1WM">
@@ -58,28 +58,28 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MtU-Ao-lpq">
-                                                    <rect key="frame" x="318" y="29.5" width="51" height="31"/>
+                                                    <rect key="frame" x="318" y="30" width="51" height="31"/>
                                                     <connections>
                                                         <action selector="cellSwitchAction:" destination="BYZ-38-t0r" eventType="valueChanged" id="DDW-oD-jOK"/>
                                                     </connections>
                                                 </switch>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="battelfield is a good choice" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vj2-dm-NQP">
-                                                    <rect key="frame" x="8" y="57.5" width="298" height="24.5"/>
-                                                    <fontDescription key="fontDescription" name="ChalkboardSE-Light" family="Chalkboard SE" pointSize="17"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="battlefield is a good choice" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vj2-dm-NQP">
+                                                    <rect key="frame" x="8" y="59.5" width="296" height="23"/>
+                                                    <fontDescription key="fontDescription" name="ChalkboardSE-Light" family="Chalkboard SE" pointSize="16"/>
                                                     <color key="textColor" red="0.29803922770000002" green="0.29803922770000002" blue="0.29803922770000002" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Play First shooter games " lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="17" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="P9J-Us-aUR">
-                                                    <rect key="frame" x="8" y="24.5" width="298" height="30"/>
+                                                    <rect key="frame" x="8" y="24.5" width="296" height="30"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" priority="999" constant="30" id="GZi-qV-nuU"/>
                                                     </constraints>
-                                                    <fontDescription key="fontDescription" name="ChalkboardSE-Light" family="Chalkboard SE" pointSize="18"/>
+                                                    <fontDescription key="fontDescription" name="ChalkboardSE-Regular" family="Chalkboard SE" pointSize="19"/>
                                                     <color key="textColor" red="0.20000000300000001" green="0.20000000300000001" blue="0.20000000300000001" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="At 7:00 PM" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a8t-xB-mKS">
-                                                    <rect key="frame" x="8" y="6" width="68.5" height="16"/>
+                                                    <rect key="frame" x="8" y="6" width="69" height="16"/>
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="13"/>
                                                     <color key="textColor" red="0.29803922770000002" green="0.29803922770000002" blue="0.29803922770000002" alpha="1" colorSpace="calibratedRGB"/>
@@ -111,13 +111,13 @@
                                                 <constraint firstItem="fGJ-Pd-cM7" firstAttribute="leading" secondItem="Y3F-qj-t1H" secondAttribute="leading" priority="999" id="BAm-tq-fv5"/>
                                                 <constraint firstItem="MtU-Ao-lpq" firstAttribute="centerY" secondItem="Y3F-qj-t1H" secondAttribute="centerY" priority="999" id="CBQ-KP-iKx"/>
                                                 <constraint firstItem="a8t-xB-mKS" firstAttribute="top" secondItem="Y3F-qj-t1H" secondAttribute="topMargin" priority="999" constant="-2" id="Tsg-xB-wRZ"/>
-                                                <constraint firstAttribute="trailingMargin" secondItem="Vj2-dm-NQP" secondAttribute="trailing" priority="999" constant="61" id="W0m-IN-P5V"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="Vj2-dm-NQP" secondAttribute="trailing" priority="999" constant="63" id="W0m-IN-P5V"/>
                                                 <constraint firstItem="zd8-wK-VEW" firstAttribute="top" secondItem="Y3F-qj-t1H" secondAttribute="topMargin" priority="999" constant="-2" id="YFQ-v2-1X4"/>
-                                                <constraint firstAttribute="trailingMargin" secondItem="P9J-Us-aUR" secondAttribute="trailing" priority="999" constant="61" id="Yhr-hr-m1f"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="P9J-Us-aUR" secondAttribute="trailing" priority="999" constant="63" id="Yhr-hr-m1f"/>
                                                 <constraint firstAttribute="leadingMargin" secondItem="P9J-Us-aUR" secondAttribute="leading" priority="999" id="afZ-Bu-30Z"/>
+                                                <constraint firstItem="Vj2-dm-NQP" firstAttribute="top" secondItem="P9J-Us-aUR" secondAttribute="bottom" constant="5" id="bM5-0J-vuU"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="Vj2-dm-NQP" secondAttribute="bottom" priority="999" id="fm5-OB-Kdc"/>
                                                 <constraint firstItem="MtU-Ao-lpq" firstAttribute="trailing" secondItem="Y3F-qj-t1H" secondAttribute="trailingMargin" priority="999" id="ktS-7E-UxR"/>
-                                                <constraint firstItem="Vj2-dm-NQP" firstAttribute="top" secondItem="P9J-Us-aUR" secondAttribute="bottom" priority="999" constant="3" id="qQT-wJ-uV9"/>
                                                 <constraint firstItem="a8t-xB-mKS" firstAttribute="leading" secondItem="fGJ-Pd-cM7" secondAttribute="trailing" priority="999" id="rBy-5J-1NS"/>
                                                 <constraint firstAttribute="leadingMargin" secondItem="Vj2-dm-NQP" secondAttribute="leading" priority="999" id="tWZ-tf-9SU"/>
                                             </constraints>
@@ -153,7 +153,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Nelson Mandela" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Aef-Wn-5gh">
-                                <rect key="frame" x="138.5" y="325.5" width="97.5" height="16"/>
+                                <rect key="frame" x="138" y="326" width="98" height="16"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <color key="textColor" red="0.80000001190000003" green="0.80000001190000003" blue="0.80000001190000003" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
@@ -180,6 +180,7 @@
                     </view>
                     <connections>
                         <outlet property="habitsTable" destination="3Ns-cp-gLZ" id="iVD-02-4x0"/>
+                        <outlet property="leftBarItem" destination="RCw-GH-Ztc" id="gqB-an-AQg"/>
                         <outlet property="navBar" destination="aYi-Wc-6sU" id="TbH-1D-jS2"/>
                         <outlet property="quote" destination="PlV-YF-7vd" id="sSw-Ow-S6h"/>
                         <outlet property="quoteAuthor" destination="Aef-Wn-5gh" id="CUD-Fd-XgE"/>
