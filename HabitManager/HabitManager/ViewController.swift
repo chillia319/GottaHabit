@@ -106,8 +106,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return cell
     }
     
+    /* When a tab is presssed */
     internal func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
-        
         if (item.tag == 0){
             tabPressed = 0
             navBar.topItem?.title = "All Habits"
@@ -229,6 +229,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 //        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
 //    }
     
+    /* When "Edit" is pressed, change it to "Done" and tell the system to start editing */
     @IBAction func editAction(_ sender: UIBarButtonItem) {
         if(habitsTable.isEditing){
             leftBarItem.title = "Edit"
@@ -239,6 +240,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
+    /* Move the relavant data when user moves a row */
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         let tempUUIDs = uuid[sourceIndexPath.row]
         uuid.remove(at: sourceIndexPath.row)

@@ -24,6 +24,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     @IBOutlet var intervalPicker: UIDatePicker!
     @IBOutlet var saveButton: UIBarButtonItem!
     @IBOutlet var repeatOptionsTable: UITableView!
+    @IBOutlet var repeatModeToggles: UISegmentedControl!
     
     @IBOutlet var startOptionsCell: UITableViewCell!
     @IBOutlet var timePickerCell: UITableViewCell!
@@ -35,13 +36,15 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     private var intervalPickerVisible = false
     private var firstRun = true
     private var mode = 0
+    private static var repeatMode: Int!
     private var selectedTime: Date!
     private var selectedInterval: Int = 60
     private var selectedIntervalHours: Int = 0
     private var selectedIntervalMinutes: Int = 0
     private var alertOptionsMode0Text: String = "None"
     private var alertOptionsMode1Text: String = "Every 1 minute"
-    private static var daysSelected: [Int] = []
+    private static var weeklyDaysSelected: [Int] = []
+    private static var monthlyDaysSelected: [Int] = []
     private var uuid: [[String]] = []
     
     /* Disables "Save" button if no text is in the textfield */
@@ -55,25 +58,23 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         checkDescription()
     }
     
-    /* Toggles between "Daily" and "Reoccurring", set up the relevant interface */
+    /* Toggles between "Standard" and "Reoccurring", set up the relevant interface */
     @IBAction func modeToggle(_ sender: UISegmentedControl) {
         if sender.selectedSegmentIndex == 0{
             mode = 0
             
             // Temporary solution for unfinished "alert" option
             /*if(timeLabel.text == "None"){
-                toggleAlertOptionsCell(enable: false)
-            }*/
+             toggleAlertOptionsCell(enable: false)
+             }*/
             toggleAlertOptionsCell(enable: false)
-            
             alertOptionsLabel.text = alertOptionsMode0Text
         }else{
             mode = 1
             toggleAlertOptionsCell(enable: true)
             alertOptionsLabel.text = alertOptionsMode1Text
         }
-        tableView.beginUpdates()
-        tableView.endUpdates()
+        updateTable(withAnimation: true)
     }
     
     /* If "Cancel" button is pressed, go back to the main page */
@@ -98,7 +99,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         var switchState: [Int]
         
         /* ============================================================================================================ */
- 
+        
         // Store habit decription to user's local storage
         if let tempHabits = habitsObject as? [String] {
             habits = tempHabits
@@ -156,7 +157,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             switchState = [1]
         }
         UserDefaults.standard.set(switchState, forKey: "switchState")
-
+        
         /* ============================================================================================================ */
         
         let delegate = UIApplication.shared.delegate as? AppDelegate
@@ -171,15 +172,15 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             bodyContentForNotification = habitSecondDescription.text!
         }
         
-        // If in "Daily" mode, schedual the notifications based on time and day selected by the user
+        // If in "Standard" mode, schedual the notifications based on time and day selected by the user
         if(selectedTime != nil && mode == 0){
             
-            if(AddHabitVC.daysSelected.count != 0){
+            if(AddHabitVC.weeklyDaysSelected.count != 0){
                 var tempUUIDs: [String] = []
-                for index in 0..<AddHabitVC.daysSelected.count{
+                for index in 0..<AddHabitVC.weeklyDaysSelected.count{
                     
-                    // Convert days selected by the user (stored in daysSelected array) to gregorian format
-                    var gregorianDay = AddHabitVC.daysSelected[index]+2
+                    // Convert days selected by the user (stored in weeklyDaysSelected array) to gregorian format
+                    var gregorianDay = AddHabitVC.weeklyDaysSelected[index]+2
                     // Sunday is 1, Monday is 2 ... Saturaday is 7
                     if(gregorianDay == 8){
                         gregorianDay = 1
@@ -202,7 +203,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 checkNotificationAccess = true
                 print ("Added uuid: \(uuid[uuid.count-1])\n")
             }
-        }// If in "Daily" mode and no time is selected
+        }// If in "Standard" mode and no time is selected
         else if(selectedTime == nil && mode == 0){
             notificationType = 2
             saveUUIDs(UUID: ["none"])
@@ -259,6 +260,19 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         UserDefaults.standard.set(uuid, forKey: "uuid")
     }
     
+    /* updates table with/without animation */
+    private func updateTable(withAnimation: Bool){
+        if(withAnimation){
+            tableView.beginUpdates()
+            tableView.endUpdates()
+        }else{
+            UIView.setAnimationsEnabled(false)
+            tableView.beginUpdates()
+            tableView.endUpdates()
+            UIView.setAnimationsEnabled(true)
+        }
+    }
+    
     /* Enables or disables "Repeat" optinos cell */
     private func toggleRepeatOptionsCell(enable: Bool){
         if(enable){
@@ -270,6 +284,16 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             repeatOptionsTitleLabel.isEnabled = false
             repeatOptionsLabel.isEnabled = false
         }
+    }
+    
+    /* Toggles between "Weekly" and "Monthly" mode inside repeat option cell */
+    @IBAction func repeatOptionMode(_ sender: UISegmentedControl) {
+        if sender.selectedSegmentIndex == 0{
+            AddHabitVC.repeatMode = 0
+        }else{
+            AddHabitVC.repeatMode = 1
+        }
+        updateTable(withAnimation: false)
     }
     
     /* Enables or disables "Alert" optinos cell */
@@ -307,8 +331,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     /* Toggle the boolean so another method "heightForRowAt" is called and changes the cell height */
     private func toggleShowTimePicker (){
         timePickerVisible = !timePickerVisible
-        tableView.beginUpdates()
-        tableView.endUpdates()
+        updateTable(withAnimation: true)
     }
     
     /* Store the interval picked by user and process the interval (in seconds) so it is more readable to the user */
@@ -346,8 +369,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     /* Toggle the boolean so another method "heightForRowAt" is called and changes the cell height */
     private func toggleShowInvervalPicker(){
         intervalPickerVisible = !intervalPickerVisible
-        tableView.beginUpdates()
-        tableView.endUpdates()
+        updateTable(withAnimation: true)
     }
     
     /* Do tasks when a certain row is selected */
@@ -362,55 +384,118 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             }
             
             tableView.deselectRow(at: indexPath, animated: true)
-        } else if(restorationIdentifier == "RepeatOptions"){
-            // Toggle the checkmarks based on row selected when in "Repeat" options view
-            let numberOfRows = tableView.numberOfRows(inSection: 0)
+        }else if(restorationIdentifier == "RepeatOptions"){
+            // Toggle the checkmarks based on row selected and mode selected when in "Repeat" options view
             
-            for row in 0..<numberOfRows {
-                if let cell = tableView.cellForRow(at: IndexPath(row: row, section: 0)) {
-                    //cell.accessoryType = row == indexPath.row ? .checkmark : .none
- 
-                    if(row == indexPath.row && cell.accessoryType == .none){
-                        cell.accessoryType = .checkmark
-                        AddHabitVC.daysSelected.append(row)
-                    }else if(row == indexPath.row && cell.accessoryType != .none){
-                        cell.accessoryType = .none
-                        let itemToRemove = row
-                        if let index = AddHabitVC.daysSelected.index(of: itemToRemove) {
-                            AddHabitVC.daysSelected.remove(at: index)
+            if(AddHabitVC.repeatMode == 0){
+                let rowsCount = tableView.numberOfRows(inSection: 1)
+                let rowsCountForTheOtherSection = tableView.numberOfRows(inSection: 2)
+                
+                for row in 0..<rowsCount {
+                    if let cell = tableView.cellForRow(at: IndexPath(row: row, section: 1)) {
+                        //cell.accessoryType = row == indexPath.row ? .checkmark : .none
+                        if(indexPath.section == 1){
+                            if(row == indexPath.row && cell.accessoryType == .none){
+                                cell.accessoryType = .checkmark
+                                AddHabitVC.weeklyDaysSelected.append(row)
+                            }else if(row == indexPath.row && cell.accessoryType != .none){
+                                cell.accessoryType = .none
+                                let itemToRemove = row
+                                if let index = AddHabitVC.weeklyDaysSelected.index(of: itemToRemove) {
+                                    AddHabitVC.weeklyDaysSelected.remove(at: index)
+                                }
+                            }
                         }
+                        tableView.deselectRow(at: indexPath, animated: true)
                     }
-                    tableView.deselectRow(at: indexPath, animated: true)
+                }
+                AddHabitVC.monthlyDaysSelected = []
+                for row in 0..<rowsCountForTheOtherSection {
+                    if let cell = tableView.cellForRow(at: IndexPath(row: row, section: 2)) {
+                        cell.accessoryType = .none
+                    }
+                }
+            }else{
+                let rowsCount = tableView.numberOfRows(inSection: 2)
+                let rowsCountForTheOtherSection = tableView.numberOfRows(inSection: 1)
+                
+                for row in 0..<rowsCount {
+                    if let cell = tableView.cellForRow(at: IndexPath(row: row, section: 2)) {
+                        if(indexPath.section == 2){
+                            if(row == indexPath.row && cell.accessoryType == .none){
+                                cell.accessoryType = .checkmark
+                                AddHabitVC.monthlyDaysSelected.append(row)
+                            }else if(row == indexPath.row && cell.accessoryType != .none){
+                                cell.accessoryType = .none
+                                AddHabitVC.monthlyDaysSelected = []
+                                let itemToRemove = row
+                                if let index = AddHabitVC.monthlyDaysSelected.index(of: itemToRemove) {
+                                    AddHabitVC.monthlyDaysSelected.remove(at: index)
+                                }
+                            }
+                        }
+                        tableView.deselectRow(at: indexPath, animated: true)
+                    }
+                }
+                AddHabitVC.weeklyDaysSelected = []
+                for row in 0..<rowsCountForTheOtherSection {
+                    if let cell = tableView.cellForRow(at: IndexPath(row: row, section: 1)) {
+                        cell.accessoryType = .none
+                    }
                 }
             }
+            
         }
     }
     
     /* Changes row heights if certain condition is met */
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if(mode == 0){
-            if(indexPath.section == 1 && indexPath.row == 4){
-                return 0
-            }else if(!timePickerVisible && indexPath.section == 1 && indexPath.row == 1){
-                return 0
-            }else {
-                if(indexPath.section == 1 && indexPath.row == 1){
-                    return 216
-                }
-                return super.tableView.rowHeight
-            }
-        }else{
-            if(indexPath.section == 1 && (indexPath.row == 0 || indexPath.row == 1 || indexPath.row == 2)){
-                return 0
-            }else if(!intervalPickerVisible && indexPath.section == 1 && indexPath.row == 4){
-                return 0
-            }else{
+        if(restorationIdentifier == "NewHabit"){
+            if(mode == 0){
                 if(indexPath.section == 1 && indexPath.row == 4){
-                    return 216
+                    return 0
+                }else if(!timePickerVisible && indexPath.section == 1 && indexPath.row == 1){
+                    return 0
+                }else {
+                    if(indexPath.section == 1 && indexPath.row == 1){
+                        return 216
+                    }
                 }
-                return super.tableView.rowHeight
+            }else{
+                if(indexPath.section == 1 && (indexPath.row == 0 || indexPath.row == 1 || indexPath.row == 2)){
+                    return 0
+                }else if(!intervalPickerVisible && indexPath.section == 1 && indexPath.row == 4){
+                    return 0
+                }else{
+                    if(indexPath.section == 1 && indexPath.row == 4){
+                        return 216
+                    }
+                }
+            }
+        }else if(restorationIdentifier == "RepeatOptions"){
+            if(AddHabitVC.repeatMode == 0){
+                if(indexPath.section == 1){
+                    return super.tableView.rowHeight
+                }else if(indexPath.section == 2){
+                    return 0
+                }
+            }else{
+                if(indexPath.section == 1){
+                    return 0
+                }else if(indexPath.section == 2){
+                    return super.tableView.rowHeight
+                }
             }
         }
+        return super.tableView.rowHeight
+    }
+    
+    /* Hide extra space between weekly day section and monthly day section */
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        if(restorationIdentifier == "RepeatOptions" && AddHabitVC.repeatMode == 1){
+            return  CGFloat.leastNormalMagnitude
+        }
+        return super.tableView.sectionFooterHeight
     }
     
     /* If user tapped "Return" button on his/her keyboard, then hide the keyboard */
@@ -422,7 +507,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     /* Do tasks when add new habit page (which includes two views) is first loaded */
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         self.navigationController?.navigationBar.isTranslucent = false
         
         if(restorationIdentifier == "NewHabit"){
@@ -432,10 +517,11 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             self.view.addGestureRecognizer(tap)
             
             // Tasks that need to be done when the view is first loaded
-            AddHabitVC.daysSelected = []
+            AddHabitVC.weeklyDaysSelected = []
             checkDescription()
             toggleRepeatOptionsCell(enable: false)
             toggleAlertOptionsCell(enable: false)
+            AddHabitVC.repeatMode = 0
             
             //Work around for: DatePicker in CountDownTimer mode does not update countDownDuration after the first spin (possible system bug)
             let dateComp : NSDateComponents = NSDateComponents()
@@ -447,46 +533,74 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         }
     }
     
-    /* Do tasks when add new habit page (which includes two views) is appeared */
-    override func viewDidAppear(_ animated: Bool) {
+    /* Do tasks before a view is loaded */
+    override func viewWillAppear(_ animated: Bool) {
         if(restorationIdentifier == "RepeatOptions"){
-            
-            // Redo the checkmarks, there's probably a better solution
-            for cell in repeatOptionsTable.visibleCells {
-                let row = repeatOptionsTable.indexPath(for: cell)?.row
-
-                if(AddHabitVC.daysSelected.contains(row!)){
-                    cell.accessoryType = .checkmark
+            if(!AddHabitVC.weeklyDaysSelected.isEmpty){
+                AddHabitVC.repeatMode = 0
+                repeatModeToggles.selectedSegmentIndex = 0
+                
+                // Restore the checkmarks for "weekly" mode
+                for section in 0 ..< repeatOptionsTable.numberOfSections-1 {
+                    if(section == 1){
+                        for row in 0 ..< repeatOptionsTable.numberOfRows(inSection: section) {
+                            let indexPath = IndexPath(row: row, section: section)
+                            let cell = repeatOptionsTable.cellForRow(at: indexPath)
+                            if(AddHabitVC.weeklyDaysSelected.contains(row)){
+                                cell?.accessoryType = .checkmark
+                            }
+                        }
+                    }
                 }
+            }else if(!AddHabitVC.monthlyDaysSelected.isEmpty){
+                AddHabitVC.repeatMode = 1
+                repeatModeToggles.selectedSegmentIndex = 1
+                print(AddHabitVC.monthlyDaysSelected)
+                
+                // Restore the checkmarks for "monthly" mode
+                for section in 0 ..< repeatOptionsTable.numberOfSections {
+                    if(section == 2){
+                        for row in 0 ..< repeatOptionsTable.numberOfRows(inSection: section) {
+                            let indexPath = IndexPath(row: row, section: section)
+                            let cell = repeatOptionsTable.cellForRow(at: indexPath)
+                            if(AddHabitVC.monthlyDaysSelected.contains(row)){
+                                cell?.accessoryType = .checkmark
+                            }
+                        }
+                    }
+                }
+            }else{
+                AddHabitVC.repeatMode = 0
+                repeatModeToggles.selectedSegmentIndex = 0
             }
-        }else if (restorationIdentifier == "NewHabit"){
-            if(!AddHabitVC.daysSelected.isEmpty){
+        }else if(restorationIdentifier == "NewHabit"){
+            if(!AddHabitVC.weeklyDaysSelected.isEmpty){
                 // Sort the array from smaller value to bigger value
-                AddHabitVC.daysSelected = AddHabitVC.daysSelected.sorted { $0 < $1 }
+                AddHabitVC.weeklyDaysSelected = AddHabitVC.weeklyDaysSelected.sorted { $0 < $1 }
                 
                 let weekdaysList = [0,1,2,3,4]
                 let weekendsList = [5,6]
                 
                 let weekdaysListSet = Set(weekdaysList)
                 let weekendsListSet = Set(weekendsList)
-                let daysSelectedListSet = Set(AddHabitVC.daysSelected)
+                let weeklyDaysSelectedListSet = Set(AddHabitVC.weeklyDaysSelected)
                 
-                let isWeekdays = weekdaysListSet.isSubset(of: daysSelectedListSet)
-                let isWeekends = weekendsListSet.isSubset(of: daysSelectedListSet)
+                let isWeekdays = weekdaysListSet.isSubset(of: weeklyDaysSelectedListSet)
+                let isWeekends = weekendsListSet.isSubset(of: weeklyDaysSelectedListSet)
                 
                 var tempRepeatOptionsString = ""
                 
                 // Process the information given by the user and improve readability
-                if(AddHabitVC.daysSelected.count == 7){
+                if(AddHabitVC.weeklyDaysSelected.count == 7){
                     tempRepeatOptionsString = "Everyday"
-                }else if(isWeekdays && AddHabitVC.daysSelected.count == 5){
+                }else if(isWeekdays && AddHabitVC.weeklyDaysSelected.count == 5){
                     tempRepeatOptionsString = "Weekdays"
-                }else if(isWeekends && AddHabitVC.daysSelected.count == 2){
+                }else if(isWeekends && AddHabitVC.weeklyDaysSelected.count == 2){
                     tempRepeatOptionsString = "Weekends"
                 }else{
-                    for index in 0..<AddHabitVC.daysSelected.count{
+                    for index in 0..<AddHabitVC.weeklyDaysSelected.count{
                         
-                        switch AddHabitVC.daysSelected[index] {
+                        switch AddHabitVC.weeklyDaysSelected[index] {
                         case 0:
                             tempRepeatOptionsString += "Mon "
                         case 1:
@@ -502,35 +616,37 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                         case 6:
                             tempRepeatOptionsString += "Sun "
                         default:
-                            print("Unexpected case when converting daysSelected to readable String")
+                            print("Unexpected case when converting weeklyDaysSelected to readable String")
                         }
                     }
                 }
                 repeatOptionsLabel.text = tempRepeatOptionsString
-            }else if(repeatOptionsLabel.text != "Today only" && repeatOptionsLabel.text != "Never"){
+            }else if(!AddHabitVC.monthlyDaysSelected.isEmpty){
+                repeatOptionsLabel.text = "Place holder monthly"
+            }else{
                 repeatOptionsLabel.text = "Today only"
             }
         }
     }
     
     /*override var prefersStatusBarHidden: Bool {
-        return true
-    }*/
-
+     return true
+     }*/
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-
+    
     /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destinationViewController.
+     // Pass the selected object to the new view controller.
+     }
+     */
+    
 }
