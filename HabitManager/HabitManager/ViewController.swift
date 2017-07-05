@@ -56,7 +56,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             cell.cellSwitch.isHidden = false
             cell.ribbonHead.isHidden = false
             cell.ribbonTail.isHidden = false
-            // Set the ribbon body width to the same as the notification label
+            // Set the ribbon body width to the same width as the notification label
             cell.ribbonBody.frame = CGRect(x: 8, y: 6, width: cell.notificationsLabel.intrinsicContentSize.width, height: 16)
             cell.ribbonBody.isHidden = false
         }
@@ -71,7 +71,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         
         // if a habit is expired
-        if(habitData[indexPath.row*3] as! Int == 1){
+        if(habitData[indexPath.row*3] as! Int == 2){
             let currentTime = Date()
             let storedTime = habitData[indexPath.row*3+2] as! Date
             if(storedTime < currentTime){
@@ -102,7 +102,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }
             }
         }
-        
         return cell
     }
     
@@ -131,15 +130,36 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             if(habitData[indexPath.row*3] as! Int == 0){
                 let todayDate = Date()
                 let currentWeekday = Calendar.current.component(.weekday, from: todayDate)
-                let daysStr = habitData[indexPath.row*3+1] as! String
-                if(!daysStr.contains("\(currentWeekday)")){
+                let days = habitData[indexPath.row*3+1] as! [Int]
+                var show = false
+                for day in days{
+                    if(currentWeekday == day){
+                        show = true
+                        break
+                    }
+                }
+                if(!show){
                     return 0
                 }
             }else if(habitData[indexPath.row*3] as! Int == 1){
-                return habitsTable.rowHeight
+                let todayDate = Date()
+                let currentMonthday = Calendar.current.component(.day, from: todayDate)
+                let days = habitData[indexPath.row*3+1] as! [Int]
+                var show = false
+                for day in days{
+                    if(currentMonthday == day){
+                        show = true
+                        break
+                    }
+                }
+                if(!show){
+                    return 0
+                }
             }else if(habitData[indexPath.row*3] as! Int == 2){
                 return habitsTable.rowHeight
             }else if(habitData[indexPath.row*3] as! Int == 3){
+                return habitsTable.rowHeight
+            }else if(habitData[indexPath.row*3] as! Int == 4){
                 return habitsTable.rowHeight
             }
         }else if (tabPressed == 0){
@@ -153,12 +173,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
-    /* Do tasks when main page is first loaded */
+    /* Do tasks when the main page is first loaded */
     override func viewDidLoad() {
         super.viewDidLoad()
         
         tabBar.delegate = self
-        // Highlight "All habits" by default
+        // Highlight "All habits" tab by default
         tabBar.selectedItem = tabBar.items![0]
         
         habitsTable.estimatedRowHeight = 90
@@ -170,7 +190,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         //UNUserNotificationCenter.current().removeAllDeliveredNotifications()
     }
     
-    /* Do tasks when main page is appeared */
+    /* Do tasks when the main page is appeared */
     override func viewDidAppear(_ animated: Bool) {
         // Extract information from local storage and set the values inside this class
         let habitsObject = UserDefaults.standard.object(forKey: "habits")
@@ -299,7 +319,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             print("Switch states: \(switchState)")
             
             // Find the uuids that were assoiciated with this row
-            var uuidsForResume = uuid[row]
+            let uuidsForResume = uuid[row]
             
             // Set the body content for notifications that need rescheduling
             var bodyContentForNotification: String = ""
@@ -313,21 +333,23 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             let notificationType = habitData[row*3] as! Int
             switch notificationType{
             case 0: // If current row needs weekday notifications
-                let gregorianDaysString = habitData[row*3+1] as! String
-                var dayCount = 0
-                for day in gregorianDaysString.characters{
-                    if Int("\(day)") != nil {
-                        print("Resumed uuid: \(uuidsForResume[dayCount])")
-                        delegate?.scheduleWeekdayNotifications(at: habitData[row*3+2] as! Date, title: habits[row], body: bodyContentForNotification,  id: uuidsForResume[dayCount], weekday: Int("\(day)")!)
-                    }
-                    dayCount += 1
+                let DaysForResume = habitData[row*3+1] as! [Int]
+                for index in 0..<DaysForResume.count{
+                    print("Resumed uuid: \(uuidsForResume[index])")
+                    delegate?.scheduleWeekdayNotifications(at: habitData[row*3+2] as! Date, title: habits[row], body: bodyContentForNotification,  id: uuidsForResume[index], weekday: DaysForResume[index])
                 }
-            case 1: // If current row needs one-time notifications
+            case 1: // If current row needs monthly notifications
+                let DaysForResume = habitData[row*3+1] as! [Int]
+                for index in 0..<DaysForResume.count{
+                    print("Resumed uuid: \(uuidsForResume[index])")
+                    delegate?.scheduleMonthdayNotifications(at: habitData[row*3+2] as! Date, title: habits[row], body: bodyContentForNotification,  id: uuidsForResume[index], monthday: DaysForResume[index])
+                }
+            case 2: // If current row needs one-time notifications
                 print("Resumed uuid: \(uuidsForResume[0])")
                 delegate?.scheduleOneTimeNotification(at: habitData[row*3+2] as! Date, title: habits[row], body: bodyContentForNotification, id: uuidsForResume[0])
-            case 2: // If current row does not need any notification which should not be triggerd since the switch is hidden
+            case 3: // If current row does not need any notification which should not be triggerd since the switch is hidden
                 print("BS there isn't even a switch")
-            case 3: // If current row needs reoccuring notifications
+            case 4: // If current row needs reoccuring notifications
                 print("Resumed uuid: \(uuidsForResume[0])")
                 delegate?.scheduleReoccurringNotification(interval: habitData[row*3+2] as! Int, title: habits[row], body: bodyContentForNotification, id: uuidsForResume[0])
             default: // Should not trigger

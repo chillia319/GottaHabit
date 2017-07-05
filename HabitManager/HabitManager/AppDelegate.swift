@@ -48,7 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         completionHandler(UNNotificationPresentationOptions.alert)
     }
     
-    /* Schedual a new notification if user pressed Snooze */
+    /* Do tasks when a notification action is performed */
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         if response.actionIdentifier == "Snooze" {
             let receivedTitle = response.notification.request.content.title
@@ -61,7 +61,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         uuid[count].insert(snoozeUUID, at: uuid[count].index(of: receivedUUID)!+1)
                         UserDefaults.standard.set(uuid, forKey: "uuid")
                         print("uuid after inserting: \(uuid)\n")
-                        scheduleSnoozeNotification(interval: 60, title: receivedTitle, id: snoozeUUID)
+                        scheduleSnoozeNotification(interval: 600, title: receivedTitle, id: snoozeUUID)
                         print("snooze uuid: \(uuid[count][uuid[count].index(of: receivedUUID)!+1])\n")
                         break
                     }
@@ -92,6 +92,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UNUserNotificationCenter.current().add(request, withCompletionHandler: {(error) in
             if let error = error {
                 print("An error has occured when adding a weekday-based notification: \(error)")
+            }
+        })
+    }
+    
+    /* Schedual month day based notifications */
+    func scheduleMonthdayNotifications(at date: Date, title: String, body: String, id: String, monthday: Int) {
+        let calendar = Calendar(identifier: .gregorian)
+        
+        var triggerDate = calendar.dateComponents([.day,.hour,.minute,], from: date)
+        triggerDate.day = monthday
+        
+        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: true)
+        
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = UNNotificationSound.default()
+        content.categoryIdentifier = "UYLReminderCategory"
+        
+        let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: {(error) in
+            if let error = error {
+                print("An error has occured when adding a month day based notification: \(error)")
             }
         })
     }
