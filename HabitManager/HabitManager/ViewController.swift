@@ -10,6 +10,7 @@ import UIKit
 import UserNotifications
 
 var uuid: [[String]] = []
+var timer: Timer!
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITabBarDelegate {
     
@@ -35,7 +36,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     /* Do tasks based on row index */
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
-        
         let cell = tableView.dequeueReusableCell(withIdentifier:"Cell") as! CustomCell
         let currentSwitchState: Int!
         
@@ -72,9 +72,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         // if a habit is expired
         if(habitData[indexPath.row*3] as! Int == 2){
+            let calender = Calendar.current
+            
             let currentTime = Date()
+            
             let storedTime = habitData[indexPath.row*3+2] as! Date
-            if(storedTime < currentTime){
+            var STComponents = calender.dateComponents([.year, .month, .day, .hour, .minute, .second], from: storedTime)
+            STComponents.second = 0
+            let newStoredTime = calender.date(from: STComponents)!
+
+            if(newStoredTime < currentTime){
                 switchState[indexPath.row] = 0
                 UserDefaults.standard.set(switchState, forKey: "switchState")
                 cell.cellSwitch.isUserInteractionEnabled = false
@@ -186,8 +193,29 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         leftBarItem.title = "Edit"
         
+        // trigger "startTimer" when application enters foreground or becomes active
+        NotificationCenter.default.addObserver(self, selector:#selector(ViewController.startTimer), name:
+            NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.addObserver(self, selector:#selector(ViewController.startTimer), name:
+            NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
+        //startTimer()
+        
         //UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         //UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+    }
+    
+    func startTimer(){
+        if(timer==nil){
+            print("timer started")
+            timer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector:#selector(ViewController.reloadEvery5Secs), userInfo: nil, repeats: true)
+        }
+    }
+    
+    func reloadEvery5Secs(){
+        if(!habitsTable.isEditing){
+            habitsTable.reloadData()
+            print("reloaded")
+        }
     }
     
     /* Do tasks when the main page is appeared */
@@ -229,6 +257,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         
         habitsTable.reloadData()
+        startTimer()
         
         // Check if notification access is given by the user, only checks if user added a habit which requires notification access
         let notificationAccess = UIApplication.shared.currentUserNotificationSettings!.types

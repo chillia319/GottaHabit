@@ -547,42 +547,39 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         }
     }
     
+    /* Do tasks before a cell is displayed */
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if(restorationIdentifier == "RepeatOptions"){
+            // Restore the checkmarks for "weekly" mode
+            if(!AddHabitVC.weeklyDaysSelected.isEmpty && indexPath.section == 1){
+                if(AddHabitVC.weeklyDaysSelected.contains(indexPath.row)){
+                    cell.accessoryType = .checkmark
+                }
+            }// Restore the checkmarks for "monthly" mode
+            else if(!AddHabitVC.monthlyDaysSelected.isEmpty && indexPath.section == 2){
+                if(AddHabitVC.monthlyDaysSelected.contains(indexPath.row+1)){
+                    cell.accessoryType = .checkmark
+                }
+            }
+        }
+    }
+    
     /* Do tasks before a view is loaded */
     override func viewWillAppear(_ animated: Bool) {
+        if(timer.isValid){
+            print("invalidating")
+            timer.invalidate()
+            timer = nil
+        }
+        
         if(restorationIdentifier == "RepeatOptions"){
             if(!AddHabitVC.weeklyDaysSelected.isEmpty){
                 AddHabitVC.repeatMode = 0
                 repeatModeToggles.selectedSegmentIndex = 0
-                
-                // Restore the checkmarks for "weekly" mode
-                for section in 0 ..< repeatOptionsTable.numberOfSections-1 {
-                    if(section == 1){
-                        for row in 0 ..< repeatOptionsTable.numberOfRows(inSection: section) {
-                            let indexPath = IndexPath(row: row, section: section)
-                            let cell = repeatOptionsTable.cellForRow(at: indexPath)
-                            if(AddHabitVC.weeklyDaysSelected.contains(row)){
-                                cell?.accessoryType = .checkmark
-                            }
-                        }
-                    }
-                }
             }else if(!AddHabitVC.monthlyDaysSelected.isEmpty){
                 AddHabitVC.repeatMode = 1
                 repeatModeToggles.selectedSegmentIndex = 1
                 print("Monthly days selected: \(AddHabitVC.monthlyDaysSelected)")
-                
-                // Restore the checkmarks for "monthly" mode
-                for section in 0 ..< repeatOptionsTable.numberOfSections {
-                    if(section == 2){
-                        for row in 0 ..< repeatOptionsTable.numberOfRows(inSection: section) {
-                            let indexPath = IndexPath(row: row, section: section)
-                            let cell = repeatOptionsTable.cellForRow(at: indexPath)
-                            if(AddHabitVC.monthlyDaysSelected.contains(row+1)){
-                                cell?.accessoryType = .checkmark
-                            }
-                        }
-                    }
-                }
             }else{
                 repeatModeToggles.selectedSegmentIndex = AddHabitVC.repeatMode
             }
