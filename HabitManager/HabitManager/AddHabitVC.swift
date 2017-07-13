@@ -440,8 +440,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                                 AddHabitVC.monthlyDaysSelected.append(row+1)
                             }else if(row == indexPath.row && cell.accessoryType != .none){
                                 cell.accessoryType = .none
-                                AddHabitVC.monthlyDaysSelected = []
-                                let itemToRemove = row
+                                let itemToRemove = row+1
                                 if let index = AddHabitVC.monthlyDaysSelected.index(of: itemToRemove) {
                                     AddHabitVC.monthlyDaysSelected.remove(at: index)
                                 }
@@ -566,7 +565,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     
     /* Do tasks before a view is loaded */
     override func viewWillAppear(_ animated: Bool) {
-        if(timer.isValid){
+        if(timer != nil){
             print("invalidating")
             timer.invalidate()
             timer = nil
