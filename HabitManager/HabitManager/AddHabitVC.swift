@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import UserNotifications
 
 var checkNotificationAccess: Bool = false
 
@@ -17,6 +18,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     @IBOutlet var alertOptionsTitleLabel: UILabel!
     @IBOutlet var alertOptionsLabel: UILabel!
     
+    @IBOutlet var modeToggle: UISegmentedControl!
     @IBOutlet var habitDescription: UITextField!
     @IBOutlet var habitSecondDescription: UITextField!
     @IBOutlet var timePicker: UIDatePicker!
@@ -35,17 +37,23 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     private var timePickerVisible = false
     private var intervalPickerVisible = false
     private var firstRun = true
-    private var mode = 0
+    private var mode: Int = 0
+    public var rowPassed: Int = -1
+    private static var rowBeingEdited: Int = -1
     private static var repeatMode: Int!
     private var selectedTime: Date!
     private var selectedInterval: Int = 60
-    private var selectedIntervalHours: Int = 0
-    private var selectedIntervalMinutes: Int = 0
     private var alertOptionsMode0Text: String = "Never"
     private var alertOptionsMode1Text: String = "Every 1 minute"
     private static var weeklyDaysSelected: [Int] = []
     private static var monthlyDaysSelected: [Int] = []
     private var uuid: [[String]] = []
+    
+    private var habits: [String] = []
+    private var habitDetails: [String] = []
+    private var notificationsString: [String] = []
+    private var habitData: [Any] = []
+    private var switchState: [Int] = []
     
     /* Disables "Save" button if no text is in the textfield */
     internal func checkDescription() {
@@ -84,44 +92,6 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     
     /* Saves and process information entered by the user, then go to the main page */
     @IBAction func save(_ sender: Any) {
-        
-        // Set up things for storing these arrays to user's local storage
-        let habitsObject = UserDefaults.standard.object(forKey: "habits")
-        let habitDetailsObject = UserDefaults.standard.object(forKey: "habitDetails")
-        let notificationsStringObject = UserDefaults.standard.object(forKey: "notificationsString")
-        let habitDataObject = UserDefaults.standard.object(forKey: "habitData")
-        let switchStateObject = UserDefaults.standard.object(forKey: "switchState")
-        
-        var habits: [String]
-        var habitDetails: [String]
-        var notificationsString: [String]
-        var habitData: [Any]
-        var switchState: [Int]
-        
-        /* ============================================================================================================ */
-        
-        // Store habit decription to user's local storage
-        if let tempHabits = habitsObject as? [String] {
-            habits = tempHabits
-            habits.append(habitDescription.text!)
-        }else{
-            habits = [habitDescription.text!]
-        }
-        UserDefaults.standard.set(habits, forKey: "habits")
-        
-        /* ============================================================================================================ */
-        
-        // Store habit summary to user's local storage
-        if let tempHabitDetails = habitDetailsObject as? [String] {
-            habitDetails = tempHabitDetails
-            habitDetails.append(habitSecondDescription.text!)
-        }else{
-            habitDetails = [habitSecondDescription.text!]
-        }
-        UserDefaults.standard.set(habitDetails, forKey: "habitDetails")
-        
-        /* ============================================================================================================ */
-        
         // Prepare the label that descripbes the notications
         var beautifiedTimeLabel = ""
         if(mode == 0){
@@ -138,25 +108,70 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             beautifiedTimeLabel = alertOptionsMode1Text
         }
         
-        // Store the label to user's local storage so the main page can access and display
-        if let tempNotificationsString = notificationsStringObject as? [String] {
-            notificationsString = tempNotificationsString
-            notificationsString.append(beautifiedTimeLabel)
-        }else{
-            notificationsString = [beautifiedTimeLabel]
+        // If in New Habit Mode
+        if(AddHabitVC.rowBeingEdited == -1){
+            // Set up things for storing these arrays to user's local storage
+            let habitsObject = UserDefaults.standard.object(forKey: "habits")
+            let habitDetailsObject = UserDefaults.standard.object(forKey: "habitDetails")
+            let notificationsStringObject = UserDefaults.standard.object(forKey: "notificationsString")
+            let switchStateObject = UserDefaults.standard.object(forKey: "switchState")
+            
+            // Store habit decription to user's local storage
+            if let tempHabits = habitsObject as? [String] {
+                habits = tempHabits
+                habits.append(habitDescription.text!)
+            }else{
+                habits = [habitDescription.text!]
+            }
+            UserDefaults.standard.set(habits, forKey: "habits")
+            
+            // Store habit summary to user's local storage
+            if let tempHabitDetails = habitDetailsObject as? [String] {
+                habitDetails = tempHabitDetails
+                habitDetails.append(habitSecondDescription.text!)
+            }else{
+                habitDetails = [habitSecondDescription.text!]
+            }
+            UserDefaults.standard.set(habitDetails, forKey: "habitDetails")
+            
+            // Store the label to user's local storage so the main page can access and display
+            if let tempNotificationsString = notificationsStringObject as? [String] {
+                notificationsString = tempNotificationsString
+                notificationsString.append(beautifiedTimeLabel)
+            }else{
+                notificationsString = [beautifiedTimeLabel]
+            }
+            UserDefaults.standard.set(notificationsString, forKey: "notificationsString")
+            
+            // Store the state of the added switch to local storage (0 for "off" and 1 for "on")
+            if let tempSwitchState = switchStateObject as? [Int] {
+                switchState = tempSwitchState
+                switchState.append(1)
+            }else{
+                switchState = [1]
+            }
+            UserDefaults.standard.set(switchState, forKey: "switchState")
+        }// If in Edit Mode
+        else{
+            habits[AddHabitVC.rowBeingEdited] = habitDescription.text!
+            UserDefaults.standard.set(habits, forKey: "habits")
+            
+            habitDetails[AddHabitVC.rowBeingEdited] = habitSecondDescription.text!
+            UserDefaults.standard.set(habitDetails, forKey: "habitDetails")
+            
+            notificationsString[AddHabitVC.rowBeingEdited] = beautifiedTimeLabel
+            UserDefaults.standard.set(notificationsString, forKey: "notificationsString")
+            
+            switchState[AddHabitVC.rowBeingEdited] = 1
+            UserDefaults.standard.set(switchState, forKey: "switchState")
+            
+            let center = UNUserNotificationCenter.current()
+            // Cancel future notifications related to the row and delete UUIDs
+            for index in 0..<uuid[AddHabitVC.rowBeingEdited].count{
+                center.removeDeliveredNotifications(withIdentifiers: [uuid[AddHabitVC.rowBeingEdited][index]])
+                center.removePendingNotificationRequests(withIdentifiers: [uuid[AddHabitVC.rowBeingEdited][index]])
+            }
         }
-        UserDefaults.standard.set(notificationsString, forKey: "notificationsString")
-        
-        /* ============================================================================================================ */
-        
-        // Store the state of the added switch to local storage (0 for "off" and 1 for "on")
-        if let tempSwitchState = switchStateObject as? [Int] {
-            switchState = tempSwitchState
-            switchState.append(1)
-        }else{
-            switchState = [1]
-        }
-        UserDefaults.standard.set(switchState, forKey: "switchState")
         
         /* ============================================================================================================ */
         
@@ -194,7 +209,11 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 notificationType = 0
                 checkNotificationAccess = true
                 saveUUIDs(UUID: tempUUIDs)
-                print("Added multiple uuids: \(uuid[uuid.count-1])\n")
+                if(AddHabitVC.rowBeingEdited == -1){
+                    print("Added multiple uuids: \(uuid[uuid.count-1])\n")
+                }else{
+                    print("Replaced multiple uuids: \(uuid[AddHabitVC.rowBeingEdited])\n")
+                }
             }// Month day based notification, type 1
             else if(AddHabitVC.monthlyDaysSelected.count != 0){
                 var tempUUIDs: [String] = []
@@ -207,14 +226,23 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 notificationType = 1
                 checkNotificationAccess = true
                 saveUUIDs(UUID: tempUUIDs)
-                print("Added multiple uuids: \(uuid[uuid.count-1])\n")
+                if(AddHabitVC.rowBeingEdited == -1){
+                    print("Added multiple uuids: \(uuid[uuid.count-1])\n")
+                }else{
+                    print("Replaced multiple uuids: \(uuid[AddHabitVC.rowBeingEdited])\n")
+                }
             }// One time notification, type 2
             else{
-                saveUUIDs(UUID: [UUID().uuidString])
-                delegate?.scheduleOneTimeNotification(at: selectedTime, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[uuid.count-1][0])
                 notificationType = 2
                 checkNotificationAccess = true
-                print ("Added uuid: \(uuid[uuid.count-1])\n")
+                saveUUIDs(UUID: [UUID().uuidString])
+                if(AddHabitVC.rowBeingEdited == -1){
+                    delegate?.scheduleOneTimeNotification(at: selectedTime, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[uuid.count-1][0])
+                    print ("Added uuid: \(uuid[uuid.count-1])\n")
+                }else{
+                    delegate?.scheduleOneTimeNotification(at: selectedTime, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[AddHabitVC.rowBeingEdited][0])
+                    print("Replaced uuid: \(uuid[AddHabitVC.rowBeingEdited])\n")
+                }
             }
         }// If in "Standard" mode and no time is selected, type 3
         else if(selectedTime == nil && mode == 0){
@@ -222,34 +250,64 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             saveUUIDs(UUID: ["none"])
         }// If in "Reoccurring" mode, schedual notifications based on interval specified by the user, type 4
         else if(mode == 1){
-            saveUUIDs(UUID: [UUID().uuidString])
-            delegate?.scheduleReoccurringNotification(interval: selectedInterval, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[uuid.count-1][0])
             notificationType = 4
             checkNotificationAccess = true
-            print ("Added uuid: \(uuid[uuid.count-1])\n")
+            saveUUIDs(UUID: [UUID().uuidString])
+            if(AddHabitVC.rowBeingEdited == -1){
+                delegate?.scheduleReoccurringNotification(interval: selectedInterval, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[uuid.count-1][0])
+                print ("Added uuid: \(uuid[uuid.count-1])\n")
+            }else{
+                delegate?.scheduleReoccurringNotification(interval: selectedInterval, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[AddHabitVC.rowBeingEdited][0])
+                print("Replaced uuid: \(uuid[AddHabitVC.rowBeingEdited])\n")
+            }
         }
         
         // Store backend data to local storage for functions like "resume" and "edit"
-        if let temphabitData = habitDataObject as? [Any] {
-            habitData = temphabitData
+        if(AddHabitVC.rowBeingEdited == -1){
+            // Type
+            let habitDataObject = UserDefaults.standard.object(forKey: "habitData")
+            if let temphabitData = habitDataObject as? [Any] {
+                habitData = temphabitData
+                
+                habitData.append(notificationType)
+            }else{
+                habitData = [notificationType]
+            }
             
-            habitData.append(notificationType)
+            // Weekly Days/Monthly Days
+            if(notificationDays != []){
+                habitData.append(notificationDays)
+            }else{
+                habitData.append(-1)
+            }
+            
+            // Time/Interval
+            if(notificationType == 3){
+                habitData.append(-1)
+            }else if(notificationType == 4){
+                habitData.append(selectedInterval)
+            }else{
+                habitData.append(selectedTime)
+            }
         }else{
-            habitData = [notificationType]
-        }
-        
-        if(notificationDays != []){
-            habitData.append(notificationDays)
-        }else{
-            habitData.append(-1)
-        }
-        
-        if(notificationType == 3){
-            habitData.append(-1)
-        }else if(notificationType == 4){
-            habitData.append(selectedInterval)
-        }else{
-            habitData.append(selectedTime)
+            // Type
+            habitData[AddHabitVC.rowBeingEdited*3] = notificationType
+            
+            // Weekly Days/Monthly Days
+            if(notificationDays != []){
+                habitData[AddHabitVC.rowBeingEdited*3+1] = notificationDays
+            }else{
+                habitData[AddHabitVC.rowBeingEdited*3+1] = -1
+            }
+            
+            // Time/Interval
+            if(notificationType == 3){
+                habitData[AddHabitVC.rowBeingEdited*3+2] = -1
+            }else if(notificationType == 4){
+                habitData[AddHabitVC.rowBeingEdited*3+2] = selectedInterval
+            }else{
+                habitData[AddHabitVC.rowBeingEdited*3+2] = selectedTime
+            }
         }
         print ("habits data: \(habitData)")
         UserDefaults.standard.set(habitData, forKey: "habitData")
@@ -260,16 +318,19 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     
     /* Generates an unique ID if "UUID().uuidString" is the argument, store UUIDs to local storage */
     private func saveUUIDs(UUID: [String]){
-        
-        let uuidObject = UserDefaults.standard.object(forKey: "uuid")
-        
-        if let tempUUIDs = uuidObject as? [[String]]{
-            uuid = tempUUIDs
+        if(AddHabitVC.rowBeingEdited == -1){
+            let uuidObject = UserDefaults.standard.object(forKey: "uuid")
             
-            uuid.append(UUID)
+            if let tempUUIDs = uuidObject as? [[String]]{
+                uuid = tempUUIDs
+                uuid.append(UUID)
+            }else{
+                uuid = [UUID]
+            }
         }else{
-            uuid = [UUID]
+            uuid[AddHabitVC.rowBeingEdited] = UUID
         }
+        
         UserDefaults.standard.set(uuid, forKey: "uuid")
     }
     
@@ -327,7 +388,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         timeLabel.text = DateFormatter.localizedString(from: timePicker.date, dateStyle: .none, timeStyle: .short)
         alertOptionsMode0Text = "At " + timeLabel.text!
         alertOptionsLabel.text = alertOptionsMode0Text
-        if(firstRun){
+        if(firstRun && repeatOptionsLabel.text == "Never"){
             toggleRepeatOptionsCell(enable: true)
             //toggleAlertOptionsCell(enable: true)
             repeatOptionsLabel.text = "Today only"
@@ -347,8 +408,11 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         updateTable(withAnimation: true)
     }
     
-    /* Store the interval picked by user and process the interval (in seconds) so it is more readable to the user */
+    /* Do tasks when interval picker is spinned */
     @IBAction func intervalPickerAction(_ sender: UIDatePicker) {
+        var selectedIntervalHours: Int
+        var selectedIntervalMinutes: Int
+        
         selectedInterval = Int(sender.countDownDuration)
         selectedIntervalHours = selectedInterval / 3600
         if selectedIntervalHours == 0{
@@ -357,24 +421,29 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             selectedIntervalMinutes = selectedInterval % 3600 / 60
         }
         
-        if((selectedIntervalHours == 0 || selectedIntervalHours == 1) && selectedIntervalMinutes != 0 && selectedIntervalMinutes != 1){
-            alertOptionsMode1Text = "Every \(selectedIntervalHours) hour and \(selectedIntervalMinutes) minutes"
-        }else if((selectedIntervalHours == 0 || selectedIntervalHours == 1) && (selectedIntervalMinutes == 0 || selectedIntervalMinutes == 1)){
-            alertOptionsMode1Text = "Every \(selectedIntervalHours) hour and \(selectedIntervalMinutes) minute"
-        }else if(selectedIntervalHours != 0 && selectedIntervalHours != 1 && (selectedIntervalMinutes == 0 || selectedIntervalMinutes == 1)){
-            alertOptionsMode1Text = "Every \(selectedIntervalHours) hours and \(selectedIntervalMinutes) minute"
+        convertIntervalAndDisplay(hour: selectedIntervalHours, minute: selectedIntervalMinutes)
+    }
+    
+    /* convert the interval (in seconds) to readable text */
+    private func convertIntervalAndDisplay(hour: Int, minute: Int){
+        if((hour == 0 || hour == 1) && minute != 0 && minute != 1){
+            alertOptionsMode1Text = "Every \(hour) hour and \(minute) minutes"
+        }else if((hour == 0 || hour == 1) && (minute == 0 || minute == 1)){
+            alertOptionsMode1Text = "Every \(hour) hour and \(minute) minute"
+        }else if(hour != 0 && hour != 1 && (minute == 0 || minute == 1)){
+            alertOptionsMode1Text = "Every \(hour) hours and \(minute) minute"
         }else{
-            alertOptionsMode1Text = "Every \(selectedIntervalHours) hours and \(selectedIntervalMinutes) minutes"
+            alertOptionsMode1Text = "Every \(hour) hours and \(minute) minutes"
         }
         
-        if(selectedIntervalHours == 0 && selectedIntervalMinutes != 0 && selectedIntervalMinutes != 1){
-            alertOptionsMode1Text = "Every \(selectedIntervalMinutes) minutes"
-        }else if(selectedIntervalMinutes == 0 && selectedIntervalHours != 0 && selectedIntervalHours != 1){
-            alertOptionsMode1Text = "Every \(selectedIntervalHours) hours"
-        }else if(selectedIntervalHours == 0 && (selectedIntervalMinutes == 0 || selectedIntervalMinutes == 1)){
-            alertOptionsMode1Text = "Every \(selectedIntervalMinutes) minute"
-        }else if(selectedIntervalMinutes == 0 && (selectedIntervalHours == 0 || selectedIntervalHours == 1)){
-            alertOptionsMode1Text = "Every \(selectedIntervalHours) hour"
+        if(hour == 0 && minute != 0 && minute != 1){
+            alertOptionsMode1Text = "Every \(minute) minutes"
+        }else if(minute == 0 && hour != 0 && hour != 1){
+            alertOptionsMode1Text = "Every \(hour) hours"
+        }else if(hour == 0 && (minute == 0 || minute == 1)){
+            alertOptionsMode1Text = "Every \(minute) minute"
+        }else if(minute == 0 && (hour == 0 || hour == 1)){
+            alertOptionsMode1Text = "Every \(hour) hour"
         }
         alertOptionsLabel.text = alertOptionsMode1Text
     }
@@ -516,33 +585,131 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         return true
     }
     
-    /* Do tasks when add new habit page (which includes two views) is first loaded */
+    /* Do tasks when New Habit/Edit Habit page (includes two views) is first loaded */
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.navigationController?.navigationBar.isTranslucent = false
         
         if(restorationIdentifier == "NewHabit"){
+            // Edit Mode
+            if(rowPassed != -1){
+                AddHabitVC.rowBeingEdited = rowPassed
+                print("Edit Mode: row \(AddHabitVC.rowBeingEdited)")
+                
+                // Retrieve data from local storage
+                let habitsObject = UserDefaults.standard.object(forKey: "habits")
+                let habitDetailsObject = UserDefaults.standard.object(forKey: "habitDetails")
+                let notificationsStringObject = UserDefaults.standard.object(forKey: "notificationsString")
+                let uuidObject = UserDefaults.standard.object(forKey: "uuid")
+                let habitDataObject = UserDefaults.standard.object(forKey: "habitData")
+                let switchStateObject = UserDefaults.standard.object(forKey: "switchState")
+                
+                if let tempHabits = habitsObject as? [String] {
+                    habits = tempHabits
+                }
+                if let tempHabitDetails = habitDetailsObject as? [String] {
+                    habitDetails = tempHabitDetails
+                }
+                if let tempNotificationsString = notificationsStringObject as? [String] {
+                    notificationsString = tempNotificationsString
+                }
+                if let tempUUIDs = uuidObject as? [[String]] {
+                    uuid = tempUUIDs
+                }
+                if let temphabitData = habitDataObject as? [Any] {
+                    habitData = temphabitData
+                }
+                if let tempSwitchState = switchStateObject as? [Int] {
+                    switchState = tempSwitchState
+                }
+                
+                // If editing reoccuring habit
+                if(habitData[AddHabitVC.rowBeingEdited*3] as! Int == 4){
+                    modeToggle.selectedSegmentIndex = 1
+                    mode = 1
+                    
+                    // Restore interval picker data
+                    var storedIntervalMinutes: Int
+                    selectedInterval = habitData[AddHabitVC.rowBeingEdited*3+2] as! Int
+                    let storedIntervalHours = selectedInterval / 3600
+                    if storedIntervalHours == 0{
+                        storedIntervalMinutes = selectedInterval / 60
+                    } else{
+                        storedIntervalMinutes = selectedInterval % 3600 / 60
+                    }
+                    convertIntervalAndDisplay(hour: storedIntervalHours, minute: storedIntervalMinutes)
+                    var dateComp = DateComponents()
+                    dateComp.hour = storedIntervalHours
+                    dateComp.minute = storedIntervalMinutes
+                    let calendar = Calendar(identifier: .gregorian)
+                    let date = calendar.date(from: dateComp as DateComponents)!
+                    intervalPicker.setDate(date as Date, animated: true)
+                    
+                    toggleRepeatOptionsCell(enable: false)
+                    toggleAlertOptionsCell(enable: true)
+                    AddHabitVC.repeatMode = 0
+                    AddHabitVC.weeklyDaysSelected = []
+                    AddHabitVC.monthlyDaysSelected = []
+                }// If editing standard habit
+                else{
+                    // If a start time exists
+                    AddHabitVC.weeklyDaysSelected = []
+                    AddHabitVC.monthlyDaysSelected = []
+                    
+                    if(habitData[AddHabitVC.rowBeingEdited*3] as! Int != 3){
+                        let time = habitData[AddHabitVC.rowBeingEdited*3+2] as! Date
+                        timePicker.setDate(time, animated: true)
+                        timeLabel.text = DateFormatter.localizedString(from: timePicker.date, dateStyle: .none, timeStyle: .short)
+                        selectedTime = timePicker.date
+                        alertOptionsMode0Text = "At " + timeLabel.text!
+                        alertOptionsLabel.text = alertOptionsMode0Text
+                        
+                        if(habitData[AddHabitVC.rowBeingEdited*3] as! Int  == 0){
+                            AddHabitVC.weeklyDaysSelected = habitData[AddHabitVC.rowBeingEdited*3+1] as! [Int]
+                            for index in 0..<AddHabitVC.weeklyDaysSelected.count{
+                                if(AddHabitVC.weeklyDaysSelected[index] == 1){
+                                    AddHabitVC.weeklyDaysSelected[index] = 6
+                                }else{
+                                    AddHabitVC.weeklyDaysSelected[index] -= 2
+                                }
+                            }
+                        }else if(habitData[AddHabitVC.rowBeingEdited*3] as! Int  == 1){
+                            AddHabitVC.monthlyDaysSelected = habitData[AddHabitVC.rowBeingEdited*3+1] as! [Int]
+                        }
+                    }// If no start time
+                    else{
+                        toggleRepeatOptionsCell(enable: false)
+                        AddHabitVC.repeatMode = 0
+                    }
+                    toggleAlertOptionsCell(enable: false)
+                }
+                habitDescription.text = habits[AddHabitVC.rowBeingEdited]
+                habitSecondDescription.text = habitDetails[AddHabitVC.rowBeingEdited]
+            }// New Habit Mode
+            else{
+                AddHabitVC.rowBeingEdited = -1
+                toggleAlertOptionsCell(enable: false)
+                toggleRepeatOptionsCell(enable: false)
+                AddHabitVC.repeatMode = 0
+                AddHabitVC.weeklyDaysSelected = []
+                AddHabitVC.monthlyDaysSelected = []
+                
+                //Work around for: DatePicker in CountDownTimer mode does not update countDownDuration after the first spin (possible system bug)
+                var dateComp = DateComponents()
+                dateComp.hour = 0
+                dateComp.minute = 1
+                let calendar = Calendar(identifier: .gregorian)
+                let date = calendar.date(from: dateComp as DateComponents)!
+                intervalPicker.setDate(date as Date, animated: true)
+            }
+            
             // Hide the keyboard when user tapped somewhere outside the textfield */
             let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:)))
             tap.cancelsTouchesInView = false
             self.view.addGestureRecognizer(tap)
-            
-            // Tasks that need to be done when the view is first loaded
-            AddHabitVC.repeatMode = 0
-            AddHabitVC.weeklyDaysSelected = []
-            AddHabitVC.monthlyDaysSelected = []
+
             checkDescription()
-            toggleRepeatOptionsCell(enable: false)
-            toggleAlertOptionsCell(enable: false)
-            
-            //Work around for: DatePicker in CountDownTimer mode does not update countDownDuration after the first spin (possible system bug)
-            let dateComp : NSDateComponents = NSDateComponents()
-            dateComp.hour = 0
-            dateComp.minute = 1
-            let calendar = Calendar(identifier: .gregorian)
-            let date : NSDate = calendar.date(from: dateComp as DateComponents)! as NSDate
-            intervalPicker.setDate(date as Date, animated: true)
         }
     }
     
@@ -569,6 +736,12 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             print("invalidating")
             timer.invalidate()
             timer = nil
+        }
+        
+        if(AddHabitVC.rowBeingEdited != -1){
+            title = "Edit Habit"
+        }else{
+            title = "New Habit"
         }
         
         if(restorationIdentifier == "RepeatOptions"){

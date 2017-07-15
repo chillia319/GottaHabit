@@ -18,16 +18,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet var tabBar: UITabBar!
     @IBOutlet var navBar: UINavigationBar!
     @IBOutlet var leftBarItem: UIBarButtonItem!
+    @IBOutlet var rightBarItem: UIBarButtonItem!
     @IBOutlet var quote: UILabel!
     @IBOutlet var quoteAuthor: UILabel!
     
-    var habits: [String] = []
-    var habitDetails: [String] = []
-    var notificationsString: [String] = []
-    var habitData: [Any] = []
-    var switchState: [Int] = []
+    private var habits: [String] = []
+    private var habitDetails: [String] = []
+    private var notificationsString: [String] = []
+    private var habitData: [Any] = []
+    private var switchState: [Int] = []
     
-    var tabPressed: Int = 0
+    private var tabPressed: Int = 0
+    private var rowSelected: Int!
     
     /* Count how many rows are in the main page */
     internal func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
@@ -131,7 +133,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
-    /* Set row height */
+    /* Set row height for each row */
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if(tabPressed == 1){
             if(habitData[indexPath.row*3] as! Int == 0){
@@ -175,9 +177,24 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return habitsTable.rowHeight
     }
     
+    /* Do tasks before presenting another view */
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "segueToNewHabit" && habitsTable.isEditing {
+            if let navVC = segue.destination as? UINavigationController{
+                if let addHabitVC = navVC.viewControllers[0] as? AddHabitVC{
+                    addHabitVC.rowPassed = rowSelected
+                }
+            }
+        }
+    }
+    
     /* Deselect row animation for better UX */
     internal func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
         tableView.deselectRow(at: indexPath, animated: true)
+        if(habitsTable.isEditing){
+            rowSelected = indexPath.row
+            performSegue(withIdentifier: "segueToNewHabit", sender: self)
+        }
     }
     
     /* Do tasks when the main page is first loaded */
@@ -192,6 +209,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         habitsTable.rowHeight = UITableViewAutomaticDimension
         
         leftBarItem.title = "Edit"
+        habitsTable.allowsSelectionDuringEditing = true
         
         // trigger "startTimer" when application enters foreground or becomes active
         NotificationCenter.default.addObserver(self, selector:#selector(ViewController.startTimer), name:
@@ -204,22 +222,24 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         //UNUserNotificationCenter.current().removeAllDeliveredNotifications()
     }
     
+    /* Create a new timer and excute "reloadData" based on time interval */
     func startTimer(){
         if(timer==nil){
             print("timer started")
-            timer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector:#selector(ViewController.reloadEvery5Secs), userInfo: nil, repeats: true)
+            timer = Timer.scheduledTimer(timeInterval: 15.0, target: self, selector:#selector(ViewController.reloadData), userInfo: nil, repeats: true)
         }
     }
     
-    func reloadEvery5Secs(){
+    /* reload table data */
+    func reloadData(){
         if(!habitsTable.isEditing){
             habitsTable.reloadData()
             print("reloaded")
         }
     }
     
-    /* Do tasks when the main page is appeared */
-    override func viewDidAppear(_ animated: Bool) {
+    /* Do tasks before the main page is appeared */
+    override func viewWillAppear(_ animated: Bool) {
         // Extract information from local storage and set the values inside this class
         let habitsObject = UserDefaults.standard.object(forKey: "habits")
         let habitDetailsObject = UserDefaults.standard.object(forKey: "habitDetails")
@@ -258,7 +278,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         habitsTable.reloadData()
         startTimer()
-        
+    }
+    
+    /* Do tasks when the main page is appeared */
+    override func viewDidAppear(_ animated: Bool) {
         // Check if notification access is given by the user, only checks if user added a habit which requires notification access
         let notificationAccess = UIApplication.shared.currentUserNotificationSettings!.types
         if notificationAccess == [] && checkNotificationAccess{
@@ -282,9 +305,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBAction func editAction(_ sender: UIBarButtonItem) {
         if(habitsTable.isEditing){
             leftBarItem.title = "Edit"
+            rightBarItem.isEnabled = true
             habitsTable.setEditing(false,animated:true)
         }else{
             leftBarItem.title = "Done"
+            rightBarItem.isEnabled = false
             habitsTable.setEditing(true,animated:true)
         }
     }
@@ -407,7 +432,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if editingStyle == UITableViewCellEditingStyle.delete{
             let center = UNUserNotificationCenter.current()
             print ("UUIDs Before deletion: \(uuid)")
-            // Delete UUIDs
+            // Cancel future notifications related to the row and delete UUIDs
             for index in 0..<uuid[indexPath.row].count{
                 center.removeDeliveredNotifications(withIdentifiers: [uuid[indexPath.row][index]])
                 center.removePendingNotificationRequests(withIdentifiers: [uuid[indexPath.row][index]])
