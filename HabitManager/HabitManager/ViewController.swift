@@ -72,7 +72,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             cell.backgroundColor = UIColor(red: 77/255, green: 215/255, blue: 199/255, alpha: 1.0)
         }
         
-        // if a habit is expired
+        // Check whether a habit is expired
         if(habitData[indexPath.row*3] as! Int == 2){
             let calender = Calendar.current
             

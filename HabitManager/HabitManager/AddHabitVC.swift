@@ -90,8 +90,38 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         dismiss(animated: true, completion: nil)
     }
     
-    /* Saves and process information entered by the user, then go to the main page */
+    /* When "Save" is tapped */
     @IBAction func save(_ sender: Any) {
+        // Developer mode
+        if(habitDescription.text == "#Add" && AddHabitVC.rowBeingEdited == -1){ // Add random habits
+            RandomlyGenHabits(numOfTimes: 10)
+        }else if(habitDescription.text == "#Delete" && AddHabitVC.rowBeingEdited == -1){ // Delete all habits
+            habits = []
+            habitDetails = []
+            notificationsString = []
+            habitData = []
+            switchState = []
+            uuid = []
+            UserDefaults.standard.set(habits, forKey: "habits")
+            UserDefaults.standard.set(habitDetails, forKey: "habitDetails")
+            UserDefaults.standard.set(notificationsString, forKey: "notificationsString")
+            UserDefaults.standard.set(habitData, forKey: "habitData")
+            UserDefaults.standard.set(switchState, forKey: "switchState")
+            UserDefaults.standard.set(uuid, forKey: "uuid")
+            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+            UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+        }
+        // User mode
+        else{
+          saveHabits()
+        }
+        
+        // Go back to the main page
+        dismiss(animated: true, completion: nil)
+    }
+    
+    /*  Saves and process information entered by the user */
+    private func saveHabits(){
         // Prepare the label that descripbes the notications
         var beautifiedTimeLabel = ""
         if(mode == 0){
@@ -311,9 +341,6 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         }
         print ("habits data: \(habitData)")
         UserDefaults.standard.set(habitData, forKey: "habitData")
-        
-        // Go back to the main page
-        dismiss(animated: true, completion: nil)
     }
     
     /* Generates an unique ID if "UUID().uuidString" is the argument, store UUIDs to local storage */
@@ -332,6 +359,75 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         }
         
         UserDefaults.standard.set(uuid, forKey: "uuid")
+    }
+    
+    /* Generate random habits for development purposes */
+    private func RandomlyGenHabits(numOfTimes: Int){
+        var count = 1
+        while(count <= numOfTimes){
+            AddHabitVC.weeklyDaysSelected = []
+            let randomModeChance: UInt32 = arc4random_uniform(3) // range is 0 to 2
+            if(randomModeChance == 2){
+                mode = 1
+            }else{
+                mode = 0
+            }
+            
+            habitDescription.text = "test " + String(count)
+            let randomSummaryBool: UInt32 = arc4random_uniform(2)
+            if(Int(randomSummaryBool) == 0){
+                habitSecondDescription.text = "test "
+                var randomWordCount: UInt32 = arc4random_uniform(20)+2
+                while(Int(randomWordCount) != 0){
+                    habitSecondDescription.text = habitSecondDescription.text! + "test "
+                    randomWordCount -= 1
+                }
+                
+            }else{
+                habitSecondDescription.text = ""
+            }
+            
+            if(mode == 0){
+                let currentTime = Date()
+                let calender = Calendar.current
+                var components = calender.dateComponents([.year, .month, .day, .hour, .minute, .second], from: currentTime)
+                components.hour = Int(arc4random_uniform(25))
+                components.minute = Int(arc4random_uniform(61))
+                let randomTime = calender.date(from: components)!
+                timePicker.setDate(randomTime, animated: true)
+                timeLabel.text = DateFormatter.localizedString(from: timePicker.date, dateStyle: .none, timeStyle: .short)
+                selectedTime = randomTime
+                
+                var randomDaysCount: UInt32 = arc4random_uniform(8)
+                while(Int(randomDaysCount) != 0){
+                    var randomWeeklyDay: UInt32 = arc4random_uniform(7) // range is 0 to 6
+                    while(AddHabitVC.weeklyDaysSelected.contains(Int(randomWeeklyDay))){
+                        randomWeeklyDay = arc4random_uniform(7)
+                    }
+                    AddHabitVC.weeklyDaysSelected.append(Int(randomWeeklyDay))
+                    randomDaysCount -= 1
+                }
+                if(AddHabitVC.weeklyDaysSelected.count == 0){
+                    repeatOptionsLabel.text = "Today only"
+                }else{
+                    convertToString(reapeatMode: 0)
+                }
+            }else{
+                let randomHour: UInt32 = arc4random_uniform(24) // range is 0 to 23
+                var randomMinute: UInt32 = 0
+                if(Int(randomHour) == 0){
+                    randomMinute = arc4random_uniform(60)+1 // range is 1 to 60
+                }else{
+                    randomMinute = arc4random_uniform(61) // range is 0 to 60
+                }
+                
+                convertIntervalAndDisplay(hour: Int(randomHour), minute: Int(randomMinute))
+                selectedInterval = Int(randomHour)*3600 + Int(randomMinute)*60
+            }
+            
+            saveHabits()
+            count += 1
+        }
     }
     
     /* updates table with/without animation */
@@ -738,13 +834,8 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             timer = nil
         }
         
-        if(AddHabitVC.rowBeingEdited != -1){
-            title = "Edit Habit"
-        }else{
-            title = "New Habit"
-        }
-        
         if(restorationIdentifier == "RepeatOptions"){
+            title = "Repeat"
             if(!AddHabitVC.weeklyDaysSelected.isEmpty){
                 AddHabitVC.repeatMode = 0
                 repeatModeToggles.selectedSegmentIndex = 0
@@ -756,64 +847,78 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 repeatModeToggles.selectedSegmentIndex = AddHabitVC.repeatMode
             }
         }else if(restorationIdentifier == "NewHabit"){
+            if(AddHabitVC.rowBeingEdited != -1){
+                title = "Edit Habit"
+            }else{
+                title = "New Habit"
+            }
+            
             if(!repeatOptionsLabel.isEnabled){
                 repeatOptionsLabel.text = "Never"
             }else if(!AddHabitVC.weeklyDaysSelected.isEmpty){
-                // Sort the array from smaller value to bigger value
-                AddHabitVC.weeklyDaysSelected = AddHabitVC.weeklyDaysSelected.sorted { $0 < $1 }
-                
-                let weekdaysList = [0,1,2,3,4]
-                let weekendsList = [5,6]
-                
-                let weekdaysListSet = Set(weekdaysList)
-                let weekendsListSet = Set(weekendsList)
-                let weeklyDaysSelectedListSet = Set(AddHabitVC.weeklyDaysSelected)
-                
-                let isWeekdays = weekdaysListSet.isSubset(of: weeklyDaysSelectedListSet)
-                let isWeekends = weekendsListSet.isSubset(of: weeklyDaysSelectedListSet)
-                
-                var tempRepeatOptionsString = ""
-                
-                // Process the information given by the user and improve readability
-                if(AddHabitVC.weeklyDaysSelected.count == 7){
-                    tempRepeatOptionsString = "Everyday"
-                }else if(isWeekdays && AddHabitVC.weeklyDaysSelected.count == 5){
-                    tempRepeatOptionsString = "Weekdays"
-                }else if(isWeekends && AddHabitVC.weeklyDaysSelected.count == 2){
-                    tempRepeatOptionsString = "Weekends"
-                }else{
-                    for index in 0..<AddHabitVC.weeklyDaysSelected.count{
-                        
-                        switch AddHabitVC.weeklyDaysSelected[index] {
-                        case 0:
-                            tempRepeatOptionsString += "Mon "
-                        case 1:
-                            tempRepeatOptionsString += "Tue "
-                        case 2:
-                            tempRepeatOptionsString += "Wed "
-                        case 3:
-                            tempRepeatOptionsString += "Thu "
-                        case 4:
-                            tempRepeatOptionsString += "Fri "
-                        case 5:
-                            tempRepeatOptionsString += "Sat "
-                        case 6:
-                            tempRepeatOptionsString += "Sun "
-                        default:
-                            print("Unexpected case when converting weeklyDaysSelected to readable String")
-                        }
-                    }
-                }
-                repeatOptionsLabel.text = tempRepeatOptionsString
+                convertToString(reapeatMode: 0)
             }else if(!AddHabitVC.monthlyDaysSelected.isEmpty){
-                AddHabitVC.monthlyDaysSelected = AddHabitVC.monthlyDaysSelected.sorted { $0 < $1 }
-                if(AddHabitVC.monthlyDaysSelected.count >= 31){
-                    repeatOptionsLabel.text = "Everyday"
-                }else{
-                    repeatOptionsLabel.text = "Place holder monthly"
-                }
+                convertToString(reapeatMode: 1)
             }else{
                 repeatOptionsLabel.text = "Today only"
+            }
+        }
+    }
+    
+    private func convertToString(reapeatMode: Int){
+        if(reapeatMode == 0){
+            // Sort the array from smaller value to bigger value
+            AddHabitVC.weeklyDaysSelected = AddHabitVC.weeklyDaysSelected.sorted { $0 < $1 }
+            
+            let weekdaysList = [0,1,2,3,4]
+            let weekendsList = [5,6]
+            
+            let weekdaysListSet = Set(weekdaysList)
+            let weekendsListSet = Set(weekendsList)
+            let weeklyDaysSelectedListSet = Set(AddHabitVC.weeklyDaysSelected)
+            
+            let isWeekdays = weekdaysListSet.isSubset(of: weeklyDaysSelectedListSet)
+            let isWeekends = weekendsListSet.isSubset(of: weeklyDaysSelectedListSet)
+            
+            var tempRepeatOptionsString = ""
+            
+            // Process the information given by the user and improve readability
+            if(AddHabitVC.weeklyDaysSelected.count == 7){
+                tempRepeatOptionsString = "Everyday"
+            }else if(isWeekdays && AddHabitVC.weeklyDaysSelected.count == 5){
+                tempRepeatOptionsString = "Weekdays"
+            }else if(isWeekends && AddHabitVC.weeklyDaysSelected.count == 2){
+                tempRepeatOptionsString = "Weekends"
+            }else{
+                for index in 0..<AddHabitVC.weeklyDaysSelected.count{
+                    
+                    switch AddHabitVC.weeklyDaysSelected[index] {
+                    case 0:
+                        tempRepeatOptionsString += "Mon "
+                    case 1:
+                        tempRepeatOptionsString += "Tue "
+                    case 2:
+                        tempRepeatOptionsString += "Wed "
+                    case 3:
+                        tempRepeatOptionsString += "Thu "
+                    case 4:
+                        tempRepeatOptionsString += "Fri "
+                    case 5:
+                        tempRepeatOptionsString += "Sat "
+                    case 6:
+                        tempRepeatOptionsString += "Sun "
+                    default:
+                        print("Unexpected case when converting weeklyDaysSelected to readable String")
+                    }
+                }
+            }
+            repeatOptionsLabel.text = tempRepeatOptionsString
+        }else{
+            AddHabitVC.monthlyDaysSelected = AddHabitVC.monthlyDaysSelected.sorted { $0 < $1 }
+            if(AddHabitVC.monthlyDaysSelected.count >= 31){
+                repeatOptionsLabel.text = "Everyday"
+            }else{
+                repeatOptionsLabel.text = "Place holder monthly"
             }
         }
     }
