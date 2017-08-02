@@ -94,7 +94,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     @IBAction func save(_ sender: Any) {
         // Developer mode
         if(habitDescription.text == "#Add" && AddHabitVC.rowBeingEdited == -1){ // Add random habits
-            RandomlyGenHabits(numOfTimes: 10)
+            randomlyGenHabits(numOfTimes: 10)
         }else if(habitDescription.text == "#Delete" && AddHabitVC.rowBeingEdited == -1){ // Delete all habits
             habits = []
             habitDetails = []
@@ -362,7 +362,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     }
     
     /* Generate random habits for development purposes */
-    private func RandomlyGenHabits(numOfTimes: Int){
+    private func randomlyGenHabits(numOfTimes: Int){
         var count = 1
         while(count <= numOfTimes){
             AddHabitVC.weeklyDaysSelected = []
