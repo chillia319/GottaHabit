@@ -366,8 +366,8 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         var count = 1
         while(count <= numOfTimes){
             AddHabitVC.weeklyDaysSelected = []
-            let randomModeChance: UInt32 = arc4random_uniform(3) // range is 0 to 2
-            if(randomModeChance == 2){
+            let randomModeChance = Int(arc4random_uniform(100))
+            if(randomModeChance < 20){
                 mode = 1
             }else{
                 mode = 0
@@ -388,43 +388,47 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             }
             
             if(mode == 0){
-                let currentTime = Date()
-                let calender = Calendar.current
-                var components = calender.dateComponents([.year, .month, .day, .hour, .minute, .second], from: currentTime)
-                components.hour = Int(arc4random_uniform(25))
-                components.minute = Int(arc4random_uniform(61))
-                let randomTime = calender.date(from: components)!
-                timePicker.setDate(randomTime, animated: true)
-                timeLabel.text = DateFormatter.localizedString(from: timePicker.date, dateStyle: .none, timeStyle: .short)
-                selectedTime = randomTime
-                
-                var randomDaysCount: UInt32 = arc4random_uniform(8)
-                while(Int(randomDaysCount) != 0){
-                    var randomWeeklyDay: UInt32 = arc4random_uniform(7) // range is 0 to 6
-                    while(AddHabitVC.weeklyDaysSelected.contains(Int(randomWeeklyDay))){
-                        randomWeeklyDay = arc4random_uniform(7)
+                let chance = Int(arc4random_uniform(100))
+                if(chance<10){ // notification type 3
+                    timeLabel.text = "None"
+                    selectedTime = nil
+                }else{ // notification type 0 and 2, 1 not implemented yet
+                    let currentTime = Date()
+                    let calender = Calendar.current
+                    var components = calender.dateComponents([.year, .month, .day, .hour, .minute, .second], from: currentTime)
+                    components.hour = Int(arc4random_uniform(25))
+                    components.minute = Int(arc4random_uniform(61))
+                    let randomTime = calender.date(from: components)!
+                    timePicker.setDate(randomTime, animated: true)
+                    timeLabel.text = DateFormatter.localizedString(from: timePicker.date, dateStyle: .none, timeStyle: .short)
+                    selectedTime = randomTime
+                    
+                    var randomDaysCount: UInt32 = arc4random_uniform(8)
+                    while(Int(randomDaysCount) != 0){
+                        var randomWeeklyDay: UInt32 = arc4random_uniform(7)
+                        while(AddHabitVC.weeklyDaysSelected.contains(Int(randomWeeklyDay))){
+                            randomWeeklyDay = arc4random_uniform(7)
+                        }
+                        AddHabitVC.weeklyDaysSelected.append(Int(randomWeeklyDay))
+                        randomDaysCount -= 1
                     }
-                    AddHabitVC.weeklyDaysSelected.append(Int(randomWeeklyDay))
-                    randomDaysCount -= 1
+                    if(AddHabitVC.weeklyDaysSelected.count == 0){
+                        repeatOptionsLabel.text = "Today only"
+                    }else{
+                        convertToString(reapeatMode: 0)
+                    }
                 }
-                if(AddHabitVC.weeklyDaysSelected.count == 0){
-                    repeatOptionsLabel.text = "Today only"
-                }else{
-                    convertToString(reapeatMode: 0)
-                }
-            }else{
-                let randomHour: UInt32 = arc4random_uniform(24) // range is 0 to 23
+            }else{ // notification type 4
+                let randomHour: UInt32 = arc4random_uniform(24)
                 var randomMinute: UInt32 = 0
                 if(Int(randomHour) == 0){
-                    randomMinute = arc4random_uniform(60)+1 // range is 1 to 60
+                    randomMinute = arc4random_uniform(59)+1
                 }else{
-                    randomMinute = arc4random_uniform(61) // range is 0 to 60
+                    randomMinute = arc4random_uniform(60)
                 }
-                
                 convertIntervalAndDisplay(hour: Int(randomHour), minute: Int(randomMinute))
                 selectedInterval = Int(randomHour)*3600 + Int(randomMinute)*60
             }
-            
             saveHabits()
             count += 1
         }
