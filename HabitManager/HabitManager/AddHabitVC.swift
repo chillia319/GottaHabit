@@ -94,7 +94,15 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     @IBAction func save(_ sender: Any) {
         // Developer mode
         if(habitDescription.text == "#Add" && AddHabitVC.rowBeingEdited == -1){ // Add random habits
-            randomlyGenHabits(numOfTimes: 10)
+            if habitSecondDescription.text != ""{
+                guard let times = Int(habitSecondDescription.text!) else{
+                    print("error converting summary to integer")
+                    return
+                }
+                randomlyGenHabits(numOfTimes: times)
+            }else{
+                randomlyGenHabits(numOfTimes: 10)
+            }
         }else if(habitDescription.text == "#Delete" && AddHabitVC.rowBeingEdited == -1){ // Delete all habits
             habits = []
             habitDetails = []
