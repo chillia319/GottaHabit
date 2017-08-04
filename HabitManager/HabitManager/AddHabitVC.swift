@@ -96,7 +96,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         if(habitDescription.text == "#Add" && AddHabitVC.rowBeingEdited == -1){ // Add random habits
             if habitSecondDescription.text != ""{
                 guard let times = Int(habitSecondDescription.text!) else{
-                    print("error converting summary to integer")
+                    print("Error converting summary string to integer")
                     return
                 }
                 randomlyGenHabits(numOfTimes: times)

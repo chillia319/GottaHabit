@@ -30,6 +30,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     private var tabPressed: Int = 0
     private var rowSelected: Int!
+    private var colours: [UIColor] = []
+    
     
     /* Count how many rows are in the main page */
     internal func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
@@ -66,10 +68,65 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         // Assign switches with tags for easy tracking
         cell.cellSwitch.tag = indexPath.row
         
-        if indexPath.row % 2 == 0 {
-            cell.backgroundColor = UIColor(red: 77/255, green: 200/255, blue: 199/255, alpha: 1.0)
+        let reoccuringColour1 = UIColor(red:0.000, green:0.730, blue:1.000, alpha:1.000)
+        let reoccuringColour2 = UIColor(red:0.000, green:0.770, blue:1.000, alpha:1.000)
+        let standardColour1 = UIColor(red: 77/255, green: 200/255, blue: 199/255, alpha: 1.0)
+        let standardColour2 = UIColor(red: 77/255, green: 215/255, blue: 199/255, alpha: 1.0)
+        
+        if(habitData[indexPath.row*3] as! Int == 4){
+            if(indexPath.row == 0){
+                cell.backgroundColor = reoccuringColour1
+                if(colours.isEmpty){
+                    colours = [reoccuringColour1]
+                }else{
+                    colours[0] = reoccuringColour1
+                }
+            }else{
+                if(colours[indexPath.row-1] == reoccuringColour1){
+                    cell.backgroundColor = reoccuringColour2
+                    if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
+                        colours.append(reoccuringColour2)
+                    }else{
+                        colours[indexPath.row] = reoccuringColour2
+                    }
+                }else{
+                    cell.backgroundColor = reoccuringColour1
+                    if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
+                        colours.append(reoccuringColour1)
+                    }else{
+                        colours[indexPath.row] = reoccuringColour1                    }
+                }
+            }
         }else{
-            cell.backgroundColor = UIColor(red: 77/255, green: 215/255, blue: 199/255, alpha: 1.0)
+            /*if indexPath.row % 2 == 0 {
+             cell.backgroundColor = UIColor(red: 77/255, green: 200/255, blue: 199/255, alpha: 1.0)
+             }else{
+             cell.backgroundColor = UIColor(red: 77/255, green: 215/255, blue: 199/255, alpha: 1.0)
+             }*/
+            if(indexPath.row == 0){
+                cell.backgroundColor = standardColour1
+                if(colours.isEmpty){
+                    colours = [standardColour1]
+                }else{
+                    colours[0] = standardColour1
+                }
+            }else{
+                if(colours[indexPath.row-1] == standardColour1){
+                    cell.backgroundColor = standardColour2
+                    if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
+                        colours.append(standardColour2)
+                    }else{
+                        colours[indexPath.row] = standardColour2
+                    }
+                }else{
+                    cell.backgroundColor = standardColour1
+                    if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
+                        colours.append(standardColour1)
+                    }else{
+                        colours[indexPath.row] = standardColour1
+                    }
+                }
+            }
         }
         
         // Check whether a habit is expired
@@ -82,12 +139,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             var STComponents = calender.dateComponents([.year, .month, .day, .hour, .minute, .second], from: storedTime)
             STComponents.second = 0
             let newStoredTime = calender.date(from: STComponents)!
-
+            
             if(newStoredTime < currentTime){
                 switchState[indexPath.row] = 0
                 UserDefaults.standard.set(switchState, forKey: "switchState")
                 cell.cellSwitch.isUserInteractionEnabled = false
                 cell.backgroundColor = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1.0)
+                colours[indexPath.row] = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1.0)
             }else{
                 switchState[indexPath.row] = 1
                 UserDefaults.standard.set(switchState, forKey: "switchState")
@@ -295,11 +353,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
-//    /* Development purpose only */
-//    @IBAction func RemoveAllNotifications(_ sender: Any) {
-//        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-//        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
-//    }
+    //    /* Development purpose only */
+    //    @IBAction func RemoveAllNotifications(_ sender: Any) {
+    //        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+    //        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+    //    }
     
     /* When "Edit" is pressed, change it to "Done" and tell the system to start editing */
     @IBAction func editAction(_ sender: UIBarButtonItem) {
@@ -323,7 +381,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let tempHabits = habits[sourceIndexPath.row]
         habits.remove(at: sourceIndexPath.row)
         habits.insert(tempHabits, at: destinationIndexPath.row)
-       
+        
         let tempHabitDetails = habitDetails[sourceIndexPath.row]
         habitDetails.remove(at: sourceIndexPath.row)
         habitDetails.insert(tempHabitDetails, at: destinationIndexPath.row)
@@ -331,7 +389,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let tempNotificationString = notificationsString[sourceIndexPath.row]
         notificationsString.remove(at: sourceIndexPath.row)
         notificationsString.insert(tempNotificationString, at: destinationIndexPath.row)
-
+        
         let tempHabitData0 = habitData[sourceIndexPath.row*3]
         let tempHabitData1 = habitData[sourceIndexPath.row*3+1]
         let tempHabitData2 = habitData[sourceIndexPath.row*3+2]
@@ -353,6 +411,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         UserDefaults.standard.set(notificationsString, forKey: "notificationsString")
         UserDefaults.standard.set(habitData, forKey: "habitData")
         UserDefaults.standard.set(switchState, forKey: "switchState")
+        
+        habitsTable.reloadData()
         
         print ("UUIDs: \(uuid)")
         print ("habits: \(habits)")
@@ -472,7 +532,4 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    
 }
-
