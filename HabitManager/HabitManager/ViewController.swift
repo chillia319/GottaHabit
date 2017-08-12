@@ -68,10 +68,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         // Assign switches with tags for easy tracking
         cell.cellSwitch.tag = indexPath.row
         
-        let reoccuringColour1 = UIColor(red:0.000, green:0.730, blue:1.000, alpha:1.000)
-        let reoccuringColour2 = UIColor(red:0.000, green:0.770, blue:1.000, alpha:1.000)
-        let standardColour1 = UIColor(red: 77/255, green: 200/255, blue: 199/255, alpha: 1.0)
-        let standardColour2 = UIColor(red: 77/255, green: 215/255, blue: 199/255, alpha: 1.0)
+        let reoccuringColour1 = UIColor(red:0.000, green:0.800, blue:1.000, alpha:1.000)
+        let reoccuringColour2 = UIColor(red:0.000, green:0.850, blue:1.000, alpha:1.000)
+        let standardColour1 = UIColor(red: 77/255, green: 205/255, blue: 199/255, alpha: 1.0)
+        let standardColour2 = UIColor(red: 77/255, green: 220/255, blue: 199/255, alpha: 1.0)
         
         if(habitData[indexPath.row*3] as! Int == 4){
             if(indexPath.row == 0){
@@ -98,11 +98,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }
             }
         }else{
-            /*if indexPath.row % 2 == 0 {
-             cell.backgroundColor = UIColor(red: 77/255, green: 200/255, blue: 199/255, alpha: 1.0)
-             }else{
-             cell.backgroundColor = UIColor(red: 77/255, green: 215/255, blue: 199/255, alpha: 1.0)
-             }*/
             if(indexPath.row == 0){
                 cell.backgroundColor = standardColour1
                 if(colours.isEmpty){
