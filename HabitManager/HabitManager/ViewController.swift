@@ -28,7 +28,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     private var habitData: [Any] = []
     private var switchState: [Int] = []
     
-    private var tabPressed: Int = 0
+    //private var tabPressed: Int = 0
     private var rowSelected: Int!
     private var colours: [UIColor] = []
     
@@ -175,14 +175,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     /* When a tab is presssed */
     internal func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
         if (item.tag == 0){
-            tabPressed = 0
+            setTabPressed(0)
             navBar.topItem?.title = "All Habits"
             UIView.animate(withDuration: 0.2, animations: {
                 self.habitsTable.beginUpdates()
                 self.habitsTable.endUpdates()
             }, completion: nil)
         } else if(item.tag == 1){
-            tabPressed = 1
+            setTabPressed(1)
             navBar.topItem?.title = "Today"
             UIView.animate(withDuration: 0.2, animations: {
                 self.habitsTable.beginUpdates()
@@ -193,7 +193,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     /* Set row height for each row */
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if(tabPressed == 1){
+        if(getTabPressed() == 1){
             if(habitData[indexPath.row*3] as! Int == 0){
                 let todayDate = Date()
                 let currentWeekday = Calendar.current.component(.weekday, from: todayDate)
@@ -229,7 +229,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }else if(habitData[indexPath.row*3] as! Int == 4){
                 return habitsTable.rowHeight
             }
-        }else if (tabPressed == 0){
+        }else if (getTabPressed() == 0){
             return habitsTable.rowHeight
         }
         return habitsTable.rowHeight

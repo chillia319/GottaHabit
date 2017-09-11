@@ -34,17 +34,11 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     @IBOutlet var alertOptionsCell: UITableViewCell!
     @IBOutlet var intervalPickerCell: UITableViewCell!
     
-    private var timePickerVisible = false
-    private var intervalPickerVisible = false
-    private var firstRun = true
-    private var mode: Int = 0
     public var rowPassed: Int = -1
     private static var rowBeingEdited: Int = -1
     private static var repeatMode: Int!
     private var selectedTime: Date!
-    private var selectedInterval: Int = 60
-    private var alertOptionsMode0Text: String = "Never"
-    private var alertOptionsMode1Text: String = "Every 1 minute"
+
     private static var weeklyDaysSelected: [Int] = []
     private static var monthlyDaysSelected: [Int] = []
     private var uuid: [[String]] = []
@@ -54,6 +48,15 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     private var notificationsString: [String] = []
     private var habitData: [Any] = []
     private var switchState: [Int] = []
+    
+    //private var timePickerVisible = false
+    //private var intervalPickerVisible = false
+    //private var firstRun = true
+    //private var mode: Int = 0
+    
+    //private var selectedInterval: Int = 60
+    //private var alertOptionsMode0Text: String = "Never"
+    //private var alertOptionsMode1Text: String = "Every 1 minute"
     
     /* Disables "Save" button if no text is in the textfield */
     internal func checkDescription() {
@@ -69,24 +72,32 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     /* Toggles between "Standard" and "Reoccurring", set up the relevant interface */
     @IBAction func modeToggle(_ sender: UISegmentedControl) {
         if sender.selectedSegmentIndex == 0{
-            mode = 0
-            
+            setMode(0)
+            setIntervalPickerVisible(0)
             // Temporary solution for unfinished "alert" option
             /*if(timeLabel.text == "None"){
              toggleAlertOptionsCell(enable: false)
              }*/
             toggleAlertOptionsCell(enable: false)
-            alertOptionsLabel.text = alertOptionsMode0Text
+            alertOptionsLabel.text = String(cString: getAlertOptionsMode0Text())
         }else{
-            mode = 1
+            setMode(1)
+            setTimePickerVisible(0)
             toggleAlertOptionsCell(enable: true)
-            alertOptionsLabel.text = alertOptionsMode1Text
+            alertOptionsLabel.text = String(cString: getAlertOptionsMode1Text())
         }
         updateTable(withAnimation: true)
     }
     
     /* If "Cancel" button is pressed, go back to the main page */
     @IBAction func cancel(_ sender: Any) {
+        setMode(0)
+        setIntervalPickerVisible(0)
+        setTimePickerVisible(0)
+        setSelectedInterval(Int32(60))
+        setFirstRun(1)
+        setAlertOptionsMode0Text(UnsafeMutablePointer<Int8>(mutating: "None"))
+        setAlertOptionsMode1Text(UnsafeMutablePointer<Int8>(mutating: "Every 1 minute"))
         dismiss(animated: true, completion: nil)
     }
     
@@ -125,6 +136,13 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         }
         
         // Go back to the main page
+        setMode(0)
+        setIntervalPickerVisible(0)
+        setTimePickerVisible(0)
+        setFirstRun(1)
+        setSelectedInterval(Int32(60))
+        setAlertOptionsMode0Text(UnsafeMutablePointer<Int8>(mutating: "None"))
+        setAlertOptionsMode1Text(UnsafeMutablePointer<Int8>(mutating: "Every 1 minute"))
         dismiss(animated: true, completion: nil)
     }
     
@@ -132,7 +150,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     private func saveHabits(){
         // Prepare the label that descripbes the notications
         var beautifiedTimeLabel = ""
-        if(mode == 0){
+        if(getMode() == 0){
             if(timeLabel.text == "None"){
                 beautifiedTimeLabel = "No Alert"
             }else{
@@ -143,7 +161,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 }
             }
         }else{
-            beautifiedTimeLabel = alertOptionsMode1Text
+            beautifiedTimeLabel = String(cString: getAlertOptionsMode1Text())
         }
         
         // If in New Habit Mode
@@ -226,7 +244,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         }
         
         // If in "Standard" mode, schedual the notifications based on time and day selected by the user
-        if(selectedTime != nil && mode == 0){
+        if(selectedTime != nil && getMode() == 0){
             // Weekday based notification, type 0
             if(AddHabitVC.weeklyDaysSelected.count != 0){
                 var tempUUIDs: [String] = []
@@ -283,19 +301,19 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 }
             }
         }// If in "Standard" mode and no time is selected, type 3
-        else if(selectedTime == nil && mode == 0){
+        else if(selectedTime == nil && getMode() == 0){
             notificationType = 3
             saveUUIDs(UUID: ["none"])
         }// If in "Reoccurring" mode, schedual notifications based on interval specified by the user, type 4
-        else if(mode == 1){
+        else if(getMode() == 1){
             notificationType = 4
             checkNotificationAccess = true
             saveUUIDs(UUID: [UUID().uuidString])
             if(AddHabitVC.rowBeingEdited == -1){
-                delegate?.scheduleReoccurringNotification(interval: selectedInterval, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[uuid.count-1][0])
+                delegate?.scheduleReoccurringNotification(interval: Int(getSelectedInterval()), title: habitDescription.text!, body: bodyContentForNotification, id: uuid[uuid.count-1][0])
                 print ("Added uuid: \(uuid[uuid.count-1])\n")
             }else{
-                delegate?.scheduleReoccurringNotification(interval: selectedInterval, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[AddHabitVC.rowBeingEdited][0])
+                delegate?.scheduleReoccurringNotification(interval: Int(getSelectedInterval()), title: habitDescription.text!, body: bodyContentForNotification, id: uuid[AddHabitVC.rowBeingEdited][0])
                 print("Replaced uuid: \(uuid[AddHabitVC.rowBeingEdited])\n")
             }
         }
@@ -323,7 +341,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             if(notificationType == 3){
                 habitData.append(-1)
             }else if(notificationType == 4){
-                habitData.append(selectedInterval)
+                habitData.append(getSelectedInterval())
             }else{
                 habitData.append(selectedTime)
             }
@@ -342,7 +360,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             if(notificationType == 3){
                 habitData[AddHabitVC.rowBeingEdited*3+2] = -1
             }else if(notificationType == 4){
-                habitData[AddHabitVC.rowBeingEdited*3+2] = selectedInterval
+                habitData[AddHabitVC.rowBeingEdited*3+2] = Int(getSelectedInterval())
             }else{
                 habitData[AddHabitVC.rowBeingEdited*3+2] = selectedTime
             }
@@ -376,9 +394,9 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             AddHabitVC.weeklyDaysSelected = []
             let randomModeChance = Int(arc4random_uniform(100))
             if(randomModeChance < 20){
-                mode = 1
+                setMode(1)
             }else{
-                mode = 0
+                setMode(0)
             }
             
             habitDescription.text = "test " + String(count)
@@ -395,7 +413,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 habitSecondDescription.text = ""
             }
             
-            if(mode == 0){
+            if(getMode() == 0){
                 let chance = Int(arc4random_uniform(100))
                 if(chance<10){ // notification type 3
                     timeLabel.text = "None"
@@ -434,8 +452,8 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 }else{
                     randomMinute = arc4random_uniform(60)
                 }
-                convertIntervalAndDisplay(hour: Int(randomHour), minute: Int(randomMinute))
-                selectedInterval = Int(randomHour)*3600 + Int(randomMinute)*60
+                alertOptionsLabel.text = String(cString: convertIntervalAndDisplay(Int32(Int(randomHour)), Int32(randomMinute)))
+                setSelectedInterval(Int32(Int(randomHour)*3600 + Int(randomMinute)*60))
             }
             saveHabits()
             count += 1
@@ -494,13 +512,13 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     /* Stores value that's given by the date picker and make changes to the relevant UI */
     private func setTimelabelValue (){
         timeLabel.text = DateFormatter.localizedString(from: timePicker.date, dateStyle: .none, timeStyle: .short)
-        alertOptionsMode0Text = "At " + timeLabel.text!
-        alertOptionsLabel.text = alertOptionsMode0Text
-        if(firstRun && repeatOptionsLabel.text == "Never"){
+        setAlertOptionsMode0Text(UnsafeMutablePointer<Int8>(mutating: "At " + timeLabel.text!))
+        alertOptionsLabel.text = String(cString: getAlertOptionsMode0Text())
+        if(getFirstRun() == 1 && repeatOptionsLabel.text == "Never"){
             toggleRepeatOptionsCell(enable: true)
             //toggleAlertOptionsCell(enable: true)
             repeatOptionsLabel.text = "Today only"
-            firstRun = false
+            setFirstRun(0)
         }
     }
     
@@ -512,53 +530,62 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     
     /* Toggle the boolean so another method "heightForRowAt" is called and changes the cell height */
     private func toggleShowTimePicker (){
-        timePickerVisible = !timePickerVisible
+        if getTimePickerVisible() == 1 {
+            setTimePickerVisible(0)
+        } else {
+            setTimePickerVisible(1)
+        }
         updateTable(withAnimation: true)
     }
     
     /* Do tasks when interval picker is spinned */
     @IBAction func intervalPickerAction(_ sender: UIDatePicker) {
-        var selectedIntervalHours: Int
-        var selectedIntervalMinutes: Int
+//        var selectedIntervalHours: Int
+//        var selectedIntervalMinutes: Int
         
-        selectedInterval = Int(sender.countDownDuration)
-        selectedIntervalHours = selectedInterval / 3600
-        if selectedIntervalHours == 0{
-            selectedIntervalMinutes = selectedInterval / 60
+        setSelectedInterval(Int32(sender.countDownDuration))
+        setSelectedIntervalHours(getSelectedInterval() / 3600)
+        if getSelectedIntervalHours() == 0{
+            setSelectedIntervalMinutes(getSelectedInterval() / 60)
         } else{
-            selectedIntervalMinutes = selectedInterval % 3600 / 60
+            setSelectedIntervalMinutes(getSelectedInterval() % 3600 / 60)
         }
         
-        convertIntervalAndDisplay(hour: selectedIntervalHours, minute: selectedIntervalMinutes)
+        alertOptionsLabel.text = String(cString: convertIntervalAndDisplay(getSelectedIntervalHours(), getSelectedIntervalMinutes()))
+        
     }
     
     /* convert the interval (in seconds) to readable text */
-    private func convertIntervalAndDisplay(hour: Int, minute: Int){
-        if((hour == 0 || hour == 1) && minute != 0 && minute != 1){
-            alertOptionsMode1Text = "Every \(hour) hour and \(minute) minutes"
-        }else if((hour == 0 || hour == 1) && (minute == 0 || minute == 1)){
-            alertOptionsMode1Text = "Every \(hour) hour and \(minute) minute"
-        }else if(hour != 0 && hour != 1 && (minute == 0 || minute == 1)){
-            alertOptionsMode1Text = "Every \(hour) hours and \(minute) minute"
-        }else{
-            alertOptionsMode1Text = "Every \(hour) hours and \(minute) minutes"
-        }
-        
-        if(hour == 0 && minute != 0 && minute != 1){
-            alertOptionsMode1Text = "Every \(minute) minutes"
-        }else if(minute == 0 && hour != 0 && hour != 1){
-            alertOptionsMode1Text = "Every \(hour) hours"
-        }else if(hour == 0 && (minute == 0 || minute == 1)){
-            alertOptionsMode1Text = "Every \(minute) minute"
-        }else if(minute == 0 && (hour == 0 || hour == 1)){
-            alertOptionsMode1Text = "Every \(hour) hour"
-        }
-        alertOptionsLabel.text = alertOptionsMode1Text
-    }
+//    private func convertIntervalAndDisplay(hour: Int, minute: Int){
+//        if((hour == 0 || hour == 1) && minute != 0 && minute != 1){
+//            alertOptionsMode1Text = "Every \(hour) hour and \(minute) minutes"
+//        }else if((hour == 0 || hour == 1) && (minute == 0 || minute == 1)){
+//            alertOptionsMode1Text = "Every \(hour) hour and \(minute) minute"
+//        }else if(hour != 0 && hour != 1 && (minute == 0 || minute == 1)){
+//            alertOptionsMode1Text = "Every \(hour) hours and \(minute) minute"
+//        }else{
+//            alertOptionsMode1Text = "Every \(hour) hours and \(minute) minutes"
+//        }
+//        
+//        if(hour == 0 && minute != 0 && minute != 1){
+//            alertOptionsMode1Text = "Every \(minute) minutes"
+//        }else if(minute == 0 && hour != 0 && hour != 1){
+//            alertOptionsMode1Text = "Every \(hour) hours"
+//        }else if(hour == 0 && (minute == 0 || minute == 1)){
+//            alertOptionsMode1Text = "Every \(minute) minute"
+//        }else if(minute == 0 && (hour == 0 || hour == 1)){
+//            alertOptionsMode1Text = "Every \(hour) hour"
+//        }
+//        alertOptionsLabel.text = alertOptionsMode1Text
+//    }
     
     /* Toggle the boolean so another method "heightForRowAt" is called and changes the cell height */
     private func toggleShowInvervalPicker(){
-        intervalPickerVisible = !intervalPickerVisible
+        if getIntervalPickerVisible() == 1 {
+            setIntervalPickerVisible(0)
+        } else {
+            setIntervalPickerVisible(1)
+        }
         updateTable(withAnimation: true)
     }
     
@@ -640,10 +667,10 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     /* Changes row heights if certain condition is met */
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if(restorationIdentifier == "NewHabit"){
-            if(mode == 0){
+            if(getMode() == 0){
                 if(indexPath.section == 1 && indexPath.row == 4){
                     return 0
-                }else if(!timePickerVisible && indexPath.section == 1 && indexPath.row == 1){
+                }else if(getTimePickerVisible() == 0 && indexPath.section == 1 && indexPath.row == 1){
                     return 0
                 }else {
                     if(indexPath.section == 1 && indexPath.row == 1){
@@ -653,7 +680,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             }else{
                 if(indexPath.section == 1 && (indexPath.row == 0 || indexPath.row == 1 || indexPath.row == 2)){
                     return 0
-                }else if(!intervalPickerVisible && indexPath.section == 1 && indexPath.row == 4){
+                }else if(getIntervalPickerVisible() == 0 && indexPath.section == 1 && indexPath.row == 4){
                     return 0
                 }else{
                     if(indexPath.section == 1 && indexPath.row == 4){
@@ -735,18 +762,19 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 // If editing reoccuring habit
                 if(habitData[AddHabitVC.rowBeingEdited*3] as! Int == 4){
                     modeToggle.selectedSegmentIndex = 1
-                    mode = 1
+                    setMode(1)
                     
                     // Restore interval picker data
                     var storedIntervalMinutes: Int
-                    selectedInterval = habitData[AddHabitVC.rowBeingEdited*3+2] as! Int
-                    let storedIntervalHours = selectedInterval / 3600
+                    setSelectedInterval(Int32(habitData[AddHabitVC.rowBeingEdited*3+2] as! Int))
+                    
+                    let storedIntervalHours = Int(getSelectedInterval() / 3600)
                     if storedIntervalHours == 0{
-                        storedIntervalMinutes = selectedInterval / 60
+                        storedIntervalMinutes = Int(getSelectedInterval() / 60)
                     } else{
-                        storedIntervalMinutes = selectedInterval % 3600 / 60
+                        storedIntervalMinutes = Int(getSelectedInterval() % 3600 / 60)
                     }
-                    convertIntervalAndDisplay(hour: storedIntervalHours, minute: storedIntervalMinutes)
+                    alertOptionsLabel.text = String(cString: convertIntervalAndDisplay(Int32(storedIntervalHours), Int32(storedIntervalMinutes)))
                     var dateComp = DateComponents()
                     dateComp.hour = storedIntervalHours
                     dateComp.minute = storedIntervalMinutes
@@ -770,8 +798,8 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                         timePicker.setDate(time, animated: true)
                         timeLabel.text = DateFormatter.localizedString(from: timePicker.date, dateStyle: .none, timeStyle: .short)
                         selectedTime = timePicker.date
-                        alertOptionsMode0Text = "At " + timeLabel.text!
-                        alertOptionsLabel.text = alertOptionsMode0Text
+                        setAlertOptionsMode0Text(UnsafeMutablePointer<Int8>(mutating: "At " + timeLabel.text!))
+                        alertOptionsLabel.text = String(cString: getAlertOptionsMode0Text())
                         
                         if(habitData[AddHabitVC.rowBeingEdited*3] as! Int  == 0){
                             AddHabitVC.weeklyDaysSelected = habitData[AddHabitVC.rowBeingEdited*3+1] as! [Int]
