@@ -42,7 +42,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         let cell = tableView.dequeueReusableCell(withIdentifier:"Cell") as! CustomCell
         let currentSwitchState: Int!
-        
+
         // do these for each cell
         cell.habitLabel.text = habits[indexPath.row]
         cell.habitDetailsLabel.numberOfLines = 0
@@ -70,10 +70,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         let reoccuringColour1 = UIColor(red:0.000, green:0.800, blue:1.000, alpha:1.000)
         let reoccuringColour2 = UIColor(red:0.000, green:0.850, blue:1.000, alpha:1.000)
-        let standardColour1 = UIColor(red: 77/255, green: 205/255, blue: 199/255, alpha: 1.0)
-        let standardColour2 = UIColor(red: 77/255, green: 220/255, blue: 199/255, alpha: 1.0)
+        let green1 = UIColor(red:0.000, green:0.800, blue:0.000, alpha:1.000)
+        let green2 = UIColor(red:0.000, green:0.700, blue:0.000, alpha:1.000)
+        let yellow1 = UIColor(red:0.800, green:0.800, blue:0.000, alpha:1.000)
+        let yellow2 = UIColor(red:0.800, green:0.700, blue:0.000, alpha:1.000)
+        let blue1 = UIColor(red:0.000, green:0.000, blue:0.800, alpha:1.000)
+        let blue2 = UIColor(red:0.000, green:0.000, blue:0.700, alpha:1.000)
         
-        if(habitData[indexPath.row*3] as! Int == 4){
+        if(habitData[indexPath.row*3] as! Int == 3 || habitData[indexPath.row*3] as! Int == 4){
             if(indexPath.row == 0){
                 cell.backgroundColor = reoccuringColour1
                 if(colours.isEmpty){
@@ -98,27 +102,91 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }
             }
         }else{
-            if(indexPath.row == 0){
-                cell.backgroundColor = standardColour1
-                if(colours.isEmpty){
-                    colours = [standardColour1]
-                }else{
-                    colours[0] = standardColour1
-                }
-            }else{
-                if(colours[indexPath.row-1] == standardColour1){
-                    cell.backgroundColor = standardColour2
-                    if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
-                        colours.append(standardColour2)
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+            
+            let noonStart = dateFormatter.date(from: "2017-09-11T12:00:00")!
+            let morningStart = dateFormatter.date(from: "2017-09-11T06:00:00")!
+            let nightStart = dateFormatter.date(from: "2017-09-11T19:00:00")!
+            
+            let storedTime = habitData[indexPath.row*3+2] as! Date
+            let morning = storedTime.compareTimeOnly(to: morningStart)
+            let noon = storedTime.compareTimeOnly(to: noonStart)
+            let night = storedTime.compareTimeOnly(to: nightStart)
+            
+            if(morning.rawValue == 1 && noon.rawValue != 1){ // morning
+                if(indexPath.row == 0){
+                    cell.backgroundColor = green1
+                    if(colours.isEmpty){
+                        colours = [green1]
                     }else{
-                        colours[indexPath.row] = standardColour2
+                        colours[0] = green1
                     }
                 }else{
-                    cell.backgroundColor = standardColour1
-                    if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
-                        colours.append(standardColour1)
+                    if(colours[indexPath.row-1] == green1){
+                        cell.backgroundColor = green2
+                        if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
+                            colours.append(green2)
+                        }else{
+                            colours[indexPath.row] = green2
+                        }
                     }else{
-                        colours[indexPath.row] = standardColour1
+                        cell.backgroundColor = green1
+                        if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
+                            colours.append(green1)
+                        }else{
+                            colours[indexPath.row] = green1
+                        }
+                    }
+                }
+            }else if(noon.rawValue == 1 && night.rawValue != 1){ // noon
+                if(indexPath.row == 0){
+                    cell.backgroundColor = yellow1
+                    if(colours.isEmpty){
+                        colours = [yellow1]
+                    }else{
+                        colours[0] = yellow1
+                    }
+                }else{
+                    if(colours[indexPath.row-1] == yellow1){
+                        cell.backgroundColor = yellow2
+                        if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
+                            colours.append(yellow2)
+                        }else{
+                            colours[indexPath.row] = yellow2
+                        }
+                    }else{
+                        cell.backgroundColor = yellow1
+                        if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
+                            colours.append(yellow1)
+                        }else{
+                            colours[indexPath.row] = yellow1
+                        }
+                    }
+                }
+            }else{ // night
+                if(indexPath.row == 0){
+                    cell.backgroundColor = blue1
+                    if(colours.isEmpty){
+                        colours = [blue1]
+                    }else{
+                        colours[0] = blue1
+                    }
+                }else{
+                    if(colours[indexPath.row-1] == blue1){
+                        cell.backgroundColor = blue2
+                        if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
+                            colours.append(blue2)
+                        }else{
+                            colours[indexPath.row] = blue2
+                        }
+                    }else{
+                        cell.backgroundColor = blue1
+                        if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
+                            colours.append(blue1)
+                        }else{
+                            colours[indexPath.row] = blue1
+                        }
                     }
                 }
             }
@@ -232,7 +300,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     /* Do tasks before presenting another view */
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "segueToNewHabit" && habitsTable.isEditing {
+        if segue.identifier == "segueToNewHabit" && habitsTable.isEditing && leftBarItem.title == "Done" {
             if let navVC = segue.destination as? UINavigationController{
                 if let addHabitVC = navVC.viewControllers[0] as? AddHabitVC{
                     addHabitVC.rowPassed = rowSelected
@@ -482,7 +550,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     /* Do tasks when a row is being edited (deletion only for now) */
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        
         // Remove all information related to that row
         if editingStyle == UITableViewCellEditingStyle.delete{
             let center = UNUserNotificationCenter.current()
