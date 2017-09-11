@@ -1,1 +1,1 @@
-GottaHabit is a habit manager app for a University project
+GottaHabit is an iOS habit manager app for a university project
