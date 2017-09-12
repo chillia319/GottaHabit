@@ -120,7 +120,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
             UNUserNotificationCenter.current().removeAllDeliveredNotifications()
         }
-            // User mode
+        // User mode
         else{
             saveHabits()
         }
@@ -158,6 +158,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             let notificationsStringObject = UserDefaults.standard.object(forKey: "notificationsString")
             let switchStateObject = UserDefaults.standard.object(forKey: "switchState")
             
+            // Find the correct row for the new habit to be added, also stores habit description to local storage
             if let tempHabits = habitsObject as? [String]{ //  if not the first habit
                 habits = tempHabits
                 if(selectedTime != nil && mode == 0){ // type 0, 1, 2
@@ -182,7 +183,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 }else if(mode == 1){ // type 4
                     rowToInsert = 0
                 }else{
-                    assert(false, "!!!!!! CHECK INSERTION !!!!!!")
+                    assert(false, "FATAL: unexpected insertion case")
                 }
                 
                 if(appendNeeded){
@@ -194,22 +195,8 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 appendNeeded = true
                 habits = [habitDescription.text!]
             }
-            
-            
             UserDefaults.standard.set(habits, forKey: "habits")
-            
-            // Store habit decription to user's local storage
-            //            if let tempHabits = habitsObject as? [String] {
-            //                habits = tempHabits
-            //                if(appendNeeded){
-            //                    habits.append(habitDescription.text!)
-            //                }else{
-            //                    habits.insert(habitDescription.text!, at: rowToInsert)
-            //                }
-            //            }else{
-            //                habits = [habitDescription.text!]
-            //            }
-            //            UserDefaults.standard.set(habits, forKey: "habits")
+
             
             // Store habit summary to user's local storage
             if let tempHabitDetails = habitDetailsObject as? [String] {
@@ -378,6 +365,15 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         
         // Store backend data to local storage for functions like "resume" and "edit"
         if(AddHabitVC.rowBeingEdited == -1){
+            
+            // Retrieve habit data for type 3 and 4
+            if habitData.isEmpty && habits.count != 0{
+                let habitDataObject = UserDefaults.standard.object(forKey: "habitData")
+                if let temphabitData = habitDataObject as? [Any] {
+                    habitData = temphabitData
+                }
+            }
+            
             // Type
             if !habitData.isEmpty {
                 if(appendNeeded){
@@ -482,26 +478,25 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 mode = 0
             }
             
-            habitDescription.text = "test " + String(count)
-            let randomSummaryBool: UInt32 = arc4random_uniform(2)
+            habitDescription.text = "Test " + String(count)
+            let randomSummaryBool: UInt32 = arc4random_uniform(5)
             if(Int(randomSummaryBool) == 0){
+                habitSecondDescription.text = ""
+            }else{
                 habitSecondDescription.text = "test "
                 var randomWordCount: UInt32 = arc4random_uniform(20)+2
                 while(Int(randomWordCount) != 0){
                     habitSecondDescription.text = habitSecondDescription.text! + "test "
                     randomWordCount -= 1
                 }
-                
-            }else{
-                habitSecondDescription.text = ""
             }
             
             if(mode == 0){
                 let chance = Int(arc4random_uniform(100))
-                if(chance<10){ // notification type 3
+                if(chance < 5){ // notification type 3
                     timeLabel.text = "None"
                     selectedTime = nil
-                }else{ // notification type 0 and 2, 1 not implemented yet
+                }else{ // notification type 0, 1, 2
                     let currentTime = Date()
                     let calender = Calendar.current
                     var components = calender.dateComponents([.year, .month, .day, .hour, .minute, .second], from: currentTime)
@@ -512,7 +507,13 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                     timeLabel.text = DateFormatter.localizedString(from: timePicker.date, dateStyle: .none, timeStyle: .short)
                     selectedTime = randomTime
                     
-                    var randomDaysCount: UInt32 = arc4random_uniform(8)
+                    let type2Chance = Int(arc4random_uniform(100))
+                    var randomDaysCount: UInt32
+                    if(type2Chance < 5){
+                        randomDaysCount = 0 // type 2
+                    }else{
+                        randomDaysCount = arc4random_uniform(7)+1 // type 0 and 1
+                    }
                     while(Int(randomDaysCount) != 0){
                         var randomWeeklyDay: UInt32 = arc4random_uniform(7)
                         while(AddHabitVC.weeklyDaysSelected.contains(Int(randomWeeklyDay))){
@@ -1021,7 +1022,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                     case 6:
                         tempRepeatOptionsString += "Sun "
                     default:
-                        print("Unexpected case when converting weeklyDaysSelected to readable String")
+                        assert(false, "FATAL: Unexpected case when converting weeklyDaysSelected to readable String")
                     }
                 }
             }

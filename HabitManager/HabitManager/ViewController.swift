@@ -45,7 +45,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
         // do these for each cell
         cell.habitLabel.text = habits[indexPath.row]
-        cell.habitDetailsLabel.numberOfLines = 0
         cell.habitDetailsLabel.text = habitDetails[indexPath.row]
         cell.notificationsLabel.text = notificationsString[indexPath.row]
         cell.notificationsLabel.layer.zPosition = 1
@@ -70,14 +69,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         let reoccuringColour1 = UIColor(red:0.000, green:0.800, blue:1.000, alpha:1.000)
         let reoccuringColour2 = UIColor(red:0.000, green:0.850, blue:1.000, alpha:1.000)
-        let green1 = UIColor(red:0.000, green:0.800, blue:0.000, alpha:1.000)
-        let green2 = UIColor(red:0.000, green:0.700, blue:0.000, alpha:1.000)
-        let yellow1 = UIColor(red:0.800, green:0.800, blue:0.000, alpha:1.000)
-        let yellow2 = UIColor(red:0.800, green:0.700, blue:0.000, alpha:1.000)
-        let blue1 = UIColor(red:0.000, green:0.000, blue:0.800, alpha:1.000)
-        let blue2 = UIColor(red:0.000, green:0.000, blue:0.700, alpha:1.000)
-        
+        let morningColour1 = UIColor(red:0.433, green:1.000, blue:0.400, alpha:1.000)
+        let morningColour2 = UIColor(red:0.533, green:1.000, blue:0.500, alpha:1.000)
+        let noonColour1 = UIColor(red:1.000, green:0.751, blue:0.302, alpha:1.000)
+        let noonColour2 = UIColor(red:1.000, green:0.851, blue:0.302, alpha:1.000)
+        let nightColour1 = UIColor(red:0.500, green:0.200, blue:1.000, alpha:1.000)
+        let nightColour2 = UIColor(red:0.500, green:0.000, blue:1.000, alpha:1.000)
+
         if(habitData[indexPath.row*3] as! Int == 3 || habitData[indexPath.row*3] as! Int == 4){
+            cell.habitLabel.textColor = UIColor(red:0.259, green:0.259, blue:0.259, alpha:1.000)
+            cell.habitDetailsLabel.textColor = UIColor(red:0.369, green:0.369, blue:0.369, alpha:1.000)
             if(indexPath.row == 0){
                 cell.backgroundColor = reoccuringColour1
                 if(colours.isEmpty){
@@ -115,77 +116,83 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             let night = storedTime.compareTimeOnly(to: nightStart)
             
             if(morning.rawValue == 1 && noon.rawValue != 1){ // morning
+                cell.habitLabel.textColor = UIColor(red:0.259, green:0.259, blue:0.259, alpha:1.000)
+                cell.habitDetailsLabel.textColor = UIColor(red:0.369, green:0.369, blue:0.369, alpha:1.000)
                 if(indexPath.row == 0){
-                    cell.backgroundColor = green1
+                    cell.backgroundColor = morningColour1
                     if(colours.isEmpty){
-                        colours = [green1]
+                        colours = [morningColour1]
                     }else{
-                        colours[0] = green1
+                        colours[0] = morningColour1
                     }
                 }else{
-                    if(colours[indexPath.row-1] == green1){
-                        cell.backgroundColor = green2
+                    if(colours[indexPath.row-1] == morningColour1){
+                        cell.backgroundColor = morningColour2
                         if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
-                            colours.append(green2)
+                            colours.append(morningColour2)
                         }else{
-                            colours[indexPath.row] = green2
+                            colours[indexPath.row] = morningColour2
                         }
                     }else{
-                        cell.backgroundColor = green1
+                        cell.backgroundColor = morningColour1
                         if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
-                            colours.append(green1)
+                            colours.append(morningColour1)
                         }else{
-                            colours[indexPath.row] = green1
+                            colours[indexPath.row] = morningColour1
                         }
                     }
                 }
             }else if(noon.rawValue == 1 && night.rawValue != 1){ // noon
+                cell.habitLabel.textColor = UIColor(red:0.259, green:0.259, blue:0.259, alpha:1.000)
+                cell.habitDetailsLabel.textColor = UIColor(red:0.369, green:0.369, blue:0.369, alpha:1.000)
                 if(indexPath.row == 0){
-                    cell.backgroundColor = yellow1
+                    cell.backgroundColor = noonColour1
                     if(colours.isEmpty){
-                        colours = [yellow1]
+                        colours = [noonColour1]
                     }else{
-                        colours[0] = yellow1
+                        colours[0] = noonColour1
                     }
                 }else{
-                    if(colours[indexPath.row-1] == yellow1){
-                        cell.backgroundColor = yellow2
+                    if(colours[indexPath.row-1] == noonColour1){
+                        cell.backgroundColor = noonColour2
                         if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
-                            colours.append(yellow2)
+                            colours.append(noonColour2)
                         }else{
-                            colours[indexPath.row] = yellow2
+                            colours[indexPath.row] = noonColour2
                         }
                     }else{
-                        cell.backgroundColor = yellow1
+                        cell.backgroundColor = noonColour1
                         if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
-                            colours.append(yellow1)
+                            colours.append(noonColour1)
                         }else{
-                            colours[indexPath.row] = yellow1
+                            colours[indexPath.row] = noonColour1
                         }
                     }
                 }
             }else{ // night
+                cell.habitLabel.textColor = UIColor(red:0.902, green:0.800, blue:1.000, alpha:1.000)
+                cell.habitDetailsLabel.textColor = UIColor(red:0.802, green:0.700, blue:1.000, alpha:1.000)
                 if(indexPath.row == 0){
-                    cell.backgroundColor = blue1
+                    cell.backgroundColor = nightColour1
                     if(colours.isEmpty){
-                        colours = [blue1]
+                        colours = [nightColour1]
                     }else{
-                        colours[0] = blue1
+                        colours[0] = nightColour1
                     }
                 }else{
-                    if(colours[indexPath.row-1] == blue1){
-                        cell.backgroundColor = blue2
+                    if(colours[indexPath.row-1] == nightColour1){
+                        cell.backgroundColor = nightColour2
                         if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
-                            colours.append(blue2)
+                            colours.append(nightColour2)
                         }else{
-                            colours[indexPath.row] = blue2
+                            colours[indexPath.row] = nightColour2
                         }
                     }else{
-                        cell.backgroundColor = blue1
+                        cell.backgroundColor = nightColour1
                         if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
-                            colours.append(blue1)
+                            colours.append(nightColour1)
                         }else{
-                            colours[indexPath.row] = blue1
+                            colours[indexPath.row] = nightColour1
                         }
                     }
                 }
@@ -525,12 +532,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 print("Resumed uuid: \(uuidsForResume[0])")
                 delegate?.scheduleOneTimeNotification(at: habitData[row*3+2] as! Date, title: habits[row], body: bodyContentForNotification, id: uuidsForResume[0])
             case 3: // If current row does not need any notification which should not be triggerd since the switch is hidden
-                print("BS there isn't even a switch")
+                assert(false, "FATAL: Reschedualing type 3 failed (switch should be hidden)")
             case 4: // If current row needs reoccuring notifications
                 print("Resumed uuid: \(uuidsForResume[0])")
                 delegate?.scheduleReoccurringNotification(interval: habitData[row*3+2] as! Int, title: habits[row], body: bodyContentForNotification, id: uuidsForResume[0])
             default: // Should not trigger
-                print("Unexpected case when reading notificationType from resumeFunData")
+                assert(false, "FATAL: Unexpected case when reading notificationType from resumeFunData")
             }
         }// Remove notification requests assosiated with this row
         else{
