@@ -124,7 +124,6 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
         else{
             saveHabits()
         }
-        
         // Go back to the main page
         dismiss(animated: true, completion: nil)
     }
@@ -183,7 +182,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 }else if(mode == 1){ // type 4
                     rowToInsert = 0
                 }else{
-                    assert(false, "FATAL: unexpected insertion case")
+                    assert(false, "FATAL: Unexpected insertion case")
                 }
                 
                 if(appendNeeded){
@@ -196,7 +195,6 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 habits = [habitDescription.text!]
             }
             UserDefaults.standard.set(habits, forKey: "habits")
-
             
             // Store habit summary to user's local storage
             if let tempHabitDetails = habitDetailsObject as? [String] {
@@ -238,16 +236,50 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             UserDefaults.standard.set(switchState, forKey: "switchState")
         }// If in Edit Mode
         else{
-            habits[AddHabitVC.rowBeingEdited] = habitDescription.text!
+            // Remove old data to find the correct row for new data to be inserted
+            habits.remove(at: AddHabitVC.rowBeingEdited)
+            for _ in 0...2{
+                habitData.remove(at: AddHabitVC.rowBeingEdited*3)
+            }
+            habitDetails.remove(at: AddHabitVC.rowBeingEdited)
+            notificationsString.remove(at: AddHabitVC.rowBeingEdited)
+            switchState.remove(at: AddHabitVC.rowBeingEdited)
+            
+            if(selectedTime != nil && mode == 0){ // type 0, 1, 2
+                for index in 0..<habits.count{
+                    if(timeRequiredTypes.contains(habitData[index*3] as! Int)){ // if this notification has a selected time
+                        let result = selectedTime.compareTimeOnly(to: habitData[index*3+2] as! Date)
+                        if(result.rawValue == -1){
+                            rowToInsert = index
+                            break
+                        }
+                    }
+                }
+                if(rowToInsert == -1){ // if didn't find a row to insert
+                    appendNeeded = true
+                }
+            }else if(selectedTime == nil && mode == 0){ // type 3
+                rowToInsert = 0
+            }else if(mode == 1){ // type 4
+                rowToInsert = 0
+            }else{
+                assert(false, "FATAL: Unexpected insertion case")
+            }
+            
+            if(appendNeeded){
+                habits.append(habitDescription.text!)
+                habitDetails.append(habitSecondDescription.text!)
+                notificationsString.append(beautifiedTimeLabel)
+                switchState.append(1)
+            }else{
+                habits.insert(habitDescription.text!, at: rowToInsert)
+                habitDetails.insert(habitSecondDescription.text!, at: rowToInsert)
+                notificationsString.insert(beautifiedTimeLabel, at: rowToInsert)
+                switchState.insert(1, at: rowToInsert)
+            }
             UserDefaults.standard.set(habits, forKey: "habits")
-            
-            habitDetails[AddHabitVC.rowBeingEdited] = habitSecondDescription.text!
             UserDefaults.standard.set(habitDetails, forKey: "habitDetails")
-            
-            notificationsString[AddHabitVC.rowBeingEdited] = beautifiedTimeLabel
             UserDefaults.standard.set(notificationsString, forKey: "notificationsString")
-            
-            switchState[AddHabitVC.rowBeingEdited] = 1
             UserDefaults.standard.set(switchState, forKey: "switchState")
             
             let center = UNUserNotificationCenter.current()
@@ -301,7 +333,11 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                         print("Added multiple uuids: \(uuid[rowToInsert])\n")
                     }
                 }else{
-                    print("Replaced multiple uuids: \(uuid[AddHabitVC.rowBeingEdited])\n")
+                    if(appendNeeded){
+                        print("Replaced with multiple uuids: \(uuid[uuid.count-1])\n")
+                    }else{
+                        print("Replaced with multiple uuids: \(uuid[rowToInsert])\n")
+                    }
                 }
             }// Month day based notification, type 1
             else if(AddHabitVC.monthlyDaysSelected.count != 0){
@@ -322,7 +358,11 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                         print("Added multiple uuids: \(uuid[rowToInsert])\n")
                     }
                 }else{
-                    print("Replaced multiple uuids: \(uuid[AddHabitVC.rowBeingEdited])\n")
+                    if(appendNeeded){
+                        print("Replaced with multiple uuids: \(uuid[uuid.count-1])\n")
+                    }else{
+                        print("Replaced with multiple uuids: \(uuid[rowToInsert])\n")
+                    }
                 }
             }// One time notification, type 2
             else{
@@ -330,15 +370,21 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 checkNotificationAccess = true
                 saveUUIDs(UUID: [UUID().uuidString], appendNeeded: appendNeeded, rowToInsert: rowToInsert)
                 if(AddHabitVC.rowBeingEdited == -1){
-                    delegate?.scheduleOneTimeNotification(at: selectedTime, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[uuid.count-1][0])
                     if(appendNeeded){
+                        delegate?.scheduleOneTimeNotification(at: selectedTime, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[uuid.count-1][0])
                         print ("Added uuid: \(uuid[uuid.count-1])\n")
                     }else{
+                        delegate?.scheduleOneTimeNotification(at: selectedTime, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[rowToInsert][0])
                         print ("Added uuid: \(uuid[rowToInsert])\n")
                     }
                 }else{
-                    delegate?.scheduleOneTimeNotification(at: selectedTime, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[AddHabitVC.rowBeingEdited][0])
-                    print("Replaced uuid: \(uuid[AddHabitVC.rowBeingEdited])\n")
+                    if(appendNeeded){
+                        delegate?.scheduleOneTimeNotification(at: selectedTime, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[uuid.count-1][0])
+                        print ("Replaced with uuid: \(uuid[uuid.count-1])\n")
+                    }else{
+                        delegate?.scheduleOneTimeNotification(at: selectedTime, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[rowToInsert][0])
+                        print ("Replaced with uuid: \(uuid[rowToInsert])\n")
+                    }
                 }
             }
         }// If in "Standard" mode and no time is selected, type 3
@@ -351,15 +397,21 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             checkNotificationAccess = true
             saveUUIDs(UUID: [UUID().uuidString], appendNeeded: appendNeeded, rowToInsert: rowToInsert)
             if(AddHabitVC.rowBeingEdited == -1){
-                delegate?.scheduleReoccurringNotification(interval: selectedInterval, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[uuid.count-1][0])
                 if(appendNeeded){
+                    delegate?.scheduleReoccurringNotification(interval: selectedInterval, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[uuid.count-1][0])
                     print ("Added uuid: \(uuid[uuid.count-1])\n")
                 }else{
+                    delegate?.scheduleReoccurringNotification(interval: selectedInterval, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[rowToInsert][0])
                     print ("Added uuid: \(uuid[rowToInsert])\n")
                 }
             }else{
-                delegate?.scheduleReoccurringNotification(interval: selectedInterval, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[AddHabitVC.rowBeingEdited][0])
-                print("Replaced uuid: \(uuid[AddHabitVC.rowBeingEdited])\n")
+                if(appendNeeded){
+                    delegate?.scheduleReoccurringNotification(interval: selectedInterval, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[uuid.count-1][0])
+                    print ("Replaced with uuid: \(uuid[uuid.count-1])\n")
+                }else{
+                    delegate?.scheduleReoccurringNotification(interval: selectedInterval, title: habitDescription.text!, body: bodyContentForNotification, id: uuid[rowToInsert][0])
+                    print ("Replaced with uuid: \(uuid[rowToInsert])\n")
+                }
             }
         }
         
@@ -421,23 +473,44 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 }
             }
         }else{
-            // Type
-            habitData[AddHabitVC.rowBeingEdited*3] = notificationType
-            
-            // Weekly Days/Monthly Days
-            if(notificationDays != []){
-                habitData[AddHabitVC.rowBeingEdited*3+1] = notificationDays
+            if(appendNeeded){
+                // Type
+                habitData.append(notificationType)
+                
+                // Weekly Days/Monthly Days
+                if(notificationDays != []){
+                    habitData.append(notificationDays)
+                }else{
+                    habitData.append(-1)
+                }
+                
+                // Time/Interval
+                if(notificationType == 3){
+                    habitData.append(-1)
+                }else if(notificationType == 4){
+                    habitData.append(selectedInterval)
+                }else{
+                    habitData.append(selectedTime)
+                }
             }else{
-                habitData[AddHabitVC.rowBeingEdited*3+1] = -1
-            }
-            
-            // Time/Interval
-            if(notificationType == 3){
-                habitData[AddHabitVC.rowBeingEdited*3+2] = -1
-            }else if(notificationType == 4){
-                habitData[AddHabitVC.rowBeingEdited*3+2] = selectedInterval
-            }else{
-                habitData[AddHabitVC.rowBeingEdited*3+2] = selectedTime
+                // Type
+                habitData.insert(notificationType, at: rowToInsert*3)
+                
+                // Weekly Days/Monthly Days
+                if(notificationDays != []){
+                    habitData.insert(notificationDays, at: rowToInsert*3+1)
+                }else{
+                    habitData.insert(-1, at: rowToInsert*3+1)
+                }
+                
+                // Time/Interval
+                if(notificationType == 3){
+                    habitData.insert(-1, at: rowToInsert*3+2)
+                }else if(notificationType == 4){
+                    habitData.insert(selectedInterval, at: rowToInsert*3+2)
+                }else{
+                    habitData.insert(selectedTime, at: rowToInsert*3+2)
+                }
             }
         }
         print ("habits data: \(habitData)")
@@ -460,7 +533,12 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 uuid = [UUID]
             }
         }else{
-            uuid[AddHabitVC.rowBeingEdited] = UUID
+            uuid.remove(at: AddHabitVC.rowBeingEdited)
+            if(appendNeeded){
+                uuid.append(UUID)
+            }else{
+                uuid.insert(UUID, at: rowToInsert)
+            }
         }
         
         UserDefaults.standard.set(uuid, forKey: "uuid")
@@ -735,7 +813,6 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                     }
                 }
             }
-            
         }
     }
     

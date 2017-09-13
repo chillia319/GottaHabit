@@ -345,9 +345,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         NotificationCenter.default.addObserver(self, selector:#selector(ViewController.startTimer), name:
             NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
         //startTimer()
-        
-        //UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-        //UNUserNotificationCenter.current().removeAllDeliveredNotifications()
     }
     
     /* Create a new timer and excute "reloadData" based on time interval */
