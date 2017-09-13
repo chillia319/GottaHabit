@@ -392,6 +392,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             switchState = tempSwitchState
         }
         
+        // Disable "Edit" button is no row is present
+        if(habits.isEmpty){
+            leftBarItem.isEnabled = false
+        }else{
+            leftBarItem.isEnabled = true
+        }
+        
         // Hide quote is a row is present
         if(!habits.isEmpty){
             quote.isHidden = true
@@ -436,6 +443,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             leftBarItem.title = "Done"
             rightBarItem.isEnabled = false
             habitsTable.setEditing(true,animated:true)
+        }
+    }
+    
+    // Disable the ability to move a row for certain notification types
+    func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+        if(habitData[indexPath.row*3] as! Int == 3 || habitData[indexPath.row*3] as! Int == 4){
+            return true
+        }else{
+            return false
         }
     }
     
@@ -577,6 +593,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 habitData.remove(at: (indexPath.row*3))
             }
             print ("habitData after deletion: \(habitData)\n")
+            
+            // Disable "Edit" button if no row is present
+            if(habits.isEmpty){
+                leftBarItem.isEnabled = false
+            }else{
+                leftBarItem.isEnabled = true
+            }
             
             // Show quote is no row is present
             if(habits.isEmpty){
