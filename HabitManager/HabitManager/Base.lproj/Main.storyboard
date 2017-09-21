@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="Helvetica.ttc">
+            <string>Helvetica</string>
+            <string>Helvetica-Bold</string>
+        </array>
+    </customFonts>
     <scenes>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
@@ -39,7 +45,7 @@
                                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="eHe-9L-1WM">
                                             <connections>
                                                 <segue destination="cGE-b2-RA0" kind="popoverPresentation" identifier="segueToNewHabit" popoverAnchorBarButtonItem="eHe-9L-1WM" id="HXH-6j-DJa">
-                                                    <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                                    <popoverArrowDirection key="popoverArrowDirection" up="YES"/>
                                                 </segue>
                                             </connections>
                                         </barButtonItem>
@@ -105,12 +111,12 @@
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="zd8-wK-VEW" firstAttribute="leading" secondItem="a8t-xB-mKS" secondAttribute="trailing" priority="999" id="4k8-WS-tD4"/>
                                                 <constraint firstItem="fGJ-Pd-cM7" firstAttribute="top" secondItem="Y3F-qj-t1H" secondAttribute="topMargin" priority="999" constant="-2" id="5qK-Fg-a5D"/>
                                                 <constraint firstItem="fGJ-Pd-cM7" firstAttribute="leading" secondItem="Y3F-qj-t1H" secondAttribute="leading" priority="999" id="BAm-tq-fv5"/>
                                                 <constraint firstItem="Vj2-dm-NQP" firstAttribute="top" secondItem="P9J-Us-aUR" secondAttribute="bottom" constant="3.5" id="Byr-Aa-v9L"/>
                                                 <constraint firstItem="MtU-Ao-lpq" firstAttribute="centerY" secondItem="Y3F-qj-t1H" secondAttribute="centerY" priority="999" id="CBQ-KP-iKx"/>
                                                 <constraint firstItem="P9J-Us-aUR" firstAttribute="top" secondItem="a8t-xB-mKS" secondAttribute="bottom" constant="8" id="HHE-MG-Ren"/>
+                                                <constraint firstItem="zd8-wK-VEW" firstAttribute="leading" secondItem="a8t-xB-mKS" secondAttribute="trailing" priority="999" id="RIx-kO-sMx"/>
                                                 <constraint firstItem="a8t-xB-mKS" firstAttribute="top" secondItem="Y3F-qj-t1H" secondAttribute="topMargin" priority="999" constant="-2" id="Tsg-xB-wRZ"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="Vj2-dm-NQP" secondAttribute="trailing" priority="999" constant="63" id="W0m-IN-P5V"/>
                                                 <constraint firstItem="zd8-wK-VEW" firstAttribute="top" secondItem="Y3F-qj-t1H" secondAttribute="topMargin" priority="999" constant="-2" id="YFQ-v2-1X4"/>
@@ -138,6 +144,18 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="38d-IM-vjR"/>
                                 </connections>
                             </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="&quot;It always seems impossible until it's done.&quot;" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PlV-YF-7vd">
+                                <rect key="frame" x="40" y="304.5" width="296" height="18"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" red="0.80000001190000003" green="0.80000001190000003" blue="0.80000001190000003" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Nelson Mandela" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Aef-Wn-5gh">
+                                <rect key="frame" x="138" y="325.5" width="98" height="16"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                <color key="textColor" red="0.80000001190000003" green="0.80000001190000003" blue="0.80000001190000003" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <tabBar contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="toO-aA-OGI">
                                 <rect key="frame" x="0.0" y="618" width="375" height="49"/>
                                 <items>
@@ -146,35 +164,22 @@
                                 </items>
                                 <color key="barTintColor" red="0.20000000300000001" green="0.20000000300000001" blue="0.20000000300000001" alpha="1" colorSpace="calibratedRGB"/>
                             </tabBar>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="&quot;It always seems impossible until it's done.&quot;" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PlV-YF-7vd">
-                                <rect key="frame" x="40" y="305" width="296" height="18"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <color key="textColor" red="0.80000001190000003" green="0.80000001190000003" blue="0.80000001190000003" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Nelson Mandela" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Aef-Wn-5gh">
-                                <rect key="frame" x="138" y="326" width="98" height="16"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                <color key="textColor" red="0.80000001190000003" green="0.80000001190000003" blue="0.80000001190000003" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.20000000300000001" green="0.20000000300000001" blue="0.20000000300000001" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="aYi-Wc-6sU" secondAttribute="trailing" id="3I9-sX-zza"/>
-                            <constraint firstItem="toO-aA-OGI" firstAttribute="top" secondItem="3Ns-cp-gLZ" secondAttribute="bottom" id="5qz-Lc-4vd"/>
-                            <constraint firstAttribute="trailing" secondItem="toO-aA-OGI" secondAttribute="trailing" id="J4e-f2-cZr"/>
+                            <constraint firstAttribute="bottom" secondItem="toO-aA-OGI" secondAttribute="bottom" id="5es-lJ-jzm"/>
                             <constraint firstItem="3Ns-cp-gLZ" firstAttribute="top" secondItem="aYi-Wc-6sU" secondAttribute="bottom" id="N0p-DC-Ftj"/>
                             <constraint firstItem="PlV-YF-7vd" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" priority="999" constant="-20" id="Oc7-uB-9Nz"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="toO-aA-OGI" secondAttribute="bottom" id="QDV-W8-WVW"/>
-                            <constraint firstItem="toO-aA-OGI" firstAttribute="top" secondItem="3Ns-cp-gLZ" secondAttribute="bottom" id="TWA-qb-DUr"/>
                             <constraint firstItem="aYi-Wc-6sU" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="Tw7-n6-D8K"/>
                             <constraint firstItem="Aef-Wn-5gh" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" priority="999" id="Ub1-g4-tq4"/>
                             <constraint firstItem="Aef-Wn-5gh" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" priority="999" id="XVO-p8-isg"/>
+                            <constraint firstItem="toO-aA-OGI" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="YAE-tC-oeD"/>
                             <constraint firstItem="PlV-YF-7vd" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" priority="999" id="YAL-fW-HA7"/>
                             <constraint firstAttribute="trailing" secondItem="3Ns-cp-gLZ" secondAttribute="trailing" id="jxV-Uy-Xa1"/>
                             <constraint firstItem="aYi-Wc-6sU" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="mZG-DV-3Xo"/>
-                            <constraint firstItem="toO-aA-OGI" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="soC-HM-1Gn"/>
+                            <constraint firstAttribute="trailing" secondItem="toO-aA-OGI" secondAttribute="trailing" id="r74-oG-JEV"/>
+                            <constraint firstItem="toO-aA-OGI" firstAttribute="top" secondItem="3Ns-cp-gLZ" secondAttribute="bottom" id="t7i-0d-cov"/>
                             <constraint firstItem="3Ns-cp-gLZ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="wYz-AT-yHM"/>
                         </constraints>
                     </view>
@@ -190,7 +195,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="764" y="631.93403298350825"/>
+            <point key="canvasLocation" x="764" y="631.77339901477831"/>
         </scene>
         <!--New Habit-->
         <scene sceneID="Qru-e3-PQi">
@@ -1192,7 +1197,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="cGE-b2-RA0" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="uqm-IJ-nzz">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>

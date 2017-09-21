@@ -875,7 +875,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     /* Do tasks when New Habit/Edit Habit page (includes two views) is first loaded */
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         self.navigationController?.navigationBar.isTranslucent = false
         
         if(restorationIdentifier == "NewHabit"){

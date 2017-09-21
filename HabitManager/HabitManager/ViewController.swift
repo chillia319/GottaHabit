@@ -348,7 +348,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     /* Create a new timer and excute "reloadData" based on time interval */
-    func startTimer(){
+    @objc func startTimer(){
         if(timer==nil){
             print("timer started")
             timer = Timer.scheduledTimer(timeInterval: 15.0, target: self, selector:#selector(ViewController.reloadData), userInfo: nil, repeats: true)
@@ -356,7 +356,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     /* reload table data */
-    func reloadData(){
+    @objc func reloadData(){
         if(!habitsTable.isEditing){
             habitsTable.reloadData()
             print("reloaded")
@@ -415,23 +415,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     /* Do tasks when the main page is appeared */
     override func viewDidAppear(_ animated: Bool) {
         // Check if notification access is given by the user, only checks if user added a habit which requires notification access
-        let notificationAccess = UIApplication.shared.currentUserNotificationSettings!.types
-        if notificationAccess == [] && checkNotificationAccess{
-            print("notifications not enabled")
-            let alertController = UIAlertController(title: "Notification Not Enabled", message: "You can still use GottaHabit, but the functionalities will be extremly limited, enable notifications by going to Settings->GottaHabit->Notifications", preferredStyle: .alert)
-            let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-            alertController.addAction(defaultAction)
-            present(alertController, animated: true, completion: nil)
-            
-            checkNotificationAccess = false
+        UNUserNotificationCenter.current().getNotificationSettings { (settings) in
+            if checkNotificationAccess && settings.authorizationStatus != .authorized {
+                print("notifications not enabled")
+                let alertController = UIAlertController(title: "Notification Not Enabled", message: "You can still use GottaHabit, but the functionalities will be extremly limited, enable notifications by going to Settings->GottaHabit->Notifications", preferredStyle: .alert)
+                let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                alertController.addAction(defaultAction)
+                self.present(alertController, animated: true, completion: nil)
+                
+                checkNotificationAccess = false
+            }
         }
     }
-    
-    //    /* Development purpose only */
-    //    @IBAction func RemoveAllNotifications(_ sender: Any) {
-    //        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-    //        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
-    //    }
     
     /* When "Edit" is pressed, change it to "Done" and tell the system to start editing */
     @IBAction func editAction(_ sender: UIBarButtonItem) {

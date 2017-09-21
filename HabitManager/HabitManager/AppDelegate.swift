@@ -18,12 +18,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         UINavigationBar.appearance().barTintColor = UIColor(red: 67/255, green: 66/255, blue: 64/255, alpha: 1.0)
-        UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName:UIColor.white]
-        UIApplication.shared.statusBarStyle = .lightContent
-        UINavigationBar.appearance().clipsToBounds = true
-        UITabBar.appearance().tintColor = UIColor(red: 77/255, green: 195/255, blue: 199/255, alpha: 1.0)
-        let statusBar: UIView = UIApplication.shared.value(forKey: "statusBar") as! UIView
-        statusBar.backgroundColor = UIColor(red: 67/255, green: 66/255, blue: 64/255, alpha: 1.0)        
+        UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor:UIColor.white]
+        UIApplication.shared.statusBarView?.backgroundColor = UIColor(red: 67/255, green: 66/255, blue: 64/255, alpha: 1.0)
+         UIApplication.shared.statusBarStyle = .lightContent 
+        UITabBar.appearance().tintColor = UIColor(red: 77/255, green: 195/255, blue: 199/255, alpha: 1.0)      
         // Request access to notifications
         let centre = UNUserNotificationCenter.current()
         centre.requestAuthorization(options: [.alert, .sound]) {(accepted, error) in
@@ -216,25 +214,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
 }
 
-/*extension UIApplication {
-    class func topViewController(controller: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
-        if let navigationController = controller as? UINavigationController {
-            return topViewController(controller: navigationController.visibleViewController)
-        }
-        if let tabController = controller as? UITabBarController {
-            if let selected = tabController.selectedViewController {
-                return topViewController(controller: selected)
-            }
-        }
-        if let presented = controller?.presentedViewController {
-            return topViewController(controller: presented)
-        }
-        return controller
+extension UIApplication {
+    var statusBarView: UIView? {
+        return value(forKey: "statusBar") as? UIView
     }
-}*/
-
-/*if let topController = UIApplication.topViewController() {
- 
- }*/
+}
 
 
