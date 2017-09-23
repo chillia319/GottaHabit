@@ -201,19 +201,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         // Check whether a habit is expired
         if(habitData[indexPath.row*3] as! Int == 2){
-            let calender = Calendar.current
-            
-            let currentTime = Date()
-            
-            let storedTime = habitData[indexPath.row*3+2] as! Date
-            var STComponents = calender.dateComponents([.year, .month, .day, .hour, .minute, .second], from: storedTime)
-            STComponents.second = 0
-            let newStoredTime = calender.date(from: STComponents)!
-            
-            if(newStoredTime < currentTime){
+            if(dateInThePast(date: habitData[indexPath.row*3+2] as! Date)){
                 switchState[indexPath.row] = 0
                 UserDefaults.standard.set(switchState, forKey: "switchState")
                 cell.cellSwitch.isUserInteractionEnabled = false
+                cell.habitLabel.textColor = UIColor(red:0.259, green:0.259, blue:0.259, alpha:1.000)
                 cell.backgroundColor = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1.0)
                 colours[indexPath.row] = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1.0)
             }else{
@@ -247,14 +239,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if (item.tag == 0){
             tabPressed = 0
             navBar.topItem?.title = "All Habits"
-            UIView.animate(withDuration: 0.2, animations: {
+            UIView.animate(withDuration: 0.3, animations: {
                 self.habitsTable.beginUpdates()
                 self.habitsTable.endUpdates()
             }, completion: nil)
         } else if(item.tag == 1){
             tabPressed = 1
             navBar.topItem?.title = "Today"
-            UIView.animate(withDuration: 0.2, animations: {
+            UIView.animate(withDuration: 0.3, animations: {
                 self.habitsTable.beginUpdates()
                 self.habitsTable.endUpdates()
             }, completion: nil)
@@ -303,6 +295,23 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             return habitsTable.rowHeight
         }
         return habitsTable.rowHeight
+    }
+    
+    func dateInThePast(date: Date) -> Bool{
+        let calender = Calendar.current
+        
+        let currentTime = Date()
+        
+        let storedTime = date
+        var STComponents = calender.dateComponents([.year, .month, .day, .hour, .minute, .second], from: storedTime)
+        STComponents.second = 0
+        let newStoredTime = calender.date(from: STComponents)!
+        
+        if(newStoredTime < currentTime){
+            return true
+        }else{
+            return false
+        }
     }
     
     /* Do tasks before presenting another view */
@@ -390,6 +399,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         if let tempSwitchState = switchStateObject as? [Int] {
             switchState = tempSwitchState
+        }
+        
+        if(leftBarItem.title == "Edit"){
+            habitsTable.setEditing(false,animated:true)
         }
         
         // Disable "Edit" button is no row is present
@@ -502,6 +515,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     /* Controls the Switches for suspending and resuming notifications */
     @IBAction func cellSwitchAction(_ sender: UISwitch) {
         let row = sender.tag
+        
+        // Check if the habit is already expired
+        if(habitData[row*3] as! Int == 2){
+            if(dateInThePast(date: habitData[row*3+2] as! Date)){
+                habitsTable.reloadData()
+            }
+        }
+        
         if(sender.isOn){
             let delegate = UIApplication.shared.delegate as? AppDelegate
             
@@ -591,7 +612,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             
             // Disable "Edit" button if no row is present
             if(habits.isEmpty){
+                leftBarItem.title = "Edit"
                 leftBarItem.isEnabled = false
+                rightBarItem.isEnabled = true
             }else{
                 leftBarItem.isEnabled = true
             }
