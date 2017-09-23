@@ -209,8 +209,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 cell.backgroundColor = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1.0)
                 colours[indexPath.row] = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1.0)
             }else{
-                switchState[indexPath.row] = 1
-                UserDefaults.standard.set(switchState, forKey: "switchState")
                 cell.cellSwitch.isUserInteractionEnabled = true
             }
         }else{
