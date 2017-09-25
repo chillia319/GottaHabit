@@ -113,6 +113,22 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 //                cell.habitLabel.textColor = UIColor(red:0.259, green:0.259, blue:0.259, alpha:1.000)
 //                cell.habitDetailsLabel.textColor = UIColor(red:0.369, green:0.369, blue:0.369, alpha:1.000)
 //            }
+            
+            // Check whether a habit is expired
+            if(habitData[filteredIndexes[indexPath.row]*3] as! Int == 2){
+                if(dateInThePast(date: habitData[filteredIndexes[indexPath.row]*3+2] as! Date)){
+                    switchState[filteredIndexes[indexPath.row]] = 0
+                    UserDefaults.standard.set(switchState, forKey: "switchState")
+                    cell.cellSwitch.isUserInteractionEnabled = false
+                    cell.habitLabel.textColor = UIColor(red:0.259, green:0.259, blue:0.259, alpha:1.000)
+                    cell.habitDetailsLabel.textColor = UIColor(red:0.369, green:0.369, blue:0.369, alpha:1.000)
+                    cell.backgroundColor = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1.0)
+                }else{
+                    cell.cellSwitch.isUserInteractionEnabled = true
+                }
+            }else{
+                cell.cellSwitch.isUserInteractionEnabled = true
+            }
         }else{
             rightBarItem.isEnabled = true
             
@@ -286,6 +302,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return cell
     }
     
+    // For manual refreshing
+    lazy var refreshControl: UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action:
+            #selector(ViewController.handleRefresh(_:)),
+                                 for: UIControlEvents.valueChanged)
+        refreshControl.tintColor = UIColor(red:0.839, green:0.839, blue:0.839, alpha:1.000)
+        
+        return refreshControl
+    }()
+    @objc func handleRefresh(_ refreshControl: UIRefreshControl) {
+        habitsTable.reloadData()
+        refreshControl.endRefreshing()
+    }
+    
     /* When a tab is presssed */
     internal func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
         if (item.tag == 0){
@@ -308,40 +339,78 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     /* Set row height for each row */
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if(tabPressed == 1){
-            if(habitData[indexPath.row*3] as! Int == 0){
-                let todayDate = Date()
-                let currentWeekday = Calendar.current.component(.weekday, from: todayDate)
-                let days = habitData[indexPath.row*3+1] as! [Int]
-                var show = false
-                for day in days{
-                    if(currentWeekday == day){
-                        show = true
-                        break
+            if isFiltering(){
+                if(habitData[filteredIndexes[indexPath.row]*3] as! Int == 0){
+                    let todayDate = Date()
+                    let currentWeekday = Calendar.current.component(.weekday, from: todayDate)
+                    let days = habitData[filteredIndexes[indexPath.row]*3+1] as! [Int]
+                    var show = false
+                    for day in days{
+                        if(currentWeekday == day){
+                            show = true
+                            break
+                        }
                     }
-                }
-                if(!show){
-                    return 0
-                }
-            }else if(habitData[indexPath.row*3] as! Int == 1){
-                let todayDate = Date()
-                let currentMonthday = Calendar.current.component(.day, from: todayDate)
-                let days = habitData[indexPath.row*3+1] as! [Int]
-                var show = false
-                for day in days{
-                    if(currentMonthday == day){
-                        show = true
-                        break
+                    if(!show){
+                        return 0
                     }
+                }else if(habitData[filteredIndexes[indexPath.row]*3] as! Int == 1){
+                    let todayDate = Date()
+                    let currentMonthday = Calendar.current.component(.day, from: todayDate)
+                    let days = habitData[filteredIndexes[indexPath.row]*3+1] as! [Int]
+                    var show = false
+                    for day in days{
+                        if(currentMonthday == day){
+                            show = true
+                            break
+                        }
+                    }
+                    if(!show){
+                        return 0
+                    }
+                }else if(habitData[filteredIndexes[indexPath.row]*3] as! Int == 2){
+                    return habitsTable.rowHeight
+                }else if(habitData[filteredIndexes[indexPath.row]*3] as! Int == 3){
+                    return habitsTable.rowHeight
+                }else if(habitData[filteredIndexes[indexPath.row]*3] as! Int == 4){
+                    return habitsTable.rowHeight
                 }
-                if(!show){
-                    return 0
+            }else{
+                if(habitData[indexPath.row*3] as! Int == 0){
+                    let todayDate = Date()
+                    let currentWeekday = Calendar.current.component(.weekday, from: todayDate)
+                    let days = habitData[indexPath.row*3+1] as! [Int]
+                    var show = false
+                    for day in days{
+                        if(currentWeekday == day){
+                            show = true
+                            break
+                        }
+                    }
+                    if(!show){
+                        return 0
+                    }
+                }else if(habitData[indexPath.row*3] as! Int == 1){
+                    let todayDate = Date()
+                    let currentMonthday = Calendar.current.component(.day, from: todayDate)
+                    let days = habitData[indexPath.row*3+1] as! [Int]
+                    var show = false
+                    for day in days{
+                        if(currentMonthday == day){
+                            show = true
+                            break
+                        }
+                    }
+                    if(!show){
+                        return 0
+                    }
+                }else if(habitData[indexPath.row*3] as! Int == 2){
+                    return habitsTable.rowHeight
+                }else if(habitData[indexPath.row*3] as! Int == 3){
+                    return habitsTable.rowHeight
+                }else if(habitData[indexPath.row*3] as! Int == 4){
+                    return habitsTable.rowHeight
                 }
-            }else if(habitData[indexPath.row*3] as! Int == 2){
-                return habitsTable.rowHeight
-            }else if(habitData[indexPath.row*3] as! Int == 3){
-                return habitsTable.rowHeight
-            }else if(habitData[indexPath.row*3] as! Int == 4){
-                return habitsTable.rowHeight
             }
         }else if (tabPressed == 0){
             return habitsTable.rowHeight
@@ -349,6 +418,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return habitsTable.rowHeight
     }
     
+    // Check whether the given Date is in the past
     func dateInThePast(date: Date) -> Bool{
         let calender = Calendar.current
         let currentTime = Date()        
@@ -403,12 +473,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         leftBarItem.title = "Edit"
         habitsTable.allowsSelectionDuringEditing = true
         
-        // trigger "startTimer" when application enters foreground or becomes active
+        // Trigger "startTimer" when application enters foreground or becomes active
         NotificationCenter.default.addObserver(self, selector:#selector(ViewController.startTimer), name:
             NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
         NotificationCenter.default.addObserver(self, selector:#selector(ViewController.startTimer), name:
             NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
         //startTimer()
+        
+        // Add refresh control
+        habitsTable.addSubview(self.refreshControl)
+        refreshControl.backgroundColor = UIColor(red:0.176, green:0.227, blue:0.263, alpha:1.000)
         
         // Setup the Search Controller
         searchController.searchResultsUpdater = self
@@ -418,7 +492,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         UISearchBar.appearance().barTintColor = UIColor(red: 67/255, green: 66/255, blue: 64/255, alpha: 1.0)
         UISearchBar.appearance().tintColor = .white
         UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor(red: 67/255, green: 66/255, blue: 64/255, alpha: 1.0)
-        
         habitsTable.setContentOffset(CGPoint(x:0, y:self.searchController.searchBar.frame.size.height), animated: false)
         definesPresentationContext = true
     }
@@ -451,7 +524,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @objc func startTimer(){
         if(timer==nil){
             print("timer started")
-            timer = Timer.scheduledTimer(timeInterval: 15.0, target: self, selector:#selector(ViewController.reloadData), userInfo: nil, repeats: true)
+            timer = Timer.scheduledTimer(timeInterval: 20.0, target: self, selector:#selector(ViewController.reloadData), userInfo: nil, repeats: true)
         }
     }
     
