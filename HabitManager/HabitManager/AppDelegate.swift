@@ -19,11 +19,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Override point for customization after application launch.
         UINavigationBar.appearance().barTintColor = UIColor(red: 67/255, green: 66/255, blue: 64/255, alpha: 1.0)
         UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName:UIColor.white]
-        UIApplication.shared.statusBarStyle = .lightContent
-        UINavigationBar.appearance().clipsToBounds = true
-        UITabBar.appearance().tintColor = UIColor(red: 77/255, green: 195/255, blue: 199/255, alpha: 1.0)
-        let statusBar: UIView = UIApplication.shared.value(forKey: "statusBar") as! UIView
-        statusBar.backgroundColor = UIColor(red: 67/255, green: 66/255, blue: 64/255, alpha: 1.0)        
+        UIApplication.shared.statusBarView?.backgroundColor = UIColor(red: 67/255, green: 66/255, blue: 64/255, alpha: 1.0)
+         UIApplication.shared.statusBarStyle = .lightContent 
+        UITabBar.appearance().tintColor = UIColor(red: 77/255, green: 195/255, blue: 199/255, alpha: 1.0)      
         // Request access to notifications
         let centre = UNUserNotificationCenter.current()
         centre.requestAuthorization(options: [.alert, .sound]) {(accepted, error) in
@@ -202,10 +200,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
+        let viewController:ViewController = window!.rootViewController as! ViewController
+        viewController.reloadData()
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
+        let viewController:ViewController = window!.rootViewController as! ViewController
+        viewController.reloadData()
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     }
 
@@ -216,25 +218,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
 }
 
-/*extension UIApplication {
-    class func topViewController(controller: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
-        if let navigationController = controller as? UINavigationController {
-            return topViewController(controller: navigationController.visibleViewController)
-        }
-        if let tabController = controller as? UITabBarController {
-            if let selected = tabController.selectedViewController {
-                return topViewController(controller: selected)
-            }
-        }
-        if let presented = controller?.presentedViewController {
-            return topViewController(controller: presented)
-        }
-        return controller
+extension UIApplication {
+    var statusBarView: UIView? {
+        return value(forKey: "statusBar") as? UIView
     }
-}*/
-
-/*if let topController = UIApplication.topViewController() {
- 
- }*/
+}
 
 
