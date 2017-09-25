@@ -31,204 +31,258 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     private var tabPressed: Int = 0
     private var rowSelected: Int!
     private var colours: [UIColor] = []
+    private var filteredHabits: [String] = []
+    private var filteredIndexes: [Int] = []
     
+    let searchController = UISearchController(searchResultsController: nil)
     
     /* Count how many rows are in the main page */
     internal func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+        if isFiltering() {
+            return filteredHabits.count
+        }
         return habits.count
     }
     
     /* Do tasks based on row index */
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         let cell = tableView.dequeueReusableCell(withIdentifier:"Cell") as! CustomCell
-        let currentSwitchState: Int!
-
-        // do these for each cell
-        cell.habitLabel.text = habits[indexPath.row]
-        cell.habitDetailsLabel.text = habitDetails[indexPath.row]
-        cell.notificationsLabel.text = notificationsString[indexPath.row]
+        
         cell.notificationsLabel.layer.zPosition = 1
         
-        // If this row does not require notifications
-        if(notificationsString[indexPath.row] == "No Alert"){
-            cell.cellSwitch.isHidden = true
-            cell.ribbonHead.isHidden = true
-            cell.ribbonTail.isHidden = true
-            cell.ribbonBody.isHidden = true
-        }else{
-            cell.cellSwitch.isHidden = false
-            cell.ribbonHead.isHidden = false
-            cell.ribbonTail.isHidden = false
-            // Set the ribbon body width to the same width as the notification label
-            cell.ribbonBody.frame = CGRect(x: 8, y: 6, width: cell.notificationsLabel.intrinsicContentSize.width, height: 16)
-            cell.ribbonBody.isHidden = false
-        }
-        
-        // Assign switches with tags for easy tracking
-        cell.cellSwitch.tag = indexPath.row
-        
-        let reoccuringColour1 = UIColor(red:0.000, green:0.800, blue:1.000, alpha:1.000)
-        let reoccuringColour2 = UIColor(red:0.000, green:0.850, blue:1.000, alpha:1.000)
-        let morningColour1 = UIColor(red:0.433, green:1.000, blue:0.400, alpha:1.000)
-        let morningColour2 = UIColor(red:0.533, green:1.000, blue:0.500, alpha:1.000)
-        let noonColour1 = UIColor(red:1.000, green:0.751, blue:0.302, alpha:1.000)
-        let noonColour2 = UIColor(red:1.000, green:0.851, blue:0.302, alpha:1.000)
-        let nightColour1 = UIColor(red:0.500, green:0.200, blue:1.000, alpha:1.000)
-        let nightColour2 = UIColor(red:0.500, green:0.000, blue:1.000, alpha:1.000)
-
-        if(habitData[indexPath.row*3] as! Int == 3 || habitData[indexPath.row*3] as! Int == 4){
-            cell.habitLabel.textColor = UIColor(red:0.259, green:0.259, blue:0.259, alpha:1.000)
-            cell.habitDetailsLabel.textColor = UIColor(red:0.369, green:0.369, blue:0.369, alpha:1.000)
-            if(indexPath.row == 0){
-                cell.backgroundColor = reoccuringColour1
-                if(colours.isEmpty){
-                    colours = [reoccuringColour1]
-                }else{
-                    colours[0] = reoccuringColour1
-                }
+        // Show/Hide ribbon
+        func toggleRibbon(enable: Bool){
+            if(enable){
+                cell.cellSwitch.isHidden = false
+                cell.ribbonHead.isHidden = false
+                cell.ribbonTail.isHidden = false
+                // Set the ribbon body width to the same width as the notification label
+                cell.ribbonBody.frame = CGRect(x: 8, y: 6, width: cell.notificationsLabel.intrinsicContentSize.width, height: 16)
+                cell.ribbonBody.isHidden = false
             }else{
-                if(colours[indexPath.row-1] == reoccuringColour1){
-                    cell.backgroundColor = reoccuringColour2
-                    if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
-                        colours.append(reoccuringColour2)
-                    }else{
-                        colours[indexPath.row] = reoccuringColour2
-                    }
-                }else{
-                    cell.backgroundColor = reoccuringColour1
-                    if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
-                        colours.append(reoccuringColour1)
-                    }else{
-                        colours[indexPath.row] = reoccuringColour1                    }
-                }
+                cell.cellSwitch.isHidden = true
+                cell.ribbonHead.isHidden = true
+                cell.ribbonTail.isHidden = true
+                cell.ribbonBody.isHidden = true
             }
-        }else{
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-            
-            let noonStart = dateFormatter.date(from: "2017-09-11T12:00:00")!
-            let morningStart = dateFormatter.date(from: "2017-09-11T06:00:00")!
-            let nightStart = dateFormatter.date(from: "2017-09-11T19:00:00")!
-            
-            let storedTime = habitData[indexPath.row*3+2] as! Date
-            let morning = storedTime.compareTimeOnly(to: morningStart)
-            let noon = storedTime.compareTimeOnly(to: noonStart)
-            let night = storedTime.compareTimeOnly(to: nightStart)
-            
-            if(morning.rawValue == 1 && noon.rawValue != 1){ // morning
-                cell.habitLabel.textColor = UIColor(red:0.259, green:0.259, blue:0.259, alpha:1.000)
-                cell.habitDetailsLabel.textColor = UIColor(red:0.369, green:0.369, blue:0.369, alpha:1.000)
-                if(indexPath.row == 0){
-                    cell.backgroundColor = morningColour1
-                    if(colours.isEmpty){
-                        colours = [morningColour1]
-                    }else{
-                        colours[0] = morningColour1
-                    }
-                }else{
-                    if(colours[indexPath.row-1] == morningColour1){
-                        cell.backgroundColor = morningColour2
-                        if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
-                            colours.append(morningColour2)
-                        }else{
-                            colours[indexPath.row] = morningColour2
-                        }
-                    }else{
-                        cell.backgroundColor = morningColour1
-                        if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
-                            colours.append(morningColour1)
-                        }else{
-                            colours[indexPath.row] = morningColour1
-                        }
-                    }
-                }
-            }else if(noon.rawValue == 1 && night.rawValue != 1){ // noon
-                cell.habitLabel.textColor = UIColor(red:0.259, green:0.259, blue:0.259, alpha:1.000)
-                cell.habitDetailsLabel.textColor = UIColor(red:0.369, green:0.369, blue:0.369, alpha:1.000)
-                if(indexPath.row == 0){
-                    cell.backgroundColor = noonColour1
-                    if(colours.isEmpty){
-                        colours = [noonColour1]
-                    }else{
-                        colours[0] = noonColour1
-                    }
-                }else{
-                    if(colours[indexPath.row-1] == noonColour1){
-                        cell.backgroundColor = noonColour2
-                        if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
-                            colours.append(noonColour2)
-                        }else{
-                            colours[indexPath.row] = noonColour2
-                        }
-                    }else{
-                        cell.backgroundColor = noonColour1
-                        if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
-                            colours.append(noonColour1)
-                        }else{
-                            colours[indexPath.row] = noonColour1
-                        }
-                    }
-                }
-            }else{ // night
-                cell.habitLabel.textColor = UIColor(red:0.902, green:0.800, blue:1.000, alpha:1.000)
-                cell.habitDetailsLabel.textColor = UIColor(red:0.802, green:0.700, blue:1.000, alpha:1.000)
-                if(indexPath.row == 0){
-                    cell.backgroundColor = nightColour1
-                    if(colours.isEmpty){
-                        colours = [nightColour1]
-                    }else{
-                        colours[0] = nightColour1
-                    }
-                }else{
-                    if(colours[indexPath.row-1] == nightColour1){
-                        cell.backgroundColor = nightColour2
-                        if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
-                            colours.append(nightColour2)
-                        }else{
-                            colours[indexPath.row] = nightColour2
-                        }
-                    }else{
-                        cell.backgroundColor = nightColour1
-                        if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
-                            colours.append(nightColour1)
-                        }else{
-                            colours[indexPath.row] = nightColour1
-                        }
-                    }
-                }
-            }
-        }
-        
-        // Check whether a habit is expired
-        if(habitData[indexPath.row*3] as! Int == 2){
-            if(dateInThePast(date: habitData[indexPath.row*3+2] as! Date)){
-                switchState[indexPath.row] = 0
-                UserDefaults.standard.set(switchState, forKey: "switchState")
-                cell.cellSwitch.isUserInteractionEnabled = false
-                cell.habitLabel.textColor = UIColor(red:0.259, green:0.259, blue:0.259, alpha:1.000)
-                cell.backgroundColor = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1.0)
-                colours[indexPath.row] = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1.0)
-            }else{
-                cell.cellSwitch.isUserInteractionEnabled = true
-            }
-        }else{
-            cell.cellSwitch.isUserInteractionEnabled = true
         }
         
         // Ensures the state of the switches are always correct
-        if(switchState.count > 0){
-            if(cell.cellSwitch.isOn){
-                currentSwitchState = 1
-                if(currentSwitchState != switchState[indexPath.row]){
-                    cell.cellSwitch.isOn = false
-                }
-            }else{
-                currentSwitchState = 0
-                if(currentSwitchState != switchState[indexPath.row]){
-                    cell.cellSwitch.isOn = true
+        func correctSwitchState(index: Int){
+            if(switchState.count > 0){
+                var currentSwitchState: Int!
+                if(cell.cellSwitch.isOn){
+                    currentSwitchState = 1
+                    if(currentSwitchState != switchState[index]){
+                        cell.cellSwitch.isOn = false
+                    }
+                }else{
+                    currentSwitchState = 0
+                    if(currentSwitchState != switchState[index]){
+                        cell.cellSwitch.isOn = true
+                    }
                 }
             }
         }
+        
+        if isFiltering(){
+            cell.habitLabel.text = filteredHabits[indexPath.row]
+            cell.habitDetailsLabel.text = habitDetails[filteredIndexes[indexPath.row]]
+            cell.notificationsLabel.text = notificationsString[filteredIndexes[indexPath.row]]
+            
+            // If this row does not require notifications
+            if(notificationsString[filteredIndexes[indexPath.row]] == "No Alert"){
+                toggleRibbon(enable: false)
+            }else{
+                toggleRibbon(enable: true)
+            }
+            
+            // Assign switches with tags for easy tracking
+            cell.cellSwitch.tag = filteredIndexes[indexPath.row]
+            
+            correctSwitchState(index: filteredIndexes[indexPath.row])
+            
+//            print(colours.count)
+//            cell.backgroundColor = colours[filteredIndexes[indexPath.row]]
+//            let nightColour1 = UIColor(red:0.500, green:0.200, blue:1.000, alpha:1.000)
+//            let nightColour2 = UIColor(red:0.500, green:0.000, blue:1.000, alpha:1.000)
+//            if(cell.backgroundColor == nightColour1 || cell.backgroundColor == nightColour2){
+//                cell.habitLabel.textColor = UIColor(red:0.902, green:0.800, blue:1.000, alpha:1.000)
+//                cell.habitDetailsLabel.textColor = UIColor(red:0.802, green:0.700, blue:1.000, alpha:1.000)
+//            }else{
+//                cell.habitLabel.textColor = UIColor(red:0.259, green:0.259, blue:0.259, alpha:1.000)
+//                cell.habitDetailsLabel.textColor = UIColor(red:0.369, green:0.369, blue:0.369, alpha:1.000)
+//            }
+        }else{
+            rightBarItem.isEnabled = true
+            
+            cell.habitLabel.text = habits[indexPath.row]
+            cell.habitDetailsLabel.text = habitDetails[indexPath.row]
+            cell.notificationsLabel.text = notificationsString[indexPath.row]
+            
+            // If this row does not require notifications
+            if(notificationsString[indexPath.row] == "No Alert"){
+                toggleRibbon(enable: false)
+            }else{
+                toggleRibbon(enable: true)
+            }
+            
+            // Assign switches with tags for easy tracking
+            cell.cellSwitch.tag = indexPath.row
+            
+            correctSwitchState(index: indexPath.row)
+            
+            let reoccuringColour1 = UIColor(red:0.000, green:0.800, blue:1.000, alpha:1.000)
+            let reoccuringColour2 = UIColor(red:0.000, green:0.850, blue:1.000, alpha:1.000)
+            let morningColour1 = UIColor(red:0.433, green:1.000, blue:0.400, alpha:1.000)
+            let morningColour2 = UIColor(red:0.533, green:1.000, blue:0.500, alpha:1.000)
+            let noonColour1 = UIColor(red:1.000, green:0.751, blue:0.302, alpha:1.000)
+            let noonColour2 = UIColor(red:1.000, green:0.851, blue:0.302, alpha:1.000)
+            let nightColour1 = UIColor(red:0.500, green:0.200, blue:1.000, alpha:1.000)
+            let nightColour2 = UIColor(red:0.500, green:0.000, blue:1.000, alpha:1.000)
+            
+            if(habitData[indexPath.row*3] as! Int == 3 || habitData[indexPath.row*3] as! Int == 4){
+                cell.habitLabel.textColor = UIColor(red:0.259, green:0.259, blue:0.259, alpha:1.000)
+                cell.habitDetailsLabel.textColor = UIColor(red:0.369, green:0.369, blue:0.369, alpha:1.000)
+                if(indexPath.row == 0){
+                    cell.backgroundColor = reoccuringColour1
+                    if(colours.isEmpty){
+                        colours = [reoccuringColour1]
+                    }else{
+                        colours[0] = reoccuringColour1
+                    }
+                }else{
+                    if(colours[indexPath.row-1] == reoccuringColour1){
+                        cell.backgroundColor = reoccuringColour2
+                        if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
+                            colours.append(reoccuringColour2)
+                        }else{
+                            colours[indexPath.row] = reoccuringColour2
+                        }
+                    }else{
+                        cell.backgroundColor = reoccuringColour1
+                        if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
+                            colours.append(reoccuringColour1)
+                        }else{
+                            colours[indexPath.row] = reoccuringColour1
+                        }
+                    }
+                }
+            }else{
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+                
+                let noonStart = dateFormatter.date(from: "2017-09-11T12:00:00")!
+                let morningStart = dateFormatter.date(from: "2017-09-11T06:00:00")!
+                let nightStart = dateFormatter.date(from: "2017-09-11T19:00:00")!
+                
+                let storedTime = habitData[indexPath.row*3+2] as! Date
+                let morning = storedTime.compareTimeOnly(to: morningStart)
+                let noon = storedTime.compareTimeOnly(to: noonStart)
+                let night = storedTime.compareTimeOnly(to: nightStart)
+                
+                if(morning.rawValue == 1 && noon.rawValue != 1){ // morning
+                    cell.habitLabel.textColor = UIColor(red:0.259, green:0.259, blue:0.259, alpha:1.000)
+                    cell.habitDetailsLabel.textColor = UIColor(red:0.369, green:0.369, blue:0.369, alpha:1.000)
+                    if(indexPath.row == 0){
+                        cell.backgroundColor = morningColour1
+                        if(colours.isEmpty){
+                            colours = [morningColour1]
+                        }else{
+                            colours[0] = morningColour1
+                        }
+                    }else{
+                        if(colours[indexPath.row-1] == morningColour1){
+                            cell.backgroundColor = morningColour2
+                            if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
+                                colours.append(morningColour2)
+                            }else{
+                                colours[indexPath.row] = morningColour2
+                            }
+                        }else{
+                            cell.backgroundColor = morningColour1
+                            if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
+                                colours.append(morningColour1)
+                            }else{
+                                colours[indexPath.row] = morningColour1
+                            }
+                        }
+                    }
+                }else if(noon.rawValue == 1 && night.rawValue != 1){ // noon
+                    cell.habitLabel.textColor = UIColor(red:0.259, green:0.259, blue:0.259, alpha:1.000)
+                    cell.habitDetailsLabel.textColor = UIColor(red:0.369, green:0.369, blue:0.369, alpha:1.000)
+                    if(indexPath.row == 0){
+                        cell.backgroundColor = noonColour1
+                        if(colours.isEmpty){
+                            colours = [noonColour1]
+                        }else{
+                            colours[0] = noonColour1
+                        }
+                    }else{
+                        if(colours[indexPath.row-1] == noonColour1){
+                            cell.backgroundColor = noonColour2
+                            if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
+                                colours.append(noonColour2)
+                            }else{
+                                colours[indexPath.row] = noonColour2
+                            }
+                        }else{
+                            cell.backgroundColor = noonColour1
+                            if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
+                                colours.append(noonColour1)
+                            }else{
+                                colours[indexPath.row] = noonColour1
+                            }
+                        }
+                    }
+                }else{ // night
+                    cell.habitLabel.textColor = UIColor(red:0.902, green:0.800, blue:1.000, alpha:1.000)
+                    cell.habitDetailsLabel.textColor = UIColor(red:0.802, green:0.700, blue:1.000, alpha:1.000)
+                    if(indexPath.row == 0){
+                        cell.backgroundColor = nightColour1
+                        if(colours.isEmpty){
+                            colours = [nightColour1]
+                        }else{
+                            colours[0] = nightColour1
+                        }
+                    }else{
+                        if(colours[indexPath.row-1] == nightColour1){
+                            cell.backgroundColor = nightColour2
+                            if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
+                                colours.append(nightColour2)
+                            }else{
+                                colours[indexPath.row] = nightColour2
+                            }
+                        }else{
+                            cell.backgroundColor = nightColour1
+                            if(indexPath.row > colours.count-1){ // If the row hasn't been seen before
+                                colours.append(nightColour1)
+                            }else{
+                                colours[indexPath.row] = nightColour1
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Check whether a habit is expired
+            if(habitData[indexPath.row*3] as! Int == 2){
+                if(dateInThePast(date: habitData[indexPath.row*3+2] as! Date)){
+                    switchState[indexPath.row] = 0
+                    UserDefaults.standard.set(switchState, forKey: "switchState")
+                    cell.cellSwitch.isUserInteractionEnabled = false
+                    cell.habitLabel.textColor = UIColor(red:0.259, green:0.259, blue:0.259, alpha:1.000)
+                    cell.habitDetailsLabel.textColor = UIColor(red:0.369, green:0.369, blue:0.369, alpha:1.000)
+                    cell.backgroundColor = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1.0)
+                    colours[indexPath.row] = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1.0)
+                }else{
+                    cell.cellSwitch.isUserInteractionEnabled = true
+                }
+            }else{
+                cell.cellSwitch.isUserInteractionEnabled = true
+            }
+        }
+    
         return cell
     }
     
@@ -297,9 +351,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func dateInThePast(date: Date) -> Bool{
         let calender = Calendar.current
-        
-        let currentTime = Date()
-        
+        let currentTime = Date()        
         let storedTime = date
         var STComponents = calender.dateComponents([.year, .month, .day, .hour, .minute, .second], from: storedTime)
         STComponents.second = 0
@@ -314,6 +366,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     /* Do tasks before presenting another view */
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        self.searchController.dismiss(animated: true, completion: nil)
         if segue.identifier == "segueToNewHabit" && habitsTable.isEditing && leftBarItem.title == "Done" {
             if let navVC = segue.destination as? UINavigationController{
                 if let addHabitVC = navVC.viewControllers[0] as? AddHabitVC{
@@ -327,7 +380,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     internal func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
         tableView.deselectRow(at: indexPath, animated: true)
         if(habitsTable.isEditing){
-            rowSelected = indexPath.row
+            if isFiltering() {
+                rowSelected = filteredIndexes[indexPath.row]
+            }else{
+                rowSelected = indexPath.row
+            }
             performSegue(withIdentifier: "segueToNewHabit", sender: self)
         }
     }
@@ -352,6 +409,42 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         NotificationCenter.default.addObserver(self, selector:#selector(ViewController.startTimer), name:
             NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
         //startTimer()
+        
+        // Setup the Search Controller
+        searchController.searchResultsUpdater = self
+        searchController.dimsBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = NSLocalizedString("Search Title", comment: "")
+        habitsTable.tableHeaderView = searchController.searchBar
+        UISearchBar.appearance().barTintColor = UIColor(red: 67/255, green: 66/255, blue: 64/255, alpha: 1.0)
+        UISearchBar.appearance().tintColor = .white
+        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor(red: 67/255, green: 66/255, blue: 64/255, alpha: 1.0)
+        
+        habitsTable.setContentOffset(CGPoint(x:0, y:self.searchController.searchBar.frame.size.height), animated: false)
+        definesPresentationContext = true
+    }
+    
+    func searchBarIsEmpty() -> Bool {
+        // Returns true if the text is empty or nil
+        return searchController.searchBar.text?.isEmpty ?? true
+    }
+    
+    func filterContentForSearchText(_ searchText: String, scope: String = "All") {
+        filteredHabits = habits.filter({( habit : String) -> Bool in
+            return habit.lowercased().contains(searchText.lowercased())
+        })
+        
+        filteredIndexes = []
+        for filtered in filteredHabits{
+            if(habits.contains(filtered)){
+                filteredIndexes.append(habits.index(of: filtered)!)
+            }
+        }
+        
+        habitsTable.reloadData()
+    }
+    
+    func isFiltering() -> Bool {
+        return searchController.isActive && !searchBarIsEmpty()
     }
     
     /* Create a new timer and excute "reloadData" based on time interval */
@@ -439,6 +532,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        if(timer != nil){
+            print("invalidating")
+            timer.invalidate()
+            timer = nil
+        }
+    }
+    
     /* When "Edit" is pressed, change it to "Done" and tell the system to start editing */
     @IBAction func editAction(_ sender: UIBarButtonItem) {
         if(habitsTable.isEditing){
@@ -454,10 +555,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     // Disable the ability to move a row for certain notification types
     func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        if(habitData[indexPath.row*3] as! Int == 3 || habitData[indexPath.row*3] as! Int == 4){
-            return true
-        }else{
+        if isFiltering(){
             return false
+        }else{
+            if(habitData[indexPath.row*3] as! Int == 3 || habitData[indexPath.row*3] as! Int == 4){
+                return true
+            }else{
+                return false
+            }
         }
     }
     
@@ -588,24 +693,50 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if editingStyle == UITableViewCellEditingStyle.delete{
             let center = UNUserNotificationCenter.current()
             print ("UUIDs Before deletion: \(uuid)")
-            // Cancel future notifications related to the row and delete UUIDs
-            for index in 0..<uuid[indexPath.row].count{
-                center.removeDeliveredNotifications(withIdentifiers: [uuid[indexPath.row][index]])
-                center.removePendingNotificationRequests(withIdentifiers: [uuid[indexPath.row][index]])
-            }
-            uuid.remove(at: indexPath.row)
-            UserDefaults.standard.set(uuid, forKey: "uuid")
-            print ("UUIDs After deletion: \(uuid)\n")
             
-            habits.remove(at: indexPath.row)
-            habitDetails.remove(at: indexPath.row)
-            notificationsString.remove(at: indexPath.row)
-            switchState.remove(at: indexPath.row)
-            print ("switchState after deletion: \(switchState)\n")
-            // There are 3 elements reserved for each row's resume data, so delete all three
-            for _ in 0...2{
-                habitData.remove(at: (indexPath.row*3))
+            if isFiltering(){
+                // Cancel future notifications related to the row and delete UUIDs
+                for index in 0..<uuid[filteredIndexes[indexPath.row]].count{
+                    center.removeDeliveredNotifications(withIdentifiers: [uuid[filteredIndexes[indexPath.row]][index]])
+                    center.removePendingNotificationRequests(withIdentifiers: [uuid[filteredIndexes[indexPath.row]][index]])
+                }
+                uuid.remove(at: filteredIndexes[indexPath.row])
+                habits.remove(at: filteredIndexes[indexPath.row])
+                habitDetails.remove(at: filteredIndexes[indexPath.row])
+                notificationsString.remove(at: filteredIndexes[indexPath.row])
+                switchState.remove(at: filteredIndexes[indexPath.row])
+                // There are 3 elements reserved for each row's data, so delete all three
+                for _ in 0...2{
+                    habitData.remove(at: (filteredIndexes[indexPath.row]*3))
+                }
+                
+                updateSearchResults(for: searchController)
+            }else{
+                // Cancel future notifications related to the row and delete UUIDs
+                for index in 0..<uuid[indexPath.row].count{
+                    center.removeDeliveredNotifications(withIdentifiers: [uuid[indexPath.row][index]])
+                    center.removePendingNotificationRequests(withIdentifiers: [uuid[indexPath.row][index]])
+                }
+                uuid.remove(at: indexPath.row)
+                habits.remove(at: indexPath.row)
+                habitDetails.remove(at: indexPath.row)
+                notificationsString.remove(at: indexPath.row)
+                switchState.remove(at: indexPath.row)
+                // There are 3 elements reserved for each row's data, so delete all three
+                for _ in 0...2{
+                    habitData.remove(at: (indexPath.row*3))
+                }
             }
+            
+            UserDefaults.standard.set(uuid, forKey: "uuid")
+            UserDefaults.standard.set(habits, forKey: "habits")
+            UserDefaults.standard.set(habitDetails, forKey: "habitDetails")
+            UserDefaults.standard.set(notificationsString, forKey: "notificationsString")
+            UserDefaults.standard.set(habitData, forKey: "habitData")
+            UserDefaults.standard.set(switchState, forKey: "switchState")
+            
+            print ("UUIDs After deletion: \(uuid)\n")
+            print ("switchState after deletion: \(switchState)\n")
             print ("habitData after deletion: \(habitData)\n")
             
             // Disable "Edit" button if no row is present
@@ -624,17 +755,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
             
             habitsTable.reloadData()
-            
-            UserDefaults.standard.set(habits, forKey: "habits")
-            UserDefaults.standard.set(habitDetails, forKey: "habitDetails")
-            UserDefaults.standard.set(notificationsString, forKey: "notificationsString")
-            UserDefaults.standard.set(habitData, forKey: "habitData")
-            UserDefaults.standard.set(switchState, forKey: "switchState")
         }
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+}
+
+extension ViewController: UISearchResultsUpdating {
+    // MARK: - UISearchResultsUpdating Delegate
+    func updateSearchResults(for searchController: UISearchController) {
+        filterContentForSearchText(searchController.searchBar.text!)
     }
 }

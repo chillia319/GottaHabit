@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         UINavigationBar.appearance().barTintColor = UIColor(red: 67/255, green: 66/255, blue: 64/255, alpha: 1.0)
-        UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor:UIColor.white]
+        UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName:UIColor.white]
         UIApplication.shared.statusBarView?.backgroundColor = UIColor(red: 67/255, green: 66/255, blue: 64/255, alpha: 1.0)
          UIApplication.shared.statusBarStyle = .lightContent 
         UITabBar.appearance().tintColor = UIColor(red: 77/255, green: 195/255, blue: 199/255, alpha: 1.0)      

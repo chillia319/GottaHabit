@@ -1019,12 +1019,6 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     
     /* Do tasks before a view is loaded */
     override func viewWillAppear(_ animated: Bool) {
-        if(timer != nil){
-            print("invalidating")
-            timer.invalidate()
-            timer = nil
-        }
-        
         if(restorationIdentifier == "RepeatOptions"){
             title = "Repeat"
             if(!AddHabitVC.weeklyDaysSelected.isEmpty){
