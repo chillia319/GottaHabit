@@ -131,7 +131,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 cell.cellSwitch.isUserInteractionEnabled = true
             }
         }else{
-            rightBarItem.isEnabled = true
+            if(!habitsTable.isEditing){
+                rightBarItem.isEnabled = true
+            }
             
             cell.habitLabel.text = habits[indexPath.row]
             cell.habitDetailsLabel.text = habitDetails[indexPath.row]
@@ -588,6 +590,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         
         habitsTable.reloadData()
+        
         startTimer()
     }
     
