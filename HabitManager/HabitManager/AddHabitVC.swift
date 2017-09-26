@@ -185,12 +185,11 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                     for index in 0..<habits.count{
                         if(habitData[index*3] as! Int == 4){ // if this notification has a selected interval
                             if(selectedInterval < habitData[index*3+2] as! Int){ // found a bigger one
-                                print("found a bigger one")
                                 rowToInsert = index
                                 break
                             }else if(habits.count > 1 && habitData[(index+1)*3] as! Int != 4 && habitData[(index+1)*3] as! Int != 3){ // I am the biggest
-                                print("I am the biggest")
                                 rowToInsert = index+1
+                                break
                             }
                         }
                     }
@@ -280,12 +279,11 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 for index in 0..<habits.count{
                     if(habitData[index*3] as! Int == 4){ // if this notification has a selected interval
                         if(selectedInterval < habitData[index*3+2] as! Int){ // found a bigger one
-                            print("found a bigger one")
                             rowToInsert = index
                             break
                         }else if(habits.count > 1 && habitData[(index+1)*3] as! Int != 4 && habitData[(index+1)*3] as! Int != 3){ // I am the biggest
-                            print("I am the biggest")
                             rowToInsert = index+1
+                            break
                         }
                     }
                 }
