@@ -119,10 +119,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 if(dateInThePast(date: habitData[filteredIndexes[indexPath.row]*3+2] as! Date)){
                     switchState[filteredIndexes[indexPath.row]] = 0
                     UserDefaults.standard.set(switchState, forKey: "switchState")
+                    cell.cellSwitch.isOn = false
                     cell.cellSwitch.isUserInteractionEnabled = false
                     cell.habitLabel.textColor = UIColor(red:0.259, green:0.259, blue:0.259, alpha:1.000)
                     cell.habitDetailsLabel.textColor = UIColor(red:0.369, green:0.369, blue:0.369, alpha:1.000)
-                    cell.backgroundColor = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1.0)
+                    let expiredColour = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1.0)
+                    cell.backgroundColor = expiredColour
                 }else{
                     cell.cellSwitch.isUserInteractionEnabled = true
                 }
@@ -130,7 +132,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 cell.cellSwitch.isUserInteractionEnabled = true
             }
         }else{
-            rightBarItem.isEnabled = true
+            if(!habitsTable.isEditing){
+                rightBarItem.isEnabled = true
+            }
             
             cell.habitLabel.text = habits[indexPath.row]
             cell.habitDetailsLabel.text = habitDetails[indexPath.row]
@@ -286,11 +290,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 if(dateInThePast(date: habitData[indexPath.row*3+2] as! Date)){
                     switchState[indexPath.row] = 0
                     UserDefaults.standard.set(switchState, forKey: "switchState")
+                    cell.cellSwitch.isOn = false
                     cell.cellSwitch.isUserInteractionEnabled = false
                     cell.habitLabel.textColor = UIColor(red:0.259, green:0.259, blue:0.259, alpha:1.000)
                     cell.habitDetailsLabel.textColor = UIColor(red:0.369, green:0.369, blue:0.369, alpha:1.000)
-                    cell.backgroundColor = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1.0)
-                    colours[indexPath.row] = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1.0)
+                    let expiredColour = UIColor(red: 180/255, green: 180/255, blue: 180/255, alpha: 1.0)
+                    cell.backgroundColor = expiredColour
+                    colours[indexPath.row] = expiredColour
                 }else{
                     cell.cellSwitch.isUserInteractionEnabled = true
                 }
@@ -492,7 +498,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         UISearchBar.appearance().barTintColor = UIColor(red: 67/255, green: 66/255, blue: 64/255, alpha: 1.0)
         UISearchBar.appearance().tintColor = .white
         UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).tintColor = UIColor(red: 67/255, green: 66/255, blue: 64/255, alpha: 1.0)
-        habitsTable.setContentOffset(CGPoint(x:0, y:self.searchController.searchBar.frame.size.height), animated: false)
+        //habitsTable.setContentOffset(CGPoint(x:0, y:self.searchController.searchBar.frame.size.height), animated: false)
         definesPresentationContext = true
     }
     
@@ -586,6 +592,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         
         habitsTable.reloadData()
+        
         startTimer()
     }
     
