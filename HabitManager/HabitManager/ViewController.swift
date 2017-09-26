@@ -119,6 +119,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 if(dateInThePast(date: habitData[filteredIndexes[indexPath.row]*3+2] as! Date)){
                     switchState[filteredIndexes[indexPath.row]] = 0
                     UserDefaults.standard.set(switchState, forKey: "switchState")
+                    cell.cellSwitch.isOn = false
                     cell.cellSwitch.isUserInteractionEnabled = false
                     cell.habitLabel.textColor = UIColor(red:0.259, green:0.259, blue:0.259, alpha:1.000)
                     cell.habitDetailsLabel.textColor = UIColor(red:0.369, green:0.369, blue:0.369, alpha:1.000)
@@ -286,6 +287,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 if(dateInThePast(date: habitData[indexPath.row*3+2] as! Date)){
                     switchState[indexPath.row] = 0
                     UserDefaults.standard.set(switchState, forKey: "switchState")
+                    cell.cellSwitch.isOn = false
                     cell.cellSwitch.isUserInteractionEnabled = false
                     cell.habitLabel.textColor = UIColor(red:0.259, green:0.259, blue:0.259, alpha:1.000)
                     cell.habitDetailsLabel.textColor = UIColor(red:0.369, green:0.369, blue:0.369, alpha:1.000)
