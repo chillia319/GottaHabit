@@ -47,8 +47,6 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
     private var alertOptionsMode1Text: String = "Every 1 minute"
     private static var weeklyDaysSelected: [Int] = []
     private static var monthlyDaysSelected: [Int] = []
-    private var uuid: [[String]] = []
-    private let timeRequiredTypes = [0, 1, 2] // notification types that require a time to be selected
     
     private var habits: [String] = []
     private var habitDetails: [String] = []
@@ -166,7 +164,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                         habitData = temphabitData
                     }
                     for index in 0..<habits.count{
-                        if(timeRequiredTypes.contains(habitData[index*3] as! Int)){ // if this notification has a selected time
+                        if(habitData[index*3] as! Int == 0 || habitData[index*3] as! Int == 1 || habitData[index*3] as! Int == 2){ // if this notification has a selected time
                             let result = selectedTime.compareTimeOnly(to: habitData[index*3+2] as! Date)
                             if(result.rawValue == -1){
                                 rowToInsert = index
@@ -180,7 +178,25 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 }else if(selectedTime == nil && mode == 0){ // type 3
                     rowToInsert = 0
                 }else if(mode == 1){ // type 4
-                    rowToInsert = 0
+                    let habitDataObject = UserDefaults.standard.object(forKey: "habitData")
+                    if let temphabitData = habitDataObject as? [Any] {
+                        habitData = temphabitData
+                    }
+                    for index in 0..<habits.count{
+                        if(habitData[index*3] as! Int == 4){ // if this notification has a selected interval
+                            if(selectedInterval < habitData[index*3+2] as! Int){ // found a bigger one
+                                print("found a bigger one")
+                                rowToInsert = index
+                                break
+                            }else if(habits.count > 1 && habitData[(index+1)*3] as! Int != 4 && habitData[(index+1)*3] as! Int != 3){ // I am the biggest
+                                print("I am the biggest")
+                                rowToInsert = index+1
+                            }
+                        }
+                    }
+                    if(rowToInsert == -1){ // no need to sort since no other type 4 are present
+                        rowToInsert = 0
+                    }
                 }else{
                     assert(false, "FATAL: Unexpected insertion case")
                 }
@@ -247,7 +263,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             
             if(selectedTime != nil && mode == 0){ // type 0, 1, 2
                 for index in 0..<habits.count{
-                    if(timeRequiredTypes.contains(habitData[index*3] as! Int)){ // if this notification has a selected time
+                    if(habitData[index*3] as! Int != 0 || habitData[index*3] as! Int == 1 || habitData[index*3] as! Int == 2){ // if this notification has a selected time
                         let result = selectedTime.compareTimeOnly(to: habitData[index*3+2] as! Date)
                         if(result.rawValue == -1){
                             rowToInsert = index
@@ -261,7 +277,21 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             }else if(selectedTime == nil && mode == 0){ // type 3
                 rowToInsert = 0
             }else if(mode == 1){ // type 4
-                rowToInsert = 0
+                for index in 0..<habits.count{
+                    if(habitData[index*3] as! Int == 4){ // if this notification has a selected interval
+                        if(selectedInterval < habitData[index*3+2] as! Int){ // found a bigger one
+                            print("found a bigger one")
+                            rowToInsert = index
+                            break
+                        }else if(habits.count > 1 && habitData[(index+1)*3] as! Int != 4 && habitData[(index+1)*3] as! Int != 3){ // I am the biggest
+                            print("I am the biggest")
+                            rowToInsert = index+1
+                        }
+                    }
+                }
+                if(rowToInsert == -1){ // no need to sort since no other type 4 are present
+                    rowToInsert = 0
+                }
             }else{
                 assert(false, "FATAL: Unexpected insertion case")
             }
@@ -888,7 +918,6 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 let habitsObject = UserDefaults.standard.object(forKey: "habits")
                 let habitDetailsObject = UserDefaults.standard.object(forKey: "habitDetails")
                 let notificationsStringObject = UserDefaults.standard.object(forKey: "notificationsString")
-                let uuidObject = UserDefaults.standard.object(forKey: "uuid")
                 let habitDataObject = UserDefaults.standard.object(forKey: "habitData")
                 let switchStateObject = UserDefaults.standard.object(forKey: "switchState")
                 
@@ -900,9 +929,6 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                 }
                 if let tempNotificationsString = notificationsStringObject as? [String] {
                     notificationsString = tempNotificationsString
-                }
-                if let tempUUIDs = uuidObject as? [[String]] {
-                    uuid = tempUUIDs
                 }
                 if let temphabitData = habitDataObject as? [Any] {
                     habitData = temphabitData
