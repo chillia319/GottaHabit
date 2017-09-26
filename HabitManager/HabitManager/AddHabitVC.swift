@@ -182,6 +182,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                     if let temphabitData = habitDataObject as? [Any] {
                         habitData = temphabitData
                     }
+                    var type3Count = 0
                     for index in 0..<habits.count{
                         if(habitData[index*3] as! Int == 4){ // if this notification has a selected interval
                             if(selectedInterval < habitData[index*3+2] as! Int){ // found a bigger one
@@ -191,10 +192,12 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                                 rowToInsert = index+1
                                 break
                             }
+                        }else if(habitData[index*3] as! Int == 3){
+                            type3Count += 1
                         }
                     }
                     if(rowToInsert == -1){ // no need to sort since no other type 4 are present
-                        rowToInsert = 0
+                        rowToInsert = type3Count
                     }
                 }else{
                     assert(false, "FATAL: Unexpected insertion case")
@@ -276,6 +279,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             }else if(selectedTime == nil && mode == 0){ // type 3
                 rowToInsert = 0
             }else if(mode == 1){ // type 4
+                var type3Count = 0
                 for index in 0..<habits.count{
                     if(habitData[index*3] as! Int == 4){ // if this notification has a selected interval
                         if(selectedInterval < habitData[index*3+2] as! Int){ // found a bigger one
@@ -285,10 +289,12 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                             rowToInsert = index+1
                             break
                         }
+                    }else if(habitData[index*3] as! Int == 3){
+                        type3Count += 1
                     }
                 }
                 if(rowToInsert == -1){ // no need to sort since no other type 4 are present
-                    rowToInsert = 0
+                    rowToInsert = type3Count
                 }
             }else{
                 assert(false, "FATAL: Unexpected insertion case")
