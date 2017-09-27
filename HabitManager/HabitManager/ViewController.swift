@@ -49,7 +49,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let cell = tableView.dequeueReusableCell(withIdentifier:"Cell") as! CustomCell
         
         cell.notificationsLabel.layer.zPosition = 1
-        
+        cell.editingAccessoryType = .disclosureIndicator
+
         // Show/Hide ribbon
         func toggleRibbon(enable: Bool){
             if(enable){
