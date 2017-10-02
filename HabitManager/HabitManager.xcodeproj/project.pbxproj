@@ -16,6 +16,7 @@
 		40C986531EA5AF36003D2D73 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40C986521EA5AF36003D2D73 /* ViewController.swift */; };
 		40C986561EA5AF36003D2D73 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40C986541EA5AF36003D2D73 /* Main.storyboard */; };
 		40C986581EA5AF36003D2D73 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40C986571EA5AF36003D2D73 /* Assets.xcassets */; };
+		5B45692D1F824A570037B1DE /* Zephyr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B45692C1F824A570037B1DE /* Zephyr.swift */; };
 		5BB947571F64D8B300EF5482 /* CLibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5BB947551F64D8B300EF5482 /* CLibrary.cpp */; };
 /* End PBXBuildFile section */
 
@@ -43,6 +44,8 @@
 		40C986551EA5AF36003D2D73 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		40C986571EA5AF36003D2D73 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		40C9865C1EA5AF36003D2D73 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5B4569291F8248090037B1DE /* HabitManager.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HabitManager.entitlements; sourceTree = "<group>"; };
+		5B45692C1F824A570037B1DE /* Zephyr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Zephyr.swift; path = ../../../../Zephyr/Sources/Zephyr.swift; sourceTree = "<group>"; };
 		5BB947541F64D8B300EF5482 /* HabitManager-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HabitManager-Bridging-Header.h"; sourceTree = "<group>"; };
 		5BB947551F64D8B300EF5482 /* CLibrary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CLibrary.cpp; sourceTree = "<group>"; };
 		5BB947561F64D8B300EF5482 /* CLibrary.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CLibrary.hpp; sourceTree = "<group>"; };
@@ -97,6 +100,8 @@
 		40C9864F1EA5AF36003D2D73 /* HabitManager */ = {
 			isa = PBXGroup;
 			children = (
+				5B4569291F8248090037B1DE /* HabitManager.entitlements */,
+				5B45692C1F824A570037B1DE /* Zephyr.swift */,
 				40C986501EA5AF36003D2D73 /* AppDelegate.swift */,
 				40C986521EA5AF36003D2D73 /* ViewController.swift */,
 				40C986541EA5AF36003D2D73 /* Main.storyboard */,
@@ -167,9 +172,14 @@
 					};
 					40C9864C1EA5AF36003D2D73 = {
 						CreatedOnToolsVersion = 8.3.1;
-						DevelopmentTeam = H87GZLP42E;
+						DevelopmentTeam = W3WEK8S6RC;
 						LastSwiftMigration = 0900;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
+						SystemCapabilities = {
+							com.apple.iCloud = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -231,6 +241,7 @@
 				5BB947571F64D8B300EF5482 /* CLibrary.cpp in Sources */,
 				40232D921EAB0CB9004E0478 /* CustomCell.swift in Sources */,
 				40C986511EA5AF36003D2D73 /* AppDelegate.swift in Sources */,
+				5B45692D1F824A570037B1DE /* Zephyr.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -396,15 +407,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = H87GZLP42E;
+				CODE_SIGN_ENTITLEMENTS = HabitManager/HabitManager.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = W3WEK8S6RC;
 				INFOPLIST_FILE = HabitManager/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.powerofpercy.HabitManager;
+				PRODUCT_BUNDLE_IDENTIFIER = com.powerofpercy.HabitManager.csotago;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "e3ef8023-cdb9-4a13-acfc-cb591e354304";
+				PROVISIONING_PROFILE_SPECIFIER = GottaHabitProfile;
 				SWIFT_OBJC_BRIDGING_HEADER = "HabitManager/HabitManager-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -415,14 +429,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = H87GZLP42E;
+				CODE_SIGN_ENTITLEMENTS = HabitManager/HabitManager.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = W3WEK8S6RC;
 				INFOPLIST_FILE = HabitManager/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.powerofpercy.HabitManager;
+				PRODUCT_BUNDLE_IDENTIFIER = com.powerofpercy.HabitManager.csotago;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "e3ef8023-cdb9-4a13-acfc-cb591e354304";
+				PROVISIONING_PROFILE_SPECIFIER = GottaHabitProfile;
 				SWIFT_OBJC_BRIDGING_HEADER = "HabitManager/HabitManager-Bridging-Header.h";
-
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

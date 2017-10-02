@@ -49,7 +49,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let cell = tableView.dequeueReusableCell(withIdentifier:"Cell") as! CustomCell
         
         cell.notificationsLabel.layer.zPosition = 1
-        
+        cell.editingAccessoryType = .disclosureIndicator
+
         // Show/Hide ribbon
         func toggleRibbon(enable: Bool){
             if(enable){
@@ -635,15 +636,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     // Disable the ability to move a row for certain notification types
     func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        if isFiltering(){
-            return false
-        }else{
-            if(habitData[indexPath.row*3] as! Int == 3 || habitData[indexPath.row*3] as! Int == 4){
-                return true
-            }else{
-                return false
-            }
-        }
+        return false
     }
     
     /* Move the relavant data when user moves a row */
