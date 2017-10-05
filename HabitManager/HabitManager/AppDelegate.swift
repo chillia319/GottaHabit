@@ -36,6 +36,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         centre.setNotificationCategories([category])
 
         UNUserNotificationCenter.current().delegate = self
+        Zephyr.addKeysToBeMonitored(keys: "habits","habitDetails","notificationsString","habitData","switchState","uuid")
+        
+//        private var habits: [String] = []
+//        private var habitDetails: [String] = []
+//        private var notificationsString: [String] = []
+//        private var habitData: [Any] = []
+//        private var switchState: [Int] = []
+        
         Zephyr.sync()
         return true
     }

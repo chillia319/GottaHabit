@@ -280,10 +280,10 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             habitDetails.remove(at: AddHabitVC.rowBeingEdited)
             notificationsString.remove(at: AddHabitVC.rowBeingEdited)
             switchState.remove(at: AddHabitVC.rowBeingEdited)
-            
+            print("value of habitData is \(habitData)")
             if(selectedTime != nil && getMode() == 0){ // type 0, 1, 2
                 for index in 0..<habits.count{
-                    if(habitData[index*3] as! Int != 0 || habitData[index*3] as! Int == 1 || habitData[index*3] as! Int == 2){ // if this notification has a selected time
+                    if(habitData[index*3] as! Int == 0 || habitData[index*3] as! Int == 1 || habitData[index*3] as! Int == 2){ // if this notification has a selected time
                         let result = selectedTime.compareTimeOnly(to: habitData[index*3+2] as! Date)
                         if(result.rawValue == -1){
                             rowToInsert = index
