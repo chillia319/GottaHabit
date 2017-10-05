@@ -433,13 +433,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 if(cellsExpanded.contains(filteredIndexes[indexPath.row])){
                     return habitsTable.rowHeight
                 }else{
-                    return 72
+                    return 72.5
                 }
             }else{
                 if(cellsExpanded.contains(indexPath.row)){
                     return habitsTable.rowHeight
                 }else{
-                    return 72
+                    return 72.5
                 }
             }
             //return habitsTable.rowHeight
@@ -506,7 +506,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     cellsExpanded.append(indexPath.row)
                 }
             }
-            
+
             UIView.animate(withDuration: 0.3, animations: {
                 self.habitsTable.beginUpdates()
                 self.habitsTable.endUpdates()
