@@ -33,6 +33,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     private var colours: [UIColor] = []
     private var filteredHabits: [String] = []
     private var filteredIndexes: [Int] = []
+    private var cellsExpanded: [Int] = []
     
     let searchController = UISearchController(searchResultsController: nil)
     
@@ -88,7 +89,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         if isFiltering(){
             cell.habitLabel.text = filteredHabits[indexPath.row]
-            cell.habitDetailsLabel.text = habitDetails[filteredIndexes[indexPath.row]]
+            if(!cellsExpanded.contains(filteredIndexes[indexPath.row])){
+                cell.habitDetailsLabel.text = ""
+            }else{
+                cell.habitDetailsLabel.text = habitDetails[filteredIndexes[indexPath.row]]
+            }
             cell.notificationsLabel.text = notificationsString[filteredIndexes[indexPath.row]]
             
             // If this row does not require notifications
@@ -138,7 +143,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
             
             cell.habitLabel.text = habits[indexPath.row]
-            cell.habitDetailsLabel.text = habitDetails[indexPath.row]
+            if(!cellsExpanded.contains(indexPath.row)){
+                cell.habitDetailsLabel.text = ""
+            }else{
+                cell.habitDetailsLabel.text = habitDetails[indexPath.row]
+            }
             cell.notificationsLabel.text = notificationsString[indexPath.row]
             
             // If this row does not require notifications
@@ -420,7 +429,20 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }
             }
         }else if (tabPressed == 0){
-            return habitsTable.rowHeight
+            if isFiltering(){
+                if(cellsExpanded.contains(filteredIndexes[indexPath.row])){
+                    return habitsTable.rowHeight
+                }else{
+                    return 72
+                }
+            }else{
+                if(cellsExpanded.contains(indexPath.row)){
+                    return habitsTable.rowHeight
+                }else{
+                    return 72
+                }
+            }
+            //return habitsTable.rowHeight
         }
         return habitsTable.rowHeight
     }
@@ -456,6 +478,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     /* Deselect row animation for better UX */
     internal func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
         tableView.deselectRow(at: indexPath, animated: true)
+        
         if(habitsTable.isEditing){
             if isFiltering() {
                 rowSelected = filteredIndexes[indexPath.row]
@@ -463,6 +486,31 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 rowSelected = indexPath.row
             }
             performSegue(withIdentifier: "segueToNewHabit", sender: self)
+        }else{
+            let cell = tableView.cellForRow(at: IndexPath(row: indexPath.row, section: 0)) as! CustomCell
+            
+            if isFiltering(){
+                if(cellsExpanded.contains(filteredIndexes[indexPath.row])){ // if cell is already expanded
+                    cell.habitDetailsLabel.text = ""
+                    cellsExpanded.remove(at: cellsExpanded.index(of: filteredIndexes[indexPath.row])!)
+                }else{
+                    cell.habitDetailsLabel.text = habitDetails[filteredIndexes[indexPath.row]]
+                    cellsExpanded.append(filteredIndexes[indexPath.row])
+                }
+            }else{
+                if(cellsExpanded.contains(indexPath.row)){ // if cell is already expanded
+                    cell.habitDetailsLabel.text = ""
+                    cellsExpanded.remove(at: cellsExpanded.index(of: indexPath.row)!)
+                }else{
+                    cell.habitDetailsLabel.text = habitDetails[indexPath.row]
+                    cellsExpanded.append(indexPath.row)
+                }
+            }
+            
+            UIView.animate(withDuration: 0.3, animations: {
+                self.habitsTable.beginUpdates()
+                self.habitsTable.endUpdates()
+            }, completion: nil)
         }
     }
     
