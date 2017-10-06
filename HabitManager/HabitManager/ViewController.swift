@@ -48,7 +48,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         let cell = tableView.dequeueReusableCell(withIdentifier:"Cell") as! CustomCell
         
-        cell.notificationsLabel.layer.zPosition = 1
         cell.editingAccessoryType = .disclosureIndicator
         
         cell.habitDetailsLabel.textColor = UIColor.white
@@ -96,8 +95,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             
             if(habitData[filteredIndexes[indexPath.row]*3] as! Int == 3){
                 cell.habitIcon.image = UIImage(named: "noAlertIcon")
+                cell.cellSwitch.isHidden = true
             }else if(habitData[filteredIndexes[indexPath.row]*3] as! Int == 4){
                 cell.habitIcon.image = UIImage(named: "reoccuringIcon")
+                cell.cellSwitch.isHidden = false
             }else{
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
@@ -118,6 +119,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }else{ // night
                     cell.habitIcon.image = UIImage(named: "nightIcon")
                 }
+                cell.cellSwitch.isHidden = false
             }
             
             // Check whether a habit is expired
@@ -155,8 +157,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             
             if(habitData[indexPath.row*3] as! Int == 3){
                 cell.habitIcon.image = UIImage(named: "noAlertIcon")
+                cell.cellSwitch.isHidden = true
             }else if(habitData[indexPath.row*3] as! Int == 4){
                 cell.habitIcon.image = UIImage(named: "reoccuringIcon")
+                cell.cellSwitch.isHidden = false
             }else{
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
@@ -177,6 +181,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }else{ // night
                     cell.habitIcon.image = UIImage(named: "nightIcon")
                 }
+                cell.cellSwitch.isHidden = false
             }
             
             // Check whether a habit is expired
