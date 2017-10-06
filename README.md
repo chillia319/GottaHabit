@@ -35,5 +35,3 @@ This is the second release of GottaHabit and contains the following additional f
 - Habits are now sorted by time and duration.
 - Search function allows habits to be filtered by name.
 
-<h2>General Comments</h2>
-
