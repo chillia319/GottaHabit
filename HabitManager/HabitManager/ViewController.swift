@@ -94,6 +94,32 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             
             correctSwitchState(index: filteredIndexes[indexPath.row])
             
+            if(habitData[filteredIndexes[indexPath.row]*3] as! Int == 3){
+                cell.habitIcon.image = UIImage(named: "noAlertIcon")
+            }else if(habitData[filteredIndexes[indexPath.row]*3] as! Int == 4){
+                cell.habitIcon.image = UIImage(named: "reoccuringIcon")
+            }else{
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+                
+                let noonStart = dateFormatter.date(from: "2017-09-11T12:00:00")!
+                let morningStart = dateFormatter.date(from: "2017-09-11T06:00:00")!
+                let nightStart = dateFormatter.date(from: "2017-09-11T19:00:00")!
+                
+                let storedTime = habitData[filteredIndexes[indexPath.row]*3+2] as! Date
+                let morning = storedTime.compareTimeOnly(to: morningStart)
+                let noon = storedTime.compareTimeOnly(to: noonStart)
+                let night = storedTime.compareTimeOnly(to: nightStart)
+                
+                if(morning.rawValue == 1 && noon.rawValue != 1){ // morning
+                    cell.habitIcon.image = UIImage(named: "morningIcon")
+                }else if(noon.rawValue == 1 && night.rawValue != 1){ // noon
+                    cell.habitIcon.image = UIImage(named: "afternoonIcon")
+                }else{ // night
+                    cell.habitIcon.image = UIImage(named: "nightIcon")
+                }
+            }
+            
             // Check whether a habit is expired
             if(habitData[filteredIndexes[indexPath.row]*3] as! Int == 2){
                 if(dateInThePast(date: habitData[filteredIndexes[indexPath.row]*3+2] as! Date)){
@@ -128,7 +154,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             correctSwitchState(index: indexPath.row)
             
             if(habitData[indexPath.row*3] as! Int == 3){
-                cell.habitIcon.image = UIImage(named: "reoccuringIcon")
+                cell.habitIcon.image = UIImage(named: "noAlertIcon")
             }else if(habitData[indexPath.row*3] as! Int == 4){
                 cell.habitIcon.image = UIImage(named: "reoccuringIcon")
             }else{
