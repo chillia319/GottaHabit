@@ -14,9 +14,7 @@ class CustomCell: UITableViewCell {
     @IBOutlet var habitDetailsLabel: UILabel!
     @IBOutlet var notificationsLabel: UILabel!
     @IBOutlet var cellSwitch: UISwitch!
-    @IBOutlet var ribbonHead: UIImageView!
-    @IBOutlet var ribbonBody: UIImageView!
-    @IBOutlet var ribbonTail: UIImageView!
+    @IBOutlet var habitIcon: UIImageView!
 
     override func awakeFromNib() {
         super.awakeFromNib()
