@@ -54,10 +54,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         cell.habitDetailsLabel.textColor = UIColor.white
         cell.habitLabel.textColor = UIColor.white
         cell.notificationsLabel.textColor = UIColor.white
+        
+        // Assign background colours
         if(indexPath.row%2 == 0){
-            cell.backgroundColor = UIColor(red:0.263, green:0.259, blue:0.251, alpha:1.000)
+            cell.backgroundColor = UIColor(red:0.000, green:0.400, blue:0.400, alpha:1.000)
         }else{
-            cell.backgroundColor = UIColor(red:0.263, green:0.259, blue:0.251, alpha:0.000)
+            cell.backgroundColor = UIColor(red:0.000, green:0.600, blue:0.600, alpha:1.000)
         }
         
         // Ensures the state of the switches are always correct
@@ -124,8 +126,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             cell.cellSwitch.tag = indexPath.row
             
             correctSwitchState(index: indexPath.row)
-
-            if(habitData[indexPath.row*3] as! Int == 3 || habitData[indexPath.row*3] as! Int == 4){
+            
+            if(habitData[indexPath.row*3] as! Int == 3){
+                cell.habitIcon.image = UIImage(named: "reoccuringIcon")
+            }else if(habitData[indexPath.row*3] as! Int == 4){
                 cell.habitIcon.image = UIImage(named: "reoccuringIcon")
             }else{
                 let dateFormatter = DateFormatter()
@@ -430,7 +434,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @objc func startTimer(){
         if(timer==nil){
             print("timer started")
-            timer = Timer.scheduledTimer(timeInterval: 20.0, target: self, selector:#selector(ViewController.reloadData), userInfo: nil, repeats: true)
+            timer = Timer.scheduledTimer(timeInterval: 30.0, target: self, selector:#selector(ViewController.reloadData), userInfo: nil, repeats: true)
         }
     }
     
