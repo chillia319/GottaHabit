@@ -48,7 +48,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         let cell = tableView.dequeueReusableCell(withIdentifier:"Cell") as! CustomCell
         
-        cell.notificationsLabel.layer.zPosition = 1
         cell.editingAccessoryType = .disclosureIndicator
         
         cell.habitDetailsLabel.textColor = UIColor.white
@@ -80,6 +79,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
         }
         
+        // If searching
         if isFiltering(){
             cell.habitLabel.text = filteredHabits[indexPath.row]
             if(!cellsExpanded.contains(filteredIndexes[indexPath.row])){
@@ -93,6 +93,36 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             cell.cellSwitch.tag = filteredIndexes[indexPath.row]
             
             correctSwitchState(index: filteredIndexes[indexPath.row])
+            
+            // Assign icons for each habit
+            if(habitData[filteredIndexes[indexPath.row]*3] as! Int == 3){
+                cell.habitIcon.image = UIImage(named: "noAlertIcon")
+                cell.cellSwitch.isHidden = true
+            }else if(habitData[filteredIndexes[indexPath.row]*3] as! Int == 4){
+                cell.habitIcon.image = UIImage(named: "reoccuringIcon")
+                cell.cellSwitch.isHidden = false
+            }else{
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+                
+                let noonStart = dateFormatter.date(from: "2017-09-11T12:00:00")!
+                let morningStart = dateFormatter.date(from: "2017-09-11T06:00:00")!
+                let nightStart = dateFormatter.date(from: "2017-09-11T19:00:00")!
+                
+                let storedTime = habitData[filteredIndexes[indexPath.row]*3+2] as! Date
+                let morning = storedTime.compareTimeOnly(to: morningStart)
+                let noon = storedTime.compareTimeOnly(to: noonStart)
+                let night = storedTime.compareTimeOnly(to: nightStart)
+                
+                if(morning.rawValue == 1 && noon.rawValue != 1){ // morning
+                    cell.habitIcon.image = UIImage(named: "morningIcon")
+                }else if(noon.rawValue == 1 && night.rawValue != 1){ // noon
+                    cell.habitIcon.image = UIImage(named: "afternoonIcon")
+                }else{ // night
+                    cell.habitIcon.image = UIImage(named: "nightIcon")
+                }
+                cell.cellSwitch.isHidden = false
+            }
             
             // Check whether a habit is expired
             if(habitData[filteredIndexes[indexPath.row]*3] as! Int == 2){
@@ -127,10 +157,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             
             correctSwitchState(index: indexPath.row)
             
+            // Assign icons for each habit
             if(habitData[indexPath.row*3] as! Int == 3){
-                cell.habitIcon.image = UIImage(named: "reoccuringIcon")
+                cell.habitIcon.image = UIImage(named: "noAlertIcon")
+                cell.cellSwitch.isHidden = true
             }else if(habitData[indexPath.row*3] as! Int == 4){
                 cell.habitIcon.image = UIImage(named: "reoccuringIcon")
+                cell.cellSwitch.isHidden = false
             }else{
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
@@ -151,6 +184,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }else{ // night
                     cell.habitIcon.image = UIImage(named: "nightIcon")
                 }
+                cell.cellSwitch.isHidden = false
             }
             
             // Check whether a habit is expired
