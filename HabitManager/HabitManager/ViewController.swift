@@ -10,6 +10,7 @@ import UIKit
 import UserNotifications
 
 var uuid: [[String]] = []
+var cellsExpanded: [Int] = []
 var timer: Timer!
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITabBarDelegate {
@@ -32,7 +33,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     private var rowSelected: Int!
     private var filteredHabits: [String] = []
     private var filteredIndexes: [Int] = []
-    private var cellsExpanded: [Int] = []
     
     let searchController = UISearchController(searchResultsController: nil)
     
@@ -99,7 +99,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 cell.habitIcon.image = UIImage(named: "noAlertIcon")
                 cell.cellSwitch.isHidden = true
             }else if(habitData[filteredIndexes[indexPath.row]*3] as! Int == 4){
-                cell.habitIcon.image = UIImage(named: "reoccuringIcon")
+                cell.habitIcon.image = UIImage(named: "reccuringIcon")
                 cell.cellSwitch.isHidden = false
             }else{
                 let dateFormatter = DateFormatter()
@@ -162,7 +162,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 cell.habitIcon.image = UIImage(named: "noAlertIcon")
                 cell.cellSwitch.isHidden = true
             }else if(habitData[indexPath.row*3] as! Int == 4){
-                cell.habitIcon.image = UIImage(named: "reoccuringIcon")
+                cell.habitIcon.image = UIImage(named: "reccuringIcon")
                 cell.cellSwitch.isHidden = false
             }else{
                 let dateFormatter = DateFormatter()
@@ -429,6 +429,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         refreshControl.backgroundColor = UIColor(red:0.176, green:0.227, blue:0.263, alpha:1.000)
         
         // Setup the Search Controller
+        searchController.hidesNavigationBarDuringPresentation = false
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = NSLocalizedString("Search Title", comment: "")
@@ -451,9 +452,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         })
         
         filteredIndexes = []
-        for filtered in filteredHabits{
-            if(habits.contains(filtered)){
-                filteredIndexes.append(habits.index(of: filtered)!)
+        if(filteredHabits.count > 1){
+            var index = 0
+            for habit in habits{
+                print(habit)
+                if(filteredHabits.contains(habit)){
+                    filteredIndexes.append(index)
+                }
+                index += 1
+            }
+            print(filteredIndexes)
+        }else{
+            for filtered in filteredHabits{
+                if(habits.contains(filtered)){
+                    filteredIndexes.append(habits.index(of: filtered)!)
+                }
             }
         }
         
@@ -675,7 +688,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 delegate?.scheduleOneTimeNotification(at: habitData[row*3+2] as! Date, title: habits[row], body: bodyContentForNotification, id: uuidsForResume[0])
             case 3: // If current row does not need any notification which should not be triggerd since the switch is hidden
                 assert(false, "FATAL: Reschedualing type 3 failed (switch should be hidden)")
-            case 4: // If current row needs reoccuring notifications
+            case 4: // If current row needs reccuring notifications
                 print("Resumed uuid: \(uuidsForResume[0])")
                 delegate?.scheduleReoccurringNotification(interval: habitData[row*3+2] as! Int, title: habits[row], body: bodyContentForNotification, id: uuidsForResume[0])
             default: // Should not trigger
@@ -720,6 +733,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     habitData.remove(at: (filteredIndexes[indexPath.row]*3))
                 }
                 
+                if(cellsExpanded.contains(filteredIndexes[indexPath.row])){ // if cell is already expanded
+                    cellsExpanded.remove(at: cellsExpanded.index(of: filteredIndexes[indexPath.row])!)
+                }
+                
                 updateSearchResults(for: searchController)
             }else{
                 // Cancel future notifications related to the row and delete UUIDs
@@ -735,6 +752,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 // There are 3 elements reserved for each row's data, so delete all three
                 for _ in 0...2{
                     habitData.remove(at: (indexPath.row*3))
+                }
+                
+                if(cellsExpanded.contains(indexPath.row)){
+                    cellsExpanded.remove(at: cellsExpanded.index(of: indexPath.row)!)
                 }
             }
             
