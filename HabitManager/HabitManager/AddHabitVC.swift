@@ -128,6 +128,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             UserDefaults.standard.set(uuid, forKey: "uuid")
             UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
             UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+            cellsExpanded = []
         }
         // User mode
         else{
@@ -944,7 +945,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                     switchState = tempSwitchState
                 }
                 
-                // If editing reoccuring habit
+                // If editing reccuring habit
                 if(habitData[AddHabitVC.rowBeingEdited*3] as! Int == 4){
                     modeToggle.selectedSegmentIndex = 1
                     setMode(1)
