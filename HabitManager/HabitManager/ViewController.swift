@@ -377,7 +377,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             performSegue(withIdentifier: "segueToNewHabit", sender: self)
         }else{
             let cell = tableView.cellForRow(at: IndexPath(row: indexPath.row, section: 0)) as! CustomCell
-            print(cell.bounds.height)
+
             if isFiltering(){
                 if(cellsExpanded.contains(filteredIndexes[indexPath.row])){ // if cell is already expanded
                     cell.habitDetailsLabel.text = ""
@@ -446,6 +446,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return searchController.searchBar.text?.isEmpty ?? true
     }
     
+    
+    // Filter the search and record the original row indexe where the title matches the search
     func filterContentForSearchText(_ searchText: String, scope: String = "All") {
         filteredHabits = habits.filter({( habit : String) -> Bool in
             return habit.lowercased().contains(searchText.lowercased())
@@ -455,13 +457,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if(filteredHabits.count > 1){
             var index = 0
             for habit in habits{
-                print(habit)
                 if(filteredHabits.contains(habit)){
                     filteredIndexes.append(index)
                 }
                 index += 1
             }
-            print(filteredIndexes)
         }else{
             for filtered in filteredHabits{
                 if(habits.contains(filtered)){
