@@ -1134,7 +1134,62 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
             if(AddHabitVC.monthlyDaysSelected.count >= 31){
                 repeatOptionsLabel.text = "Everyday"
             }else{
-                repeatOptionsLabel.text = "Place holder monthly"
+                // Convert monthly day(s) to readable string
+                var displayText = ""
+                var firstSelection = true
+                
+                for day in AddHabitVC.monthlyDaysSelected{
+                    let stringDay = String(day)
+                    if(stringDay == "32"){
+                        displayText += " !Last day WIP!"
+                    }else if (firstSelection){
+                        if(stringDay.count == 1){
+                            if(stringDay[0] == "1"){
+                                displayText += String(day)+"st"
+                            }else if(stringDay[0] == "2"){
+                                displayText += String(day)+"nd"
+                            }else if(stringDay[0] == "3"){
+                                displayText += String(day)+"rd"
+                            }else{
+                                displayText += String(day)+"th"
+                            }
+                        }else{
+                            if(stringDay[1] == "1"){
+                                displayText += String(day)+"st"
+                            }else if(stringDay[1] == "2"){
+                                displayText += String(day)+"nd"
+                            }else if(stringDay[1] == "3"){
+                                displayText += String(day)+"rd"
+                            }else{
+                                displayText += String(day)+"th"
+                            }
+                        }
+                    }else{
+                        if(stringDay.count == 1){
+                            if(stringDay[0] == "1"){
+                                displayText += ", "+String(day)+"st"
+                            }else if(stringDay[0] == "2"){
+                                displayText += ", "+String(day)+"nd"
+                            }else if(stringDay[0] == "3"){
+                                displayText += ", "+String(day)+"rd"
+                            }else{
+                                displayText += ", "+String(day)+"th"
+                            }
+                        }else{
+                            if(stringDay[1] == "1"){
+                                displayText += ", "+String(day)+"st"
+                            }else if(stringDay[1] == "2"){
+                                displayText += ", "+String(day)+"nd"
+                            }else if(stringDay[1] == "3"){
+                                displayText += ", "+String(day)+"rd"
+                            }else{
+                                displayText += ", "+String(day)+"th"
+                            }
+                        }
+                    }
+                    firstSelection = false
+                }
+                repeatOptionsLabel.text = displayText
             }
         }
     }
@@ -1177,5 +1232,22 @@ extension Date {
             // Descending means after
             return .orderedDescending
         }
+    }
+}
+
+extension String {
+    
+    subscript (i: Int) -> Character {
+        return self[index(startIndex, offsetBy: i)]
+    }
+    
+    subscript (i: Int) -> String {
+        return String(self[i] as Character)
+    }
+    
+    subscript (r: Range<Int>) -> String {
+        let start = index(startIndex, offsetBy: r.lowerBound)
+        let end = index(startIndex, offsetBy: r.upperBound)
+        return self[Range(start ..< end)]
     }
 }
