@@ -1143,7 +1143,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                     if(stringDay == "32"){
                         displayText += " !Last day WIP!"
                     }else if (firstSelection){
-                        if(stringDay.count == 1){
+                        if(stringDay.characters.count == 1){
                             if(stringDay[0] == "1"){
                                 displayText += String(day)+"st"
                             }else if(stringDay[0] == "2"){
@@ -1165,7 +1165,7 @@ class AddHabitVC: UITableViewController, UITextFieldDelegate {
                             }
                         }
                     }else{
-                        if(stringDay.count == 1){
+                        if(stringDay.characters.count == 1){
                             if(stringDay[0] == "1"){
                                 displayText += ", "+String(day)+"st"
                             }else if(stringDay[0] == "2"){
