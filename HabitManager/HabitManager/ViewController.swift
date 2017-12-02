@@ -407,6 +407,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Request access to notifications
+        let centre = UNUserNotificationCenter.current()
+        centre.requestAuthorization(options: [.alert, .sound]) {(accepted, error) in
+            if !accepted {
+                print("Notification authorization denied")
+            }
+        }
+        
         tabBar.delegate = self
         // Highlight "All habits" tab by default
         tabBar.selectedItem = tabBar.items![0]
@@ -553,7 +561,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         UNUserNotificationCenter.current().getNotificationSettings { (settings) in
             if checkNotificationAccess && settings.authorizationStatus != .authorized {
                 print("notifications not enabled")
-                let alertController = UIAlertController(title: "Notification Not Enabled", message: "You can still use GottaHabit, but the functionalities will be extremly limited, enable notifications by going to Settings->GottaHabit->Notifications", preferredStyle: .alert)
+                let alertController = UIAlertController(title: "Notification Not Enabled", message: "You can still use GottaHabit, but the functionalities will be extremly limited. Enable notifications by going to Settings->GottaHabit->Notifications", preferredStyle: .alert)
                 let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
                 alertController.addAction(defaultAction)
                 self.present(alertController, animated: true, completion: nil)
@@ -584,7 +592,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
-    // Disable the ability to move a row for certain notification types
+    // Disable the ability to move a row for certain notification types (all of them for now)
     func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
         return false
     }

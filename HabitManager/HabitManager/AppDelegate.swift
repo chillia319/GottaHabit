@@ -20,17 +20,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UINavigationBar.appearance().barTintColor = UIColor(red: 67/255, green: 66/255, blue: 64/255, alpha: 1.0)
         UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName:UIColor.white]
         UIApplication.shared.statusBarView?.backgroundColor = UIColor(red: 67/255, green: 66/255, blue: 64/255, alpha: 1.0)
-         UIApplication.shared.statusBarStyle = .lightContent 
-        UITabBar.appearance().tintColor = UIColor(red: 77/255, green: 195/255, blue: 199/255, alpha: 1.0)      
-        // Request access to notifications
-        let centre = UNUserNotificationCenter.current()
-        centre.requestAuthorization(options: [.alert, .sound]) {(accepted, error) in
-            if !accepted {
-                print("Notification authorization denied")
-            }
+        UIApplication.shared.statusBarStyle = .lightContent
+        UITabBar.appearance().tintColor = UIColor(red: 77/255, green: 195/255, blue: 199/255, alpha: 1.0)
+        
+        // Add an onbroading screen when the user opens the application the first time
+        self.window = UIWindow(frame: UIScreen.main.bounds)
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        var vc: UIViewController
+        if(UserDefaults.standard.value(forKey: "firstTimeOpening") as? Bool) == nil{
+            // Show the onboarding screen
+            vc = storyboard.instantiateViewController(withIdentifier: "OnboardingVC")
+        }else{
+            // Show the main screen
+            vc = storyboard.instantiateInitialViewController()!
         }
+        self.window?.rootViewController = vc
+        self.window?.makeKeyAndVisible()
         
         // Add a snooze option to the notifications
+        let centre = UNUserNotificationCenter.current()
         let snoozeAction = UNNotificationAction(identifier: "Snooze", title: "Snooze", options: [])
         let category = UNNotificationCategory(identifier: "UYLReminderCategory", actions: [snoozeAction], intentIdentifiers: [], options: [])
         centre.setNotificationCategories([category])
@@ -200,14 +208,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
-        let viewController:ViewController = window!.rootViewController as! ViewController
-        viewController.reloadData()
+        if(UserDefaults.standard.value(forKey: "firstTimeOpening") as? String) != nil{
+            let viewController:ViewController = window!.rootViewController as! ViewController
+            viewController.reloadData()
+        }
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
-        let viewController:ViewController = window!.rootViewController as! ViewController
-        viewController.reloadData()
+        if(UserDefaults.standard.value(forKey: "firstTimeOpening") as? String) != nil{
+            let viewController:ViewController = window!.rootViewController as! ViewController
+            viewController.reloadData()
+        }
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     }
 
