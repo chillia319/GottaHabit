@@ -220,8 +220,12 @@
                         </subviews>
                         <color key="backgroundColor" red="0.43395411968231201" green="0.75632786750793457" blue="0.77255803346633911" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
-                            <constraint firstItem="KwO-NR-W9r" firstAttribute="top" secondItem="kME-kv-v2D" secondAttribute="bottom" constant="130" id="1tc-0k-Un5"/>
-                            <constraint firstItem="ul7-mF-XAN" firstAttribute="top" secondItem="z6X-jz-nTg" secondAttribute="bottom" constant="130" id="6tL-OZ-5ZI"/>
+                            <constraint firstItem="KwO-NR-W9r" firstAttribute="top" secondItem="kME-kv-v2D" secondAttribute="bottom" constant="130" id="1tc-0k-Un5">
+                                <variation key="heightClass=compact-widthClass=compact" constant="50"/>
+                            </constraint>
+                            <constraint firstItem="ul7-mF-XAN" firstAttribute="top" secondItem="z6X-jz-nTg" secondAttribute="bottom" constant="130" id="6tL-OZ-5ZI">
+                                <variation key="heightClass=compact-widthClass=compact" constant="50"/>
+                            </constraint>
                             <constraint firstItem="KwO-NR-W9r" firstAttribute="leading" secondItem="GjW-10-nAH" secondAttribute="leadingMargin" constant="25" id="Y5z-Ey-ZlW"/>
                             <constraint firstAttribute="trailingMargin" secondItem="z6X-jz-nTg" secondAttribute="trailing" constant="100" id="asL-BN-io2"/>
                             <constraint firstItem="z6X-jz-nTg" firstAttribute="leading" secondItem="GjW-10-nAH" secondAttribute="leadingMargin" constant="100" id="dbw-hG-HkQ"/>
@@ -1266,6 +1270,6 @@
         <image name="reccuringIcon" width="100" height="100"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="RHJ-r6-ZAR"/>
+        <segue reference="wAh-bo-a5g"/>
     </inferredMetricsTieBreakers>
 </document>
